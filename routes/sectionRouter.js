@@ -1,0 +1,16 @@
+const router = require('express').Router()
+const sectionCtrl = require('../controllers/sectionCtrl')
+const auth = require('../middleware/auth')
+const authAdmin = require('../middleware/authAdmin')
+
+
+router.route('/section')
+    .get(sectionCtrl.getSections)
+    .post(sectionCtrl.createSection)
+
+router.route('/section/:id')
+    .delete(sectionCtrl.deleteSection)
+    .put(sectionCtrl.updateSection)
+
+
+module.exports = router
