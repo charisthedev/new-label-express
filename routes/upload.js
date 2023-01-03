@@ -4,6 +4,8 @@ const auth = require("../middleware/auth");
 const authAdmin = require("../middleware/authAdmin");
 const fs = require("fs");
 const axios = require("axios");
+const request = require("request");
+const Mux = require("@mux/mux-node").default;
 
 // we will upload image on cloudinary
 cloudinary.config({

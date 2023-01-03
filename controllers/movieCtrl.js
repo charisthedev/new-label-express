@@ -1,4 +1,5 @@
 const Movies = require("../models/movieModel");
+const Activities = require("../models/activityModel");
 
 // Filter, sorting and paginating
 
@@ -52,7 +53,7 @@ const movieCtrl = {
   getMovies: async (req, res) => {
     try {
       const features = new APIfeatures(
-        Movies.find().select('-video').populate("category"),
+        Movies.find().select("-video").populate("category"),
         req.query
       )
         .filtering()
@@ -71,25 +72,29 @@ const movieCtrl = {
     }
   },
   getMovie: async (req, res) => {
-        try {
-            const movie = await Movies.findById(req.params.id).populate("category").select('-video')
-            if(!movie) return res.status(400).json({msg: "Movie does not exist."})
+    try {
+      const movie = await Movies.findById({ _id: req.params.id })
+        .populate("category")
+        .select("-video");
+      if (!movie) return res.status(400).json({ msg: "Movie does not exist." });
 
-            res.json(movie)
-        } catch (err) {
-            return res.status(500).json({msg: err.message})
-        }
+      res.json(movie);
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
   },
   getVideoUrl: async (req, res) => {
-        try {
-            const movie = await Movies.findById(req.params.id).populate("category").select('video -category -_id')
-            if(!movie) return res.status(400).json({msg: "Movie does not exist."})
+    try {
+      const movie = await Movies.findById({ _id: req.params.id }).populate(
+        "category"
+      );
+      if (!movie) return res.status(400).json({ msg: "Movie does not exist." });
 
-            res.json(movie)
-        } catch (err) {
-            return res.status(500).json({msg: err.message})
-        }
-  }, 
+      res.json(movie);
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
   createMovie: async (req, res) => {
     try {
       const {
@@ -120,6 +125,12 @@ const movieCtrl = {
         category,
       });
 
+      const newActivities = new Activities({
+        description: `Successfully created movie ${title}`,
+      });
+
+      await newActivities.save();
+
       await newMovie.save();
       res.json({ msg: "Created a movie" });
     } catch (err) {
@@ -128,7 +139,14 @@ const movieCtrl = {
   },
   deleteMovie: async (req, res) => {
     try {
-      await Movies.findByIdAndDelete(req.params.id);
+      await Movies.findByIdAndDelete({ _id: req.params.id });
+
+      const newActivities = new Activities({
+        description: `Successfully deleted movie with id ${req.params.id}`,
+      });
+
+      await newActivities.save();
+
       res.json({ msg: "Deleted a Movie" });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
@@ -136,13 +154,18 @@ const movieCtrl = {
   },
   updateMovie: async (req, res) => {
     try {
-
       await Movies.findOneAndUpdate(
         { _id: req.params.id },
         {
-          ...req.body
+          ...req.body,
         }
       );
+
+      const newActivities = new Activities({
+        description: `Successfully updated movie with id ${req.params.id}`,
+      });
+
+      await newActivities.save();
 
       res.json({ msg: "Updated a Product" });
     } catch (err) {
