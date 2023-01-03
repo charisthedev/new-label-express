@@ -40,6 +40,7 @@ app.use("/api", require("./routes/upload"));
 app.use("/api", require("./routes/bannerRouter"));
 app.use("/api", require("./routes/sectionRouter"));
 app.use("/api", require("./routes/paymentRouter"));
+app.use("/api", require("./routes/adminRouter"));
 app.get("/", (req, res) => {
   res.send("Hello, World!");
 });

@@ -1,16 +1,19 @@
 const Banner = require("../models/bannerModel");
+const Activities = require("../models/activityModel");
 
 const bannerCtrl = {
   getBanner: async (req, res) => {
     try {
-        const { type } = req.params
-      const banner = await Banner.find({ type }).populate({
-        path: 'movies',
-        select: '-video'
-      }).populate({
-        path: "seasons",
-        select: "-episodes",
-      });
+      const { type } = req.params;
+      const banner = await Banner.find({ type })
+        .populate({
+          path: "movies",
+          select: "-video",
+        })
+        .populate({
+          path: "seasons",
+          select: "-episodes",
+        });
 
       res.json({ banner });
     } catch (error) {
@@ -36,6 +39,12 @@ const bannerCtrl = {
         seasons,
       });
 
+      const newActivity = new Activities({
+        description: `Successfully created ${type} banner`,
+      });
+
+      await newActivity.save();
+
       await newBanner.save();
 
       res.json({
@@ -51,7 +60,14 @@ const bannerCtrl = {
   updateBanner: async (req, res) => {
     try {
       const { bannerData } = req.body;
-      await Category.findOneAndUpdate({ _id: req.params.id }, { bannerData });
+      await Banner.findOneAndUpdate({ _id: req.params.id }, { bannerData });
+      const bannerType = await Banner.findOne({ _id: req.params.id });
+
+      const newActivity = new Activities({
+        description: `Successfully Updated ${bannerType.type} banner`,
+      });
+
+      await newActivity.save();
 
       res.json({ msg: `Updated a banner}` });
     } catch (err) {
@@ -61,6 +77,14 @@ const bannerCtrl = {
   deleteBanner: async (req, res) => {
     try {
       await Banner.findByIdAndDelete(req.params.id);
+      const bannerType = await Banner.findOne({ _id: req.params.id });
+
+      const newActivity = new Activities({
+        description: `Successfully Deleted ${bannerType.type} banner`,
+      });
+
+      await newActivity.save();
+
       res.json({ msg: "Deleted a Banner" });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
