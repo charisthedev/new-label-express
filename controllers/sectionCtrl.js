@@ -1,4 +1,6 @@
 const Section = require("../models/sectionModel");
+const Movies = require("../models/movieModel");
+const Seasons = require("../models/seasonModel");
 const Activities = require("../models/activityModel");
 
 const sectionCtrl = {
@@ -91,6 +93,22 @@ const sectionCtrl = {
       res.json({ msg: "Deleted a Section" });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
+    }
+  },
+  searchProduct: async (req, res) => {
+    try {
+      const movies = await Movies.find({ title: { $regex: req.query.title } })
+        .limit(10)
+        .select("title image type");
+      const seasons = await Seasons.find({ title: { $regex: req.query.title } })
+        .limit(10)
+        .select("title image type");
+
+      const search = movies.concat(seasons);
+
+      res.json(search);
+    } catch (err) {
+      res.status(500).json({ msg: err.message });
     }
   },
 };

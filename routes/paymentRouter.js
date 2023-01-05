@@ -10,8 +10,8 @@ router
 
 router.route("/orders/verify").post(paymentCtrl.verifyItemPurchase);
 router.route("/orders/topup").post(paymentCtrl.topUpWallet);
-router.route("/orders/user/").get(paymentCtrl.getUserOrders)
-router.route("/orders/card-payment").post(paymentCtrl.createOrderFromCard)
+router.route("/orders/user").get(paymentCtrl.getUserOrders);
+router.route("/orders/card-payment").post(paymentCtrl.createOrderFromCard);
 
 router.route("/orders/:id");
 //   .get(movieCtrl.getMovie)
