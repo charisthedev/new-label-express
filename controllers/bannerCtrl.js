@@ -2,6 +2,18 @@ const Banner = require("../models/bannerModel");
 const Activities = require("../models/activityModel");
 
 const bannerCtrl = {
+  getBanners: async (req, res) => {
+    try {
+      const banners = await Banner.find();
+
+      res.json({
+        status: "success",
+        data: banners,
+      });
+    } catch (error) {
+      res.status(500).json({ msg: err.message });
+    }
+  },
   getBanner: async (req, res) => {
     try {
       const { type } = req.params;
@@ -59,8 +71,7 @@ const bannerCtrl = {
   },
   updateBanner: async (req, res) => {
     try {
-      const { bannerData } = req.body;
-      await Banner.findOneAndUpdate({ _id: req.params.id }, { bannerData });
+      await Banner.findOneAndUpdate({ _id: req.params.id }, { ...req.body });
       const bannerType = await Banner.findOne({ _id: req.params.id });
 
       const newActivity = new Activities({
