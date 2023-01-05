@@ -88,10 +88,9 @@ const bannerCtrl = {
   deleteBanner: async (req, res) => {
     try {
       await Banner.findByIdAndDelete(req.params.id);
-      const bannerType = await Banner.findOne({ _id: req.params.id });
 
       const newActivity = new Activities({
-        description: `Successfully Deleted ${bannerType.type} banner`,
+        description: `Successfully Deleted banner with id ${req.params.id}`,
       });
 
       await newActivity.save();
