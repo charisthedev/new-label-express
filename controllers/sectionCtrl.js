@@ -9,11 +9,10 @@ const sectionCtrl = {
       const sections = await Section.find()
         .populate({
           path: "movies",
-          select: "-video -category",
+          select: "-video",
         })
         .populate({
           path: "seasons",
-          select: "-episodes",
         });
 
       res.json({ sections });
