@@ -151,6 +151,10 @@ const seasonCtrl = {
   },
   updateSeason: async (req, res) => {
     try {
+      const { body } = req;
+
+      if (!body)
+        return res.json(404).json({ msg: "no data passed as payload" });
       await Seasons.findOneAndUpdate(
         { _id: req.params.id },
         {
