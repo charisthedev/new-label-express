@@ -23,6 +23,9 @@ const seasonSchema = new mongoose.Schema(
     donation: {
       tye: Boolean,
     },
+    donate: {
+      type: Number,
+    },
     free: {
       type: Boolean,
       default: false,

@@ -37,7 +37,10 @@ const movieSchema = new mongoose.Schema(
       type: String,
     },
     donation: {
-      tye: Boolean,
+      type: Boolean,
+    },
+    donate: {
+      type: Number,
     },
     free: {
       type: Boolean,
