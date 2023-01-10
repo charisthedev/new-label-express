@@ -38,11 +38,13 @@ const bannerCtrl = {
   createBanner: async (req, res) => {
     try {
       const { type, movies, seasons } = req.body;
+      if (!type || !movies || !seasons)
+        return res.status(404).json({ msg: "Please provide all payload" });
 
       const banner = await Banner.findOne({ type });
       if (banner)
         res
-          .status(500)
+          .status(404)
           .send({ message: "type already exists, update instead." });
 
       const newBanner = new Banner({
@@ -72,10 +74,9 @@ const bannerCtrl = {
   updateBanner: async (req, res) => {
     try {
       await Banner.findOneAndUpdate({ _id: req.params.id }, { ...req.body });
-      const bannerType = await Banner.findOne({ _id: req.params.id });
 
       const newActivity = new Activities({
-        description: `Successfully Updated ${bannerType.type} banner`,
+        description: `Successfully Updated banner with id ${req.params.id}`,
       });
 
       await newActivity.save();
@@ -88,10 +89,9 @@ const bannerCtrl = {
   deleteBanner: async (req, res) => {
     try {
       await Banner.findByIdAndDelete(req.params.id);
-      const bannerType = await Banner.findOne({ _id: req.params.id });
 
       const newActivity = new Activities({
-        description: `Successfully Deleted ${bannerType.type} banner`,
+        description: `Successfully Deleted banner with id ${req.params.id}`,
       });
 
       await newActivity.save();

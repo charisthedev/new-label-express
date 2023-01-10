@@ -38,10 +38,9 @@ const categoryCtrl = {
   deleteCategory: async (req, res) => {
     try {
       await Category.findByIdAndDelete({ _id: req.params.id });
-      const categoryName = await Category.findOne({ _id: req.params.id });
 
       const newActivities = new Activities({
-        description: `Successfully deleted ${categoryName.name} category`,
+        description: `Successfully deleted category with id ${req.params.id}`,
       });
 
       await newActivities.save();

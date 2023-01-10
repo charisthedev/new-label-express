@@ -6,7 +6,6 @@ const movieSchema = new mongoose.Schema(
       type: String,
       unique: true,
       trim: true,
-      required: true,
     },
     title: {
       type: String,
@@ -30,13 +29,30 @@ const movieSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    trailer: {
+      type: String,
+      required: true,
+    },
+    duration: {
+      type: String,
+    },
+    donation: {
+      type: Boolean,
+    },
+    donate: {
+      type: Number,
+    },
+    free: {
+      type: Boolean,
+      default: false,
+    },
     video: {
       type: String,
       required: true,
     },
     type: {
       type: String,
-      default: 'Movies'
+      default: "Movies",
     },
     category: [
       {
