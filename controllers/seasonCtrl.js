@@ -151,19 +151,14 @@ const seasonCtrl = {
   },
   updateSeason: async (req, res) => {
     try {
-      const { title, price, description, image, banner, number } = req.body;
-      if (!image && !banner)
-        return res.status(400).json({ msg: "No image upload" });
+      const { body } = req;
 
+      if (!body)
+        return res.json(404).json({ msg: "no data passed as payload" });
       await Seasons.findOneAndUpdate(
         { _id: req.params.id },
         {
-          title: title.toLowerCase(),
-          price,
-          description,
-          image,
-          banner,
-          number,
+          ...req.body,
         }
       );
 
