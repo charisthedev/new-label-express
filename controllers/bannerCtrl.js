@@ -38,7 +38,7 @@ const bannerCtrl = {
   createBanner: async (req, res) => {
     try {
       const { type, movies, seasons } = req.body;
-      if (!type || !movies || !seasons)
+      if (!type && !movies && !seasons)
         return res.status(404).json({ msg: "Please provide all payload" });
 
       const banner = await Banner.findOne({ type });
