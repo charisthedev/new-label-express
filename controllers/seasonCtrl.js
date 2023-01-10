@@ -151,12 +151,9 @@ const seasonCtrl = {
   },
   updateSeason: async (req, res) => {
     try {
-      const { title } = req.body;
-
       await Seasons.findOneAndUpdate(
         { _id: req.params.id },
         {
-          title: title.toLowerCase(),
           ...req.body,
         }
       );
