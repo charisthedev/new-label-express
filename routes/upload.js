@@ -6,6 +6,7 @@ const fs = require("fs");
 const axios = require("axios");
 const request = require("request");
 const Mux = require("@mux/mux-node").default;
+const { Video } = new Mux();
 
 // we will upload image on cloudinary
 cloudinary.config({
@@ -44,6 +45,38 @@ router.post("/upload", (req, res) => {
     );
   } catch (err) {
     return res.status(500).json({ msg: err.message });
+  }
+});
+
+router.post("/upload-asset", async (req, res) => {
+  try {
+    const upload = await Video.Uploads.create({
+      new_asset_settings: { playback_policy: "public" },
+      cors_origin: "*",
+    });
+    res.json({
+      id: upload.id,
+      url: upload.url,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ msg: "Error creating upload" });
+  }
+});
+
+router.get("/get-asset/:id", async (req, res) => {
+  try {
+    const upload = await Video.Uploads.get(req.params.id);
+    res.json({
+      upload: {
+        status: upload.status,
+        url: upload.url,
+        asset_id: upload.asset_id,
+      },
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ msg: "Error getting upload/asset" });
   }
 });
 

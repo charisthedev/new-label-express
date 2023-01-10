@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/codesandbox-app/static-template#readme",
   "dependencies": {
-    "@mux/mux-node": "^7.0.0",
+    "@mux/mux-node": "3.3.2",
     "aws-sdk": "^2.1282.0",
     "axios": "^1.2.2",
     "bcrypt": "^5.1.0",
