@@ -68,15 +68,28 @@ router.get("/get-asset/:id", async (req, res) => {
   try {
     const upload = await Video.Uploads.get(req.params.id);
     res.json({
-      upload: {
-        status: upload.status,
-        url: upload.url,
-        asset_id: upload,
-      },
+      upload: upload.asset_id,
     });
   } catch (err) {
     console.log(err);
     res.status(500).json({ msg: "Error getting upload/asset" });
+  }
+});
+
+router.get("/get-playback/:id", async (req, res) => {
+  try {
+    const asset = await Video.Assets.get(req.params.id);
+    res.json({
+      asset: {
+        id: asset.id,
+        status: asset.status,
+        errors: asset.errors,
+        playback_id: asset.playback_ids[0].id,
+      },
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ err: "Error getting upload/asset" });
   }
 });
 
