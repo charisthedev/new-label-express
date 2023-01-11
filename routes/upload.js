@@ -71,7 +71,7 @@ router.get("/get-asset/:id", async (req, res) => {
       upload: {
         status: upload.status,
         url: upload.url,
-        asset_id: upload.asset_id,
+        asset_id: upload,
       },
     });
   } catch (err) {
