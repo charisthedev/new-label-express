@@ -115,9 +115,8 @@ const episodeCtrl = {
   },
   getEpisode: async (req, res) => {
     try {
-      const episodeData = await Episodes.findById(req.params.id)
-        .populate("season")
-        .exec();
+      const episodeData = await Episodes.findById(req.params.id);
+
       res.json({
         msg: "Queried",
         episodeData,
@@ -129,13 +128,13 @@ const episodeCtrl = {
   deleteEpisode: async (req, res) => {
     try {
       await Episodes.findByIdAndDelete(req.params.id);
-      
+
       const newActivities = new Activities({
         description: `Successfully created deleted episode with id ${req.params.id}`,
       });
 
       await newActivities.save();
-      
+
       res.json({ msg: "Deleted an Epsiode" });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
@@ -169,7 +168,7 @@ const episodeCtrl = {
           season,
         }
       );
-      
+
       const newActivities = new Activities({
         description: `Successfully updated ${title}`,
       });
