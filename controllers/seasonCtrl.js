@@ -75,7 +75,6 @@ const seasonCtrl = {
   createSeason: async (req, res) => {
     try {
       const {
-        season_id,
         title,
         price,
         description,
@@ -95,7 +94,6 @@ const seasonCtrl = {
         return res.status(400).json({ msg: "This season already exists." });
 
       const newSeason = new Seasons({
-        season_id,
         title: title.toLowerCase(),
         price,
         description,
