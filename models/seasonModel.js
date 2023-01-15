@@ -6,7 +6,6 @@ const seasonSchema = new mongoose.Schema(
       type: String,
       unique: true,
       trim: true,
-      required: true,
     },
     title: {
       type: String,

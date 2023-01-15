@@ -6,7 +6,6 @@ const episodeSchema = new mongoose.Schema(
       type: String,
       unique: true,
       trim: true,
-      required: true,
     },
     title: {
       type: String,
@@ -33,7 +32,7 @@ const episodeSchema = new mongoose.Schema(
     },
     banner: {
       type: String,
-    }
+    },
   },
   {
     timestamps: true,
