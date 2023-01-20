@@ -36,4 +36,4 @@ const seriesSchema = new mongoose.Schema({
     timestamps: true
 })
 
-module.exports = mogoose.model("Series", seriesSchema)
+module.exports = mongoose.model("Series", seriesSchema)
