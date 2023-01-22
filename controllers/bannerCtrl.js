@@ -23,8 +23,8 @@ const bannerCtrl = {
           select: "-video",
         })
         .populate({
-          path: "seasons",
-          select: "-episodes",
+          path: "series",
+          select: "-seasons",
         });
 
       res.json({ banner });
@@ -37,8 +37,8 @@ const bannerCtrl = {
   },
   createBanner: async (req, res) => {
     try {
-      const { type, movies, seasons } = req.body;
-      if (!type && !movies && !seasons)
+      const { type, movies, series } = req.body;
+      if (!type && !movies && !series)
         return res.status(404).json({ msg: "Please provide all payload" });
 
       const banner = await Banner.findOne({ type });
@@ -50,7 +50,7 @@ const bannerCtrl = {
       const newBanner = new Banner({
         type,
         movies,
-        seasons,
+        series,
       });
 
       const newActivity = new Activities({

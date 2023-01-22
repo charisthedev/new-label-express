@@ -51,10 +51,12 @@ const seasonCtrl = {
   getSeasons: async (req, res) => {
     try {
       const features = new APIfeatures(
-        Seasons.find().populate({
-          path: "episodes",
-          select: "-video",
-        }),
+        Seasons.find()
+          .populate({
+            path: "episodes",
+            select: "-video",
+          })
+          .sort({ _id: 1 }),
         req.query
       )
         .filtering()
@@ -88,7 +90,6 @@ const seasonCtrl = {
       } = req.body;
       if (!image && !banner)
         return res.status(400).json({ msg: "Asset upload not complete" });
-
 
       const newSeason = new Seasons({
         title: title.toLowerCase(),
