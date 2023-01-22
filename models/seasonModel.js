@@ -2,11 +2,6 @@ const mongoose = require("mongoose");
 
 const seasonSchema = new mongoose.Schema(
   {
-    season_id: {
-      type: String,
-      unique: true,
-      trim: true,
-    },
     title: {
       type: String,
       required: true,
@@ -17,7 +12,6 @@ const seasonSchema = new mongoose.Schema(
     },
     trailer: {
       type: String,
-      required: true,
     },
     donation: {
       type: Boolean,
