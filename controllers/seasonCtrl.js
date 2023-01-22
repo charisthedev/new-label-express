@@ -89,9 +89,6 @@ const seasonCtrl = {
       if (!image && !banner)
         return res.status(400).json({ msg: "Asset upload not complete" });
 
-      const season = await Seasons.findOne({ season_id });
-      if (season)
-        return res.status(400).json({ msg: "This season already exists." });
 
       const newSeason = new Seasons({
         title: title.toLowerCase(),
