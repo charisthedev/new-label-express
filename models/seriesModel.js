@@ -1,39 +1,50 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
-const seriesSchema = new mongoose.Schema({
+const seriesSchema = new mongoose.Schema(
+  {
     title: {
-        type: String
+      type: String,
     },
     free: {
-        type: Boolean,
+      type: Boolean,
     },
     description: {
-        type: String
+      type: String,
     },
     donation: {
-        type: Boolean,
+      type: Boolean,
     },
     price: {
-        type: Number,
-        trim: true,
-        required: true
+      type: Number,
+      trim: true,
+      required: true,
+    },
+    discount: {
+      type: Number,
+    },
+    dicountedPrice: {
+      type: Number,
     },
     image: {
-        type: String
+      type: String,
     },
     banner: {
-        type: String
+      type: String,
     },
     type: {
-        type: String,
-        default: "Series"
+      type: String,
+      default: "Series",
     },
-    seasons: [{
+    seasons: [
+      {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Seasons"
-    }]
-}, {
-    timestamps: true
-})
+        ref: "Seasons",
+      },
+    ],
+  },
+  {
+    timestamps: true,
+  }
+);
 
-module.exports = mongoose.model("Series", seriesSchema)
+module.exports = mongoose.model("Series", seriesSchema);

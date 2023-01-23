@@ -17,6 +17,12 @@ const movieSchema = new mongoose.Schema(
       trim: true,
       required: true,
     },
+    discount: {
+      type: Number,
+    },
+    dicountedPrice: {
+      type: Number,
+    },
     description: {
       type: String,
       required: true,
