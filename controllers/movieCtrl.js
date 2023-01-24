@@ -119,8 +119,6 @@ const movieCtrl = {
       if (movie)
         return res.status(400).json({ msg: "This movie already exists." });
 
-      const priceDicount = price * (1 - discount / 100);
-
       const newMovie = new Movies({
         movie_id,
         title: title.toLowerCase(),
@@ -135,7 +133,6 @@ const movieCtrl = {
         banner,
         video,
         category,
-        discountedPrice: priceDicount,
       });
 
       const newActivities = new Activities({
