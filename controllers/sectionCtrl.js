@@ -1,6 +1,7 @@
 const Section = require("../models/sectionModel");
 const Movies = require("../models/movieModel");
 const Seasons = require("../models/seasonModel");
+const Series = require("../models/seriesModel");
 const Activities = require("../models/activityModel");
 
 const sectionCtrl = {
@@ -12,7 +13,7 @@ const sectionCtrl = {
           select: "-video",
         })
         .populate({
-          path: "seasons",
+          path: "series",
         });
 
       res.json({ sections });
@@ -25,8 +26,8 @@ const sectionCtrl = {
   },
   createSection: async (req, res) => {
     try {
-      const { name, movies, seasons, view } = req.body;
-      if (!name && !view && !movies && !seasons)
+      const { name, movies, series, view } = req.body;
+      if (!name && !view && !movies && !series)
         res.status(404).json({ message: "Please provide all payload." });
 
       const section = await Section.findOne({ name });
@@ -36,7 +37,7 @@ const sectionCtrl = {
       const newSection = new Section({
         name,
         movies,
-        seasons,
+        series,
         view,
       });
 
@@ -58,10 +59,10 @@ const sectionCtrl = {
   },
   updateSection: async (req, res) => {
     try {
-      const { name, movies, seasons, view } = req.body;
+      const { name, movies, series, view } = req.body;
       await Section.findOneAndUpdate(
         { _id: req.params.id },
-        { name, movies, seasons, view }
+        { name, movies, series, view }
       );
 
       const newActivities = new Activities({
@@ -99,11 +100,11 @@ const sectionCtrl = {
       const movies = await Movies.find({ title: { $regex: req.query.title } })
         .limit(10)
         .select("title image type");
-      const seasons = await Seasons.find({ title: { $regex: req.query.title } })
+      const series = await Series.find({ title: { $regex: req.query.title } })
         .limit(10)
         .select("title image type");
 
-      const search = movies.concat(seasons);
+      const search = movies.concat(series);
 
       res.json(search);
     } catch (err) {

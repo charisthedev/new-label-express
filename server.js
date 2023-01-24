@@ -51,7 +51,8 @@ app.use("/api", require("./routes/paymentRouter"));
 app.use("/api", require("./routes/adminRouter"));
 app.use("/api", require("./routes/genreRouter"));
 app.use("/api", require("./routes/continueWatchingRouter"));
-app.use("/api", require("./routes/seriesRouter"))
+app.use("/api", require("./routes/seriesRouter"));
+app.use("/api", require("./routes/discountRouter"));
 app.get("/", (req, res) => {
   res.send("Hello, World!");
 });

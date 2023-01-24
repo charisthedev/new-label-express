@@ -14,10 +14,10 @@ const sectionSchema = new mongoose.Schema(
         ref: "Movies",
       },
     ],
-    seasons: [
+    series: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Seasons",
+        ref: "Series",
       },
     ],
     view: {
