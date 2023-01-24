@@ -18,10 +18,8 @@ const movieSchema = new mongoose.Schema(
       required: true,
     },
     discount: {
-      type: Number,
-    },
-    dicountedPrice: {
-      type: Number,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Discount",
     },
     description: {
       type: String,
