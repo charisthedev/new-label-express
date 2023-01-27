@@ -11,8 +11,9 @@ const discountSchema = new mongoose.Schema(
     code: {
       type: String,
     },
-    status: {
-      type: String,
+    active: {
+      type: Boolean,
+      default: false
     },
     usage: {
       type: Number,
