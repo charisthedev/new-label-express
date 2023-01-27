@@ -1,4 +1,5 @@
 const Movies = require("../models/movieModel");
+const Discount = require("../models/dicountModel");
 const Activities = require("../models/activityModel");
 
 // Filter, sorting and paginating
@@ -102,24 +103,33 @@ const movieCtrl = {
         title,
         price,
         description,
+        year,
         image,
         trailer,
         duration,
         donation,
         free,
         discount,
+        discountedPrice,
         banner,
         video,
         category,
       } = req.body;
       if (!image && !banner && !video)
         return res.status(400).json({ msg: "Asset upload not complete" });
+        
+      const discountId = await Discount.findById({ _id: discount })
+      if(!discountId) return res.status(400).json({ msg: "this discount has not been created! "})
+    
+      
 
       const newMovie = new Movies({
         movie_id,
         title: title.toLowerCase(),
         price,
         discount,
+        discountedPrice,
+        year,
         description,
         trailer,
         duration,
