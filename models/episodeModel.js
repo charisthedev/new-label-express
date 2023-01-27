@@ -4,7 +4,6 @@ const episodeSchema = new mongoose.Schema(
   {
     episode_id: {
       type: String,
-      unique: true,
       trim: true,
     },
     title: {
