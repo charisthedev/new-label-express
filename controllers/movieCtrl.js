@@ -115,10 +115,6 @@ const movieCtrl = {
       if (!image && !banner && !video)
         return res.status(400).json({ msg: "Asset upload not complete" });
 
-      const movie = await Movies.findOne({ movie_id });
-      if (movie)
-        return res.status(400).json({ msg: "This movie already exists." });
-
       const newMovie = new Movies({
         movie_id,
         title: title.toLowerCase(),
