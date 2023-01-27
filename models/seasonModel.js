@@ -38,6 +38,13 @@ const seasonSchema = new mongoose.Schema(
     banner: {
       type: String,
     },
+    discount: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Discount",
+    },
+    discountedPrice: {
+      type: Number,
+    },
     type: {
       type: String,
       default: "Seasons",

@@ -21,9 +21,15 @@ const movieSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Discount",
     },
+    discountedPrice: {
+      type: Number,
+    },
     description: {
       type: String,
       required: true,
+    },
+    year: {
+      type: String,
     },
     image: {
       type: String,

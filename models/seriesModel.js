@@ -20,10 +20,11 @@ const seriesSchema = new mongoose.Schema(
       required: true,
     },
     discount: {
-      type: Number,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Discount",
     },
-    dicountedPrice: {
-      type: Number,
+    discountedPrice: {
+      type: Number
     },
     image: {
       type: String,
