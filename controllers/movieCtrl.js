@@ -1,5 +1,6 @@
 const Movies = require("../models/movieModel");
 const Activities = require("../models/activityModel");
+const Discount = require("../models/dicountModel")
 
 // Filter, sorting and paginating
 
@@ -114,13 +115,25 @@ const movieCtrl = {
       } = req.body;
       if (!image && !banner && !video)
         return res.status(400).json({ msg: "Asset upload not complete" });
-
+        
+      const discount_id = await Discount.findById({ _id: discount})
+      
+      const getDiscountPercent = (code) => {
+         const discountPercent = code.substr(4,2);
+         return parseInt(discountPercent,10)/100;
+      }
+      
+     const extracted_Discount = getDiscountPercent(discount_id.code)
+     
+     const new_discount_price = price * (1 - extracted_Discount / 100)
+     
       const newMovie = new Movies({
         movie_id,
         title: title.toLowerCase(),
         price,
-        discount,
         description,
+        discount,
+        discountedPrice: new_discount_price,
         trailer,
         duration,
         donation,
@@ -160,9 +173,22 @@ const movieCtrl = {
   },
   updateMovie: async (req, res) => {
     try {
+      const { discount } = req.body
+      const discount_id = await Discount.findById({ _id: discount})
+
+      const getDiscountPercent = (code) => {
+         const discountPercent = code.substr(4,2);
+         return parseInt(discountPercent,10)/100;
+      }
+      
+     const extracted_Discount = getDiscountPercent(discount_id.code)
+     
+     const new_discount_price = price * (1 - extracted_Discount / 100)
+     
       await Movies.findOneAndUpdate(
         { _id: req.params.id },
         {
+          discountedPrice: new_discount_price,
           ...req.body,
         }
       );
