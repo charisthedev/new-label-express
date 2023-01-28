@@ -17,7 +17,7 @@ const bannerCtrl = {
   getBanner: async (req, res) => {
     try {
       const { type } = req.params;
-      const banner = await Banner.find({ type })
+      const banners = await Banner.find({ type })
         .populate({
           path: "movies",
           select: "-video",
@@ -26,6 +26,12 @@ const bannerCtrl = {
           path: "series",
           select: "-seasons",
         });
+
+      // Use reduce to combine the elements of the array into a single object
+      const banner = banners.reduce((obj, item) => {
+        obj[item.type] = item;
+        return obj;
+      }, {});
 
       res.json({ banner });
     } catch (error) {
