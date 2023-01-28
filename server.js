@@ -14,7 +14,7 @@ const limiter = rateLimit({
   message: "Too many requests, please try again later",
 });
 
-app.use(limiter);
+// app.use(limiter);
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors());
@@ -39,7 +39,7 @@ mongoose.connect(
   }
 );
 
-app.use("/user", require("./routes/userRouter"));
+app.use("/user", limiter, require("./routes/userRouter"));
 app.use("/api", require("./routes/movieRouter"));
 app.use("/api", require("./routes/categoryRouter"));
 app.use("/api", require("./routes/seasonRouter"));

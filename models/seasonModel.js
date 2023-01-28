@@ -10,12 +10,12 @@ const seasonSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    year: {
+      type: String,
+    },
     discount: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Discount",
-    },
-    discountedPrice: {
-      type: Number
     },
     trailer: {
       type: String,

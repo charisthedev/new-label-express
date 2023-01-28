@@ -182,7 +182,7 @@ const movieCtrl = {
   },
   updateMovie: async (req, res) => {
     try {
-      const { discount } = req.body;
+      const { discount, price } = req.body;
       const discount_id = await Discount.findById({ _id: discount });
 
       const getDiscountPercent = (code) => {
@@ -190,9 +190,13 @@ const movieCtrl = {
         return parseInt(discountPercent, 10) / 100;
       };
 
+      const movie = await Movies.findById({ _id: req.params.id });
+
       const extracted_Discount = getDiscountPercent(discount_id.code);
+      console.log(extracted_Discount)
 
       const new_discount_price = price * (1 - extracted_Discount / 100);
+      console.log(new_discount_price);
 
       await Movies.findOneAndUpdate(
         { _id: req.params.id },
