@@ -4,6 +4,7 @@ const auth = require("../middleware/auth");
 const authAdmin = require("../middleware/authAdmin");
 
 router.route("/banner/:type").get(bannerCtrl.getBanner);
+router.route("/banner/client/:type").get(bannerCtrl.getBannerClient);
 
 router.route("/banner").get(bannerCtrl.getBanners);
 
