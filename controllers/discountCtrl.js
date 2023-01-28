@@ -119,15 +119,13 @@ const discountCtrl = {
   updateDiscount: async (req, res) => {
     try {
       const { name, percentage, active } = req.body;
-      
+
       const getDiscount = await Discount.findById({ _id: req.params.id });
       if (!getDiscount)
         return res.status(400).json({ msg: "discount does not exist" });
-        
-       const generateCode = (discountPercent, expiryDate) => {
 
-        let code = crypto.randomBytes(4).toString("hex").toUpperCase();
-
+      const generateCode = (discountPercent, expiryDate) => {
+        let code = crypto.randomBytes(4).toString("hex").toUpperCase()
         code += Math.round(discountPercent * 100);
         code += expiryDate.toISOString().slice(0, 10).replace(/-/g, "");
         return code;

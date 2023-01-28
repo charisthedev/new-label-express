@@ -1,4 +1,5 @@
 const Movies = require("../models/movieModel");
+const Discount = require("../models/dicountModel");
 const Activities = require("../models/activityModel");
 const Discount = require("../models/dicountModel")
 
@@ -103,12 +104,14 @@ const movieCtrl = {
         title,
         price,
         description,
+        year,
         image,
         trailer,
         duration,
         donation,
         free,
         discount,
+        discountedPrice,
         banner,
         video,
         category,
@@ -117,6 +120,8 @@ const movieCtrl = {
         return res.status(400).json({ msg: "Asset upload not complete" });
         
       const discount_id = await Discount.findById({ _id: discount})
+
+      if(!discount_id) return res.status(400).json({ msg: "this discount has not been created! "})
       
       const getDiscountPercent = (code) => {
          const discountPercent = code.substr(4,2);
@@ -126,11 +131,13 @@ const movieCtrl = {
      const extracted_Discount = getDiscountPercent(discount_id.code)
      
      const new_discount_price = price * (1 - extracted_Discount / 100)
-     
+    
       const newMovie = new Movies({
         movie_id,
         title: title.toLowerCase(),
         price,
+        discount,
+        year,
         description,
         discount,
         discountedPrice: new_discount_price,
@@ -188,6 +195,7 @@ const movieCtrl = {
       await Movies.findOneAndUpdate(
         { _id: req.params.id },
         {
+          discount
           discountedPrice: new_discount_price,
           ...req.body,
         }
