@@ -11,6 +11,9 @@ const seriesSchema = new mongoose.Schema(
     description: {
       type: String,
     },
+    year: {
+      type: String,
+    },
     donation: {
       type: Boolean,
     },
@@ -23,9 +26,11 @@ const seriesSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Discount",
     },
-    discountedPrice: {
-      type: Number
-    },
+    casts: [
+      {
+        type: String,
+      },
+    ],
     image: {
       type: String,
     },
