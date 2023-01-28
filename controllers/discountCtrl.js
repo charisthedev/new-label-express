@@ -68,7 +68,7 @@ const discountCtrl = {
   },
   createDiscount: async (req, res) => {
     try {
-      const { name, percentage, status } = req.body;
+      const { name, percentage, active } = req.body;
 
       const generateCode = (discountPercent, expiryDate) => {
         let code = crypto.randomBytes(4).toString("hex").toUpperCase();
@@ -83,7 +83,7 @@ const discountCtrl = {
       const newDiscount = new Discount({
         name,
         percentage,
-        status,
+        active,
         code: generateCode(percentage, expiryDate),
       });
 
@@ -125,7 +125,7 @@ const discountCtrl = {
         return res.status(400).json({ msg: "discount does not exist" });
 
       const generateCode = (discountPercent, expiryDate) => {
-        let code = crypto.randomBytes(4).toString("hex").toUpperCase();
+        let code = crypto.randomBytes(4).toString("hex").toUpperCase()
         code += Math.round(discountPercent * 100);
         code += expiryDate.toISOString().slice(0, 10).replace(/-/g, "");
         return code;
