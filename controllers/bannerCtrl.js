@@ -41,6 +41,27 @@ const bannerCtrl = {
         .send({ message: "An error occurred while fetching the banner." });
     }
   },
+  getBannerClient: async (req, res) => {
+    try {
+      const { type } = req.params;
+      const banner = await Banner.find({ type })
+        .populate({
+          path: "movies",
+          select: "-video",
+        })
+        .populate({
+          path: "series",
+          select: "-seasons",
+        });
+
+      res.json({ banner });
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .send({ message: "An error occurred while fetching the banner." });
+    }
+  },
   createBanner: async (req, res) => {
     try {
       const { type, movies, series } = req.body;
