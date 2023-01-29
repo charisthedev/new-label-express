@@ -1,5 +1,7 @@
 const Payments = require("../models/paymentModel");
 const Seasons = require("../models/seasonModel");
+const Genres = require("../models/genreModel");
+const Discounts = require("../models/dicountModel");
 const Episodes = require("../models/episodeModel");
 const Movies = require("../models/movieModel");
 const Activities = require("../models/activityModel");
@@ -11,11 +13,12 @@ const adminCtrl = {
       const filter = {};
 
       const categoriesCount = await Category.countDocuments(filter);
-      const genresCount = await Category.countDocuments(filter);
       const movieCount = await Movies.countDocuments(filter);
       const seasonsCount = await Seasons.countDocuments(filter);
       const episodeCount = await Episodes.countDocuments(filter);
       const ordersCount = await Payments.countDocuments(filter);
+      const genreCount = await Genres.countDocuments(filter);
+      const discountCount = await Discounts.countDocuments(filter);
 
       const productCount = movieCount + seasonsCount + episodeCount;
 
@@ -24,7 +27,8 @@ const adminCtrl = {
           productCount: productCount,
           ordersCount: ordersCount,
           categoriesCount: categoriesCount,
-          genresCount: genresCount,
+          genreCount: genreCount,
+          couponCount: discountCount,
         },
       });
     } catch (err) {
