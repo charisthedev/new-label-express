@@ -71,6 +71,12 @@ const movieSchema = new mongoose.Schema(
         ref: "Category",
       },
     ],
+    genre: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Genre",
+      },
+    ],
     acquired: {
       type: Number,
       default: 0,

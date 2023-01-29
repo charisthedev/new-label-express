@@ -41,6 +41,12 @@ const seriesSchema = new mongoose.Schema(
       type: String,
       default: "Series",
     },
+    genre: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Genre"
+      }
+    ],
     seasons: [
       {
         type: mongoose.Schema.Types.ObjectId,
