@@ -61,7 +61,7 @@ const bannerCtrl = {
   createBanner: async (req, res) => {
     try {
       const { type, movies, series } = req.body;
-      if (!type && !movies && !series)
+      if (!req.body)
         return res.status(404).json({ msg: "Please provide all payload" });
 
       const banner = await Banner.findOne({ type });
@@ -96,30 +96,39 @@ const bannerCtrl = {
   },
   updateBanner: async (req, res) => {
     try {
-      await Banner.findOneAndUpdate({ _id: req.params.id }, { ...req.body });
+      const { movies, series } = req.body;
+      const { type } = req.params;
+      await Banner.findOneAndUpdate(
+        { type },
+        {
+          type,
+          movies,
+          series,
+        }
+      );
 
       const newActivity = new Activities({
-        description: `Successfully Updated banner with id ${req.params.id}`,
+        description: `Successfully Updated ${type} banner`,
       });
 
       await newActivity.save();
 
-      res.json({ msg: `Updated a banner}` });
+      res.json({ msg: `Updated ${type} banner` });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }
   },
   deleteBanner: async (req, res) => {
     try {
-      await Banner.findByIdAndDelete(req.params.id);
+      await Banner.findOneAndDelete(req.params.type);
 
       const newActivity = new Activities({
-        description: `Successfully Deleted banner with id ${req.params.id}`,
+        description: `Successfully Deleted ${req.params.type} banner`,
       });
 
       await newActivity.save();
 
-      res.json({ msg: "Deleted a Banner" });
+      res.json({ msg: `Deleted ${req.params.type} Banner` });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }
