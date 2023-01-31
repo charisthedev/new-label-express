@@ -73,7 +73,7 @@ const adminCtrl = {
   },
   getRecentActivities: async (req, res) => {
     try {
-      const activities = await Activities.find().limit(5);
+      const activities = await Activities.find().sort({ _id: -1 }).limit(5);
 
       res.json({
         data: activities,

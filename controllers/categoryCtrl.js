@@ -30,22 +30,23 @@ const categoryCtrl = {
 
       await newCategory.save();
 
-      res.json({ msg: "Created a category" });
+      res.json({ msg: `Created category ${name}` });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }
   },
   deleteCategory: async (req, res) => {
     try {
+      const category = await Category.findById({ _id: req.params.id });
       await Category.findByIdAndDelete({ _id: req.params.id });
 
       const newActivities = new Activities({
-        description: `Successfully deleted category with id ${req.params.id}`,
+        description: `Successfully deleted category ${category.name}`,
       });
 
       await newActivities.save();
 
-      res.json({ msg: "Deleted a Category" });
+      res.json({ msg: `Deleted Category ${category.name}` });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }
@@ -56,12 +57,12 @@ const categoryCtrl = {
       await Category.findOneAndUpdate({ _id: req.params.id }, { name });
 
       const newActivities = new Activities({
-        description: `Successfully updated ${name} category`,
+        description: `Successfully updated category ${name}`,
       });
 
       await newActivities.save();
 
-      res.json({ msg: "Updated a category" });
+      res.json({ msg: `Updated category ${name}` });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }

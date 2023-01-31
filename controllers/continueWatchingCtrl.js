@@ -1,6 +1,4 @@
 const ContinueWatching = require("../models/continueWatchingModel");
-const Movies = require("../models/movieModel");
-const Episodes = require("../models/episodeModel");
 
 const ContinueWatchingCtrl = {
   getLastWatchedContents: async (req, res) => {
@@ -31,14 +29,25 @@ const ContinueWatchingCtrl = {
     try {
       const { userId, movieId, episodeId } = req.body;
 
-      const newLastWatchedContent = new ContinueWatching({
-        userId,
+      const checkLastWatchedContent = await ContinueWatching.findOne({
         movieId,
-        episodeId,
-        timestamp: new Date(),
       });
+      if (checkLastWatchedContent.movieId === movieId) {
+        checkLastWatchedContent.timestamp = new Date();
+        await checkLastWatchedContent.save();
+      } else if (checkLastWatchedContent.episodeId === episodeId) {
+        checkLastWatchedContent.timestamp = new Date();
+        await checkLastWatchedContent.save();
+      } else {
+        const newLastWatchedContent = new ContinueWatching({
+          userId,
+          movieId,
+          episodeId,
+          timestamp: new Date(),
+        });
 
-      await newLastWatchedContent.save();
+        await newLastWatchedContent.save();
+      }
 
       res.json({
         msg: "added to lastwatched model",

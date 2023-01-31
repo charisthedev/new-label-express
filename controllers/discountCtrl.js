@@ -70,21 +70,17 @@ const discountCtrl = {
     try {
       const { name, percentage, active } = req.body;
 
-      const generateCode = (discountPercent, expiryDate) => {
+      const generateCode = (discountPercent) => {
         let code = crypto.randomBytes(4).toString("hex").toUpperCase();
-        code += Math.round(discountPercent * 100);
-        code += expiryDate.toISOString().slice(0, 10).replace(/-/g, "");
+        code += Math.round(discountPercent);
         return code;
       };
-
-      let expiryDate = new Date();
-      expiryDate.setDate(expiryDate.getDate() + 30);
 
       const newDiscount = new Discount({
         name,
         percentage,
         active,
-        code: generateCode(percentage, expiryDate),
+        code: generateCode(percentage),
       });
 
       const newActivities = new Activities({
@@ -124,15 +120,11 @@ const discountCtrl = {
       if (!getDiscount)
         return res.status(400).json({ msg: "discount does not exist" });
 
-      const generateCode = (discountPercent, expiryDate) => {
-        let code = crypto.randomBytes(4).toString("hex").toUpperCase()
-        code += Math.round(discountPercent * 100);
-        code += expiryDate.toISOString().slice(0, 10).replace(/-/g, "");
+      const generateCode = (discountPercent) => {
+        let code = crypto.randomBytes(4).toString("hex").toUpperCase();
+        code += Math.round(discountPercent);
         return code;
       };
-
-      let expiryDate = new Date();
-      expiryDate.setDate(expiryDate.getDate() + 30);
 
       await Discount.findByIdAndUpdate(
         { _id: req.params.id },
@@ -140,7 +132,7 @@ const discountCtrl = {
           name,
           percentage,
           active,
-          code: generateCode(percentage, expiryDate),
+          code: generateCode(percentage),
         }
       );
 
