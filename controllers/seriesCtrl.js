@@ -77,7 +77,6 @@ const seriesCtrl = {
         free,
         description,
         donation,
-        price,
         casts,
         genre,
         image,
@@ -85,16 +84,7 @@ const seriesCtrl = {
         seasons,
       } = req.body;
 
-      if (
-        !image &&
-        !banner &&
-        !title &&
-        !free &&
-        !description &&
-        !donation &&
-        !price &&
-        !seasons
-      )
+      if (!req.body)
         return res.status(400).json({ msg: "All payload are required" });
 
       const newSeries = new Series({
@@ -167,46 +157,15 @@ const seriesCtrl = {
   },
   updateASeries: async (req, res) => {
     try {
-      const {
-        title,
-        free,
-        description,
-        donation,
-        price,
-        casts,
-        genre,
-        image,
-        banner,
-        seasons,
-      } = req.body;
-
-      if (
-        !image &&
-        !banner &&
-        !title &&
-        !free &&
-        !description &&
-        !donation &&
-        !price &&
-        !seasons
-      )
+      if (req.body)
         return res.status(400).json({ msg: "All payload are required" });
 
       const seriesTitle = await Series.findById({ _id: req.params.id });
 
-      await Series.findOneAndUpdate(
+      await Series.findByIdAndUpdate(
         { _id: rq.params.id },
         {
-          title,
-          free,
-          description,
-          donation,
-          price,
-          casts,
-          genre,
-          image,
-          banner,
-          seasons,
+          ...req.body,
         }
       );
 
