@@ -127,10 +127,11 @@ const episodeCtrl = {
   },
   deleteEpisode: async (req, res) => {
     try {
+      const episode = await Episodes.findById({ _id: req.params.id });
       await Episodes.findByIdAndDelete(req.params.id);
 
       const newActivities = new Activities({
-        description: `Successfully created deleted episode with id ${req.params.id}`,
+        description: `Successfully deleted episode ${episode.title}`,
       });
 
       await newActivities.save();
@@ -142,40 +143,25 @@ const episodeCtrl = {
   },
   updateEpisode: async (req, res) => {
     try {
-      const {
-        title,
-        description,
-        duration,
-        publication_date,
-        video,
-        image,
-        banner,
-        season,
-      } = req.body;
-      if (!image && !banner)
-        return res.status(400).json({ msg: "No image upload" });
+      if (!req.body)
+        return res.status(400).json({ msg: "Please include a payload" });
 
-      await Episodes.findOneAndUpdate(
+      const episode = await Episodes.findById({ _id: req.params.id });
+
+      await Episodes.findByIdAndUpdate(
         { _id: req.params.id },
         {
-          title: title.toLowerCase(),
-          description,
-          duration,
-          publication_date,
-          video,
-          image,
-          banner,
-          season,
+          ...req.body,
         }
       );
 
       const newActivities = new Activities({
-        description: `Successfully updated ${title}`,
+        description: `Successfully updated ${episode.title}`,
       });
 
       await newActivities.save();
 
-      res.json({ msg: "Updated a Episode" });
+      res.json({ msg: `Updated ${episode.title} Episode` });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }

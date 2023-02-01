@@ -119,22 +119,6 @@ const movieCtrl = {
       if (!image && !banner && !video)
         return res.status(400).json({ msg: "Asset upload not complete" });
 
-      // const discount_id = await Discount.findById({ _id: discount });
-
-      // if (!discount_id)
-      //   return res
-      //     .status(400)
-      //     .json({ msg: "this discount has not been created! " });
-
-      // const getDiscountPercent = (code) => {
-      //   const discountPercent = code.substr(4, 2);
-      //   return parseInt(discountPercent, 10) / 100;
-      // };
-
-      // const extracted_Discount = getDiscountPercent(discount_id.code);
-
-      // const new_discount_price = price * (1 - extracted_Discount / 100);
-
       const newMovie = new Movies({
         movie_id,
         title: title.toLowerCase(),
@@ -184,23 +168,7 @@ const movieCtrl = {
   },
   updateMovie: async (req, res) => {
     try {
-      // const { discount, price } = req.body;
-      // const discount_id = await Discount.findById({ _id: discount });
-
-      // const getDiscountPercent = (code) => {
-      //   const discountPercent = code.substr(4, 2);
-      //   return parseInt(discountPercent, 10) / 100;
-      // };
-
-      // const movie = await Movies.findById({ _id: req.params.id });
-
-      // const extracted_Discount = getDiscountPercent(discount_id.code);
-      // console.log(extracted_Discount);
-
-      // const new_discount_price = price * (1 - extracted_Discount / 100);
-      // console.log(new_discount_price);
-
-      await Movies.findOneAndUpdate(
+      await Movies.findByIdAndUpdate(
         { _id: req.params.id },
         {
           ...req.body,

@@ -1,10 +1,11 @@
 const Genre = require("../models/genreModel");
+const Activities = require("../models/activityModel");
 
 const genreCtrl = {
   createGenre: async (req, res) => {
     try {
       const { name, categories } = req.body;
-      if (!name && !catgories)
+      if (!name && !categories)
         return res
           .status(400)
           .json({ msg: "please include genre name and categories" });
@@ -15,6 +16,31 @@ const genreCtrl = {
       });
 
       await newGenre.save();
+    } catch (err) {
+      res.status(500).json({ msg: err.message });
+    }
+  },
+  updateGenre: async (req, res) => {
+    try {
+      const { name, categories } = req.body;
+
+      const genre = await Genre.findByIdUpdate(
+        { _id: req.params.id },
+        {
+          name,
+          categories,
+        }
+      );
+
+      if (!genre) return res.status(400).json({ msg: "data not found" });
+
+      const newActivities = new Activities({
+        description: `Successfully updated ${name} genre`,
+      });
+
+      await newActivities.save();
+
+      res.json({ msg: `Updated ${name} genre` });
     } catch (err) {
       res.status(500).json({ msg: err.message });
     }
