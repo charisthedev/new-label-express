@@ -168,6 +168,7 @@ const movieCtrl = {
   },
   updateMovie: async (req, res) => {
     try {
+      const movie = await Movies.findById({ _id: req.params.id });
       await Movies.findByIdAndUpdate(
         { _id: req.params.id },
         {
@@ -176,12 +177,12 @@ const movieCtrl = {
       );
 
       const newActivities = new Activities({
-        description: `Successfully updated movie with id ${req.params.id}`,
+        description: `Successfully updated movie ${movie.title}`,
       });
 
       await newActivities.save();
 
-      res.json({ msg: "Updated a Product" });
+      res.json({ msg: `Updated a movie ${movie.title}` });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }
