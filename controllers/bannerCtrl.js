@@ -96,14 +96,11 @@ const bannerCtrl = {
   },
   updateBanner: async (req, res) => {
     try {
-      const { movies, series } = req.body;
       const { type } = req.params;
       await Banner.findOneAndUpdate(
         { type },
         {
-          type,
-          movies,
-          series,
+          ...req.body,
         }
       );
 
