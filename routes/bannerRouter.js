@@ -11,7 +11,7 @@ router.route("/banner").get(bannerCtrl.getBanners);
 router.route("/banner").post(bannerCtrl.createBanner);
 
 router
-  .route("/banner/:id")
+  .route("/banner/:type")
   .delete(bannerCtrl.deleteBanner)
   .put(bannerCtrl.updateBanner);
 
