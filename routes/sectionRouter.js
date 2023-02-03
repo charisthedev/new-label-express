@@ -10,6 +10,7 @@ router
 
 router
   .route("/section/:id")
+  .get(sectionCtrl.getSection)
   .delete(sectionCtrl.deleteSection)
   .put(sectionCtrl.updateSection);
 

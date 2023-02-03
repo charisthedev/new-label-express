@@ -24,6 +24,26 @@ const sectionCtrl = {
         .json({ message: "An error occured while fetching sections." });
     }
   },
+  getSection: async (req, res) => {
+    try {
+      const section = await Section.findById({ _id: req.params.id})
+        .populate({
+          path: "movies",
+          select: "-video"
+        })
+        .populate({
+          path: "series"
+        })
+      if (!section) return res.status(404).json({ msg: "Section not found" })
+
+      res.json({
+        status: "success",
+        data: section
+      })
+    } catch (error) {
+      res.status(500).json({ msg: err.message })
+    }
+  },
   createSection: async (req, res) => {
     try {
       const { name, movies, series, view } = req.body;

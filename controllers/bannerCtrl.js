@@ -4,7 +4,7 @@ const Activities = require("../models/activityModel");
 const bannerCtrl = {
   getBanners: async (req, res) => {
     try {
-      const banners = await Banner.find();
+      const banners = await Banner.find().populate(["movies", "series"]);
 
       res.json({
         status: "success",
@@ -13,6 +13,18 @@ const bannerCtrl = {
     } catch (error) {
       res.status(500).json({ msg: err.message });
     }
+  },
+  getBannerAdmin: async (req, res) => {
+    try {
+    const banners = await Banner.find().populate(["movies", "series"]);
+
+    res.json({
+      status: "success",
+      data: banners,
+    });
+  } catch (error) {
+    res.status(500).json({ msg: err.message });
+  }
   },
   getBanner: async (req, res) => {
     try {

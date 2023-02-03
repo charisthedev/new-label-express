@@ -53,6 +53,8 @@ app.use("/api", require("./routes/genreRouter"));
 app.use("/api", require("./routes/continueWatchingRouter"));
 app.use("/api", require("./routes/seriesRouter"));
 app.use("/api", require("./routes/discountRouter"));
+app.use("/api", require("./routes/video-uploadRouter"))
+app.use("/api", require("./routes/video-streamRouter"))
 app.get("/", (req, res) => {
   res.send("Hello, World!");
 });

@@ -11,6 +11,20 @@ const categoryCtrl = {
       return res.status(500).json({ msg: err.message });
     }
   },
+  getCategory: async (req, res) => {
+    try {
+      const category = await Category.findById({ _id: req.params.id })
+      if (!category) return res.status(404).json({ msg: "Category not found"})
+
+      res.json({
+        status: "success",
+        data: category
+      })
+      
+    } catch (err) {
+      return res.status(500).json({ msg: err.message })
+    }
+  },
   createCategory: async (req, res) => {
     try {
       // if user have role = 1 ---> admin

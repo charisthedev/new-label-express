@@ -17,6 +17,9 @@ const seriesSchema = new mongoose.Schema(
     donation: {
       type: Boolean,
     },
+    donate: {
+      type: Number
+    },
     price: {
       type: Number,
       trim: true,
