@@ -74,7 +74,7 @@ const sectionCtrl = {
       console.error(error);
       res
         .status(500)
-        .json({ message: "An error occured while creating sections." });
+        .json({ message: error.message });
     }
   },
   updateSection: async (req, res) => {
@@ -96,7 +96,7 @@ const sectionCtrl = {
       console.error(error);
       res
         .status(500)
-        .json({ message: "An error occured while creating sections." });
+        .json({ message: error.message });
     }
   },
   deleteSection: async (req, res) => {
