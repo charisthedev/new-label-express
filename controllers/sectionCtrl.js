@@ -80,7 +80,7 @@ const sectionCtrl = {
   updateSection: async (req, res) => {
     try {
       const { name, movies, series, view } = req.body;
-      await Section.findOneAndUpdate(
+      await Section.findByIdAndUpdate(
         { _id: req.params.id },
         { name, movies, series, view }
       );
