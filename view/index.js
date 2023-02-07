@@ -1,47 +1,68 @@
+
 function App(){
-    const [file, setFile] = React.useState(null);
-    const [message, setMessage] = React.useState('');
-    const [progress, setProgress] = React.useState(0);
+  const [file, setFile] = React.useState(null);
+  const [chunks, setChunks] = React.useState([]);
+  const [progress, setProgress] = React.useState(0);
+  const [chunkCount, setChunkCount] = React.useState();
 
-    const onChange = (e) => {
-        setFile(e.target.files[0]);
-    };
+  const handleChange = (e) => {
+    setFile(e.target.files[0]);
+  };
 
-    const onSubmit = async (e) => {
-        e.preventDefault();
-        const formData = new FormData();
-        formData.append('video', file);
-        try {
-          const res = await axios.post('http://localhost:5000/api/video-upload', formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            },
-            onUploadProgress: (progressEvent) => {
-              const progress = (progressEvent.loaded / progressEvent.total) * 100;
-              setProgress(progress);
-            }
-          });
-          setMessage(res.data.message);
-        } catch (err) {
-          setMessage(err.response.data.message);
-        }
-    };
+  const splitFile = (file, chunkSize) => {
+    const fileSize = file.size;
+    const numChunks = Math.ceil(fileSize / chunkSize);
+    const fileChunks = new Array(numChunks);
 
-    return (
-        <div>
-        <form onSubmit={onSubmit}>
-          <input type="file" onChange={onChange} />
-          <button type="submit">Upload Video</button>
-        </form>
-        {progress > 0 && (
-        <div>
-          Upload progress: {Math.round(progress)}%
-        </div>
-      )}
-      {message && <div>{message}</div>}
-      <video src="http://localhost:5000/api/video/video-1675484472174.mp4" controls />
-      </div>
-    )
+    let start = 0;
+    let end = chunkSize;
+
+    for (let i = 0; i < numChunks; i++) {
+      fileChunks[i] = file.slice(start, end);
+      start = end;
+      end = start + chunkSize;
+    }
+
+    setChunks(fileChunks);
+  };
+
+  React.useEffect(() => {
+    if (file) {
+      splitFile(file, 1024 * 1024);
+    }
+  }, [file]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setChunkCount(chunks.length);
+    const promises = chunks.map(async (chunk, i) => {
+      try {
+        const res = await axios.post("http://localhost:5000/api/asset-upload", { chunk: chunk.toString("base64"), chunkCount: chunkCount, chunkIndex: i });
+        setProgress(prevProgress => prevProgress + 100 / chunks.length);
+      } catch (error) {
+        console.error(error);
+      }
+    });
+  
+    await Promise.all(promises);
+  };
+
+  return (
+    <div>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="file"
+          accept="video/mp4"
+          onChange={handleChange}
+        />
+        <button type="submit">Upload</button>
+        {progress !== 0 && (
+          <p>Upload progress: {progress.toFixed(2)}%</p>
+        )}
+      </form>
+      <video width="400px" src="http://localhost:5000/api/video-Data Structures and Algorithms in JavaScript - Full Course for Beginners.mp4/play" controls />
+    </div>
+  )
 }
 
 // Render React component to the DOM

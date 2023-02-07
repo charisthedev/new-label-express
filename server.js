@@ -4,9 +4,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const rateLimit = require("express-rate-limit");
-const multer = require('multer')
-const fs = require("fs");
-const path = require("path");
+const fs = require('fs')
 
 const app = express();
 
@@ -23,79 +21,33 @@ app.use(cors());
 
 const http = require("http").createServer(app);
 
-const URI = process.env.MONGODB_URL;
-mongoose.connect(
-  URI,
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  },
-  (err) => {
-    if (err) throw err;
-    console.log("Connected to mongodb");
-  }
-);
+let chunks = [];
+let chunkCount = 0;
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './assets/');
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.fieldname + '-' + file.originalname);
-  }
-});
+app.post("/api/asset-upload", (req, res) => {
+  const chunk = Buffer.from(req.body.chunk, "base64");
+  chunks.push(chunk);
+  chunkCount++;
 
-const upload = multer({
-storage: storage
-}).single('video');
+  console.log(`Received chunk ${chunkCount}`);
 
-app.post('/api/video-upload', function (req, res) {
-  upload(req, res, function (err) {
-    if (err) {
-      return res.status(400).send({
-        success: false,
-        message: 'Failed to upload video file'
-      });
-    } else {
-      return res.status(200).send({
-        success: true,
-        message: 'Video file uploaded successfully',
-        file:  req.file.fieldname + '-' + req.file.originalname
-      });
-    }
-  });
-});
-
-app.get("/api/video/:file_name", (req, res) => {
-  const path = `./assets/${req.params.file_name}`;
-  const stat = fs.statSync(path)
-  const fileSize = stat.size;
-  const range = req.headers.range;
-  if (range) {
-    const parts = range.replace(/bytes=/, "").split("-");
-    const start = parseInt(parts[0], 10);
-    const end = parts[1]
-        ? parseInt(parts[1], 10)
-        : fileSize - 1;
-    const chunksize = (end-start) + 1;
-    const file = fs.createReadStream(path, {start, end})
-    const head = {
-      "Content-Range": `bytes ${start}-${end}/${fileSize}`,
-      "Accept-Ranges": "bytes",
-      "Content-Length": chunksize,
-      "Content-Type": "video/mp4",
-    };
-    res.writeHead(206, head);
-    file.pipe(res)
+  if (chunkCount === req.body.chunkCount) {
+    console.log("Received all chunks, reassembling file...");
+    const completeFile = Buffer.concat(chunks);
+    fs.writeFile("video.mp4", completeFile, (err) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send("Error while reassembling file");
+      } else {
+        res.status(200).send("File reassembled");
+      }
+    });
+    chunks = [];
+    chunkCount = 0;
   } else {
-    const head = {
-      "Content-Length": fileSize,
-      "Content-Type": "video/mp4",
-    }
-    res.writeHead(206, head);
-    fs.createReadStream(path).pipe(res)
+    res.status(200).send("Chunk received");
   }
-})
+});
 
 app.use("/user", require("./routes/userRouter"));
 app.use("/api", require("./routes/movieRouter"));
@@ -116,6 +68,19 @@ app.use("/api", require("./routes/video-streamRouter"))
 app.get("/", (req, res) => {
   res.send("Hello, World!");
 });
+
+const URI = process.env.MONGODB_URL;
+mongoose.connect(
+  URI,
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  },
+  (err) => {
+    if (err) throw err;
+    console.log("Connected to mongodb");
+  }
+);
 
 const port = process.env.PORT || 5000;
 const server = http.listen(port, () => {

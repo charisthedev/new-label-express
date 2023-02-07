@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const videoUploadController = require("../controllers/videoUploadCtrl")
+const videoUpload = require("../controllers/videoUploadCtrl")
 
-router.post("/upload", videoUploadController.uploadFile)
+router.post("/video-upload", videoUpload.uploadFile)
 
 module.exports = router

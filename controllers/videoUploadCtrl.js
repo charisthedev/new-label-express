@@ -25,18 +25,8 @@ const videoUpload = {
 
                 res.json({
                     success: true,
-                    link: link
+                    link: req.file.path
                 });
-
-                const attributesToBeSaved = {
-                    id: fileId,
-                    name: req.file.originalname,
-                    size: req.file.size,
-                    path: req.file.path,
-                    encoding: req.file.encoding,
-                    details: req.body.details ? req.body.details : ''
-                }
-                handleDb.saveToDB(attributesToBeSaved)
             });
         } catch (err) {
             res.status(500).json({ msg: err.message})
