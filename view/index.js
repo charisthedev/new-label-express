@@ -1,66 +1,121 @@
+const chunkSize = 5 * 1024 * 1024;
 
 function App(){
-  const [file, setFile] = React.useState(null);
-  const [chunks, setChunks] = React.useState([]);
-  const [progress, setProgress] = React.useState(0);
-  const [chunkCount, setChunkCount] = React.useState();
+  const [dropzoneActive, setDropzoneActive] = React.useState(false);
+  const [files, setFiles] = React.useState([]);
+  const [currentFileIndex, setCurrentFileIndex] = React.useState(null);
+  const [lastUploadedFileIndex, setLastUploadedFileIndex] = React.useState(null);
+  const [currentChunkIndex, setCurrentChunkIndex] = React.useState(null);
 
-  const handleChange = (e) => {
-    setFile(e.target.files[0]);
-  };
-
-  const splitFile = (file, chunkSize) => {
-    const fileSize = file.size;
-    const numChunks = Math.ceil(fileSize / chunkSize);
-    const fileChunks = new Array(numChunks);
-
-    let start = 0;
-    let end = chunkSize;
-
-    for (let i = 0; i < numChunks; i++) {
-      fileChunks[i] = file.slice(start, end);
-      start = end;
-      end = start + chunkSize;
-    }
-
-    setChunks(fileChunks);
-  };
-
-  React.useEffect(() => {
-    if (file) {
-      splitFile(file, 1024 * 1024);
-    }
-  }, [file]);
-
-  const handleSubmit = async (e) => {
+  function handleDrop(e) {
     e.preventDefault();
-    setChunkCount(chunks.length);
-    const promises = chunks.map(async (chunk, i) => {
-      try {
-        const res = await axios.post("http://localhost:5000/api/asset-upload", { chunk: chunk.toString("base64"), chunkCount: chunkCount, chunkIndex: i });
-        setProgress(prevProgress => prevProgress + 100 / chunks.length);
-      } catch (error) {
-        console.error(error);
+    setFiles([...files, ...e.dataTransfer.files]);
+  }
+
+  function readAndUploadCurrentChunk() {
+    const reader = new FileReader();
+    const file = files[currentFileIndex];
+    if (!file) {
+      return;
+    }
+    const from = currentChunkIndex * chunkSize;
+    const to = from + chunkSize;
+    const blob = file.slice(from, to);
+    reader.onload = e => uploadChunk(e);
+    reader.readAsDataURL(blob);
+  }
+
+  function uploadChunk(readerEvent) {
+    const file = files[currentFileIndex];
+    const data = readerEvent.target.result;
+    const params = new URLSearchParams();
+    params.set('name', file.name);
+    params.set('size', file.size);
+    params.set('currentChunkIndex', currentChunkIndex);
+    params.set('totalChunks', Math.ceil(file.size / chunkSize));
+    const headers = {'Content-Type': 'application/octet-stream'};
+    const url = 'http://localhost:5000/api/video-upload?'+params.toString();
+    axios.post(url, data, {headers})
+    .then(response => {
+      const file = files[currentFileIndex];
+      const filesize = files[currentFileIndex].size;
+      const chunks = Math.ceil(filesize / chunkSize) - 1;
+      const isLastChunk = currentChunkIndex === chunks;
+      if (isLastChunk) {
+        file.finalFilename = response.data.finalFilename;
+        setLastUploadedFileIndex(currentFileIndex);
+        setCurrentChunkIndex(null);
+      } else {
+        setCurrentChunkIndex(currentChunkIndex + 1);
       }
     });
-  
-    await Promise.all(promises);
-  };
+  }
+
+  React.useEffect(() => {
+    if (lastUploadedFileIndex === null) {
+      return;
+    }
+    const isLastFile = lastUploadedFileIndex === files.length - 1;
+    const nextFileIndex = isLastFile ? null : currentFileIndex + 1;
+    setCurrentFileIndex(nextFileIndex);
+  }, [lastUploadedFileIndex]);
+
+  React.useEffect(() => {
+    if (files.length > 0) {
+      if (currentFileIndex === null) {
+        setCurrentFileIndex(
+          lastUploadedFileIndex === null ? 0 : lastUploadedFileIndex + 1
+        );
+      }
+    }
+  }, [files.length]);
+
+  React.useEffect(() => {
+    if (currentChunkIndex !== null) {
+      readAndUploadCurrentChunk();
+    }
+  }, [currentChunkIndex]);
+
+  React.useEffect(() => {
+    if (currentFileIndex !== null) {
+      setCurrentChunkIndex(0);
+    }
+  }, [currentFileIndex]);
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="file"
-          accept="video/mp4"
-          onChange={handleChange}
-        />
-        <button type="submit">Upload</button>
-        {progress !== 0 && (
-          <p>Upload progress: {progress.toFixed(2)}%</p>
-        )}
-      </form>
-      <video width="400px" src="http://localhost:5000/api/video-Data Structures and Algorithms in JavaScript - Full Course for Beginners.mp4/play" controls />
+      <div
+        onDragOver={e => {setDropzoneActive(true); e.preventDefault();}}
+        onDragLeave={e => {setDropzoneActive(false); e.preventDefault();}}
+        onDrop={e => handleDrop(e)}
+        className={"dropzone" + (dropzoneActive ? " active" : "")}>
+        Drop your files here
+      </div>
+      <div className="files">
+        {files.map((file,fileIndex) => {
+          let progress = 0;
+          if (file.finalFilename) {
+            progress = 100;
+          } else {
+            const uploading = fileIndex === currentFileIndex;
+            const chunks = Math.ceil(file.size / chunkSize);
+            if (uploading) {
+              progress = Math.round(currentChunkIndex / chunks * 100);
+            } else {
+              progress = 0;
+            }
+          }
+          return (
+            <a className="file" target="_blank"
+              href={'http://localhost:4001/uploads/'+file.finalFilename}>
+              <div className="name">{file.name}</div>
+              <div className={"progress " + (progress === 100 ? 'done' : '')}
+                  style={{width:progress+'%'}}>{progress}%</div>
+            </a>
+          );
+        })}React.
+      </div>
+      <video style={{ width: "400px"}} src="http://localhost:5000/api/a6542b/play" controls />
     </div>
   )
 }

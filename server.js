@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const rateLimit = require("express-rate-limit");
-const fs = require('fs')
+const bodyParser = require("body-parser")
 
 const app = express();
 
@@ -17,37 +17,12 @@ const app = express();
 // app.use(limiter);
 app.use(express.json());
 app.use(cookieParser());
+app.use(bodyParser.raw({type:'application/octet-stream', limit:'100mb'}));
 app.use(cors());
+app.use('/uploads', express.static('uploads'));
 
 const http = require("http").createServer(app);
 
-let chunks = [];
-let chunkCount = 0;
-
-app.post("/api/asset-upload", (req, res) => {
-  const chunk = Buffer.from(req.body.chunk, "base64");
-  chunks.push(chunk);
-  chunkCount++;
-
-  console.log(`Received chunk ${chunkCount}`);
-
-  if (chunkCount === req.body.chunkCount) {
-    console.log("Received all chunks, reassembling file...");
-    const completeFile = Buffer.concat(chunks);
-    fs.writeFile("video.mp4", completeFile, (err) => {
-      if (err) {
-        console.error(err);
-        res.status(500).send("Error while reassembling file");
-      } else {
-        res.status(200).send("File reassembled");
-      }
-    });
-    chunks = [];
-    chunkCount = 0;
-  } else {
-    res.status(200).send("Chunk received");
-  }
-});
 
 app.use("/user", require("./routes/userRouter"));
 app.use("/api", require("./routes/movieRouter"));

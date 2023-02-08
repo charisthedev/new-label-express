@@ -7,7 +7,7 @@ const cache = {}; // cache to store video data
 const videoStreamCtrl = {
   sendVideoFile: async (req, res) => {
     try {
-      const path = `./assets/${req.params.file_name}`;
+      const path = `./uploads/${req.params.file_name}.mp4`;
       const stat = fs.statSync(path)
       const fileSize = stat.size;
       const range = req.headers.range;
