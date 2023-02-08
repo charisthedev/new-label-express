@@ -1,4 +1,4 @@
-const chunkSize = 5 * 1024 * 1024;
+const chunkSize = 1 * 1024 * 1024; // 1mb chunk size
 
 function App(){
   const [dropzoneActive, setDropzoneActive] = React.useState(false);
@@ -34,7 +34,7 @@ function App(){
     params.set('currentChunkIndex', currentChunkIndex);
     params.set('totalChunks', Math.ceil(file.size / chunkSize));
     const headers = {'Content-Type': 'application/octet-stream'};
-    const url = 'http://localhost:5000/api/video-upload?'+params.toString();
+    const url = 'https://www.newlabeltv.gives/api/video-upload?'+params.toString();
     axios.post(url, data, {headers})
     .then(response => {
       const file = files[currentFileIndex];
