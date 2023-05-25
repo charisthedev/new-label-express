@@ -1,19 +1,44 @@
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
 
-const auth = (req, res, next) =>{
-    try {
-        const token = req.header("Authorization")
-        if(!token) return res.status(400).json({msg: "Invalid Authentication"})
+const Auth = async (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).json({
+      status: 'error',
+      message: 'Authorization header missing',
+    });
+  }
 
-        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) =>{
-            if(err) return res.status(400).json({msg: "Invalid Authentication"})
+  const token = authHeader.split(' ')[1];
+  if (!token) {
+    return res.status(401).json({
+      status: 'error',
+      message: 'Bearer token missing',
+    });
+  }
 
-            req.user = user
-            next()
-        })
-    } catch (err) {
-        return res.status(500).json({msg: err.message})
+  try {
+    const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    const id = decodedToken.data.id;
+    const expiryTime = decodedToken.exp * 1000; // Convert expiry time to milliseconds
+    const currentTime = Date.now(); // Use Date.now() to get the current time in milliseconds
+
+
+    if (expiryTime < currentTime) {
+      return res.status(401).json({
+        status: 'error',
+        message: 'token expired',
+      });
     }
+
+    req.id = id;
+    next();
+  } catch (err) {
+    return res.status(401).json({
+      status: 'error',
+      message: 'token expired please login',
+    });
+  }
 }
 
-module.exports = auth
+module.exports = Auth

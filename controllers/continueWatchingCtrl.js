@@ -3,7 +3,8 @@ const ContinueWatching = require("../models/continueWatchingModel");
 const ContinueWatchingCtrl = {
   getLastWatchedContents: async (req, res) => {
     try {
-      const lastContent = await ContinueWatching.find({ userId: req.params.id })
+      const id = req.id
+      const lastContent = await ContinueWatching.find({ userId: id })
         .sort({ timestamp: -1 })
         .populate({
           path: "movieId",
@@ -27,7 +28,8 @@ const ContinueWatchingCtrl = {
   },
   createLastWatchedContents: async (req, res) => {
     try {
-      const { userId, movieId, episodeId } = req.body;
+      const { movieId, episodeId } = req.body;
+      const id = req.id
 
       const checkLastWatchedContent = await ContinueWatching.findOne({
         movieId,
@@ -40,7 +42,7 @@ const ContinueWatchingCtrl = {
         await checkLastWatchedContent.save();
       } else {
         const newLastWatchedContent = new ContinueWatching({
-          userId,
+          userId: id,
           movieId,
           episodeId,
           timestamp: new Date(),

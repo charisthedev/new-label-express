@@ -70,11 +70,12 @@ const paymentCtrl = {
   },
   createOrderFromWallet: async (req, res) => {
     try {
-      const { user_id, item_id, paymentType, price } = req.body;
-      if (!user_id && !item_id && payment_id && !paymentType && !price)
+      const { item_id, paymentType, price } = req.body;
+      const id = req.id
+      if (!item_id && !paymentType && !price)
         res.status(404).json({ msg: "Payment was not succssfully." });
 
-      const user = await Users.findOne({ user_id });
+      const user = await Users.findOne({ user_id: id });
       if (!user)
         res.status(404).json({ msg: "Please login to verify yourself" });
 
@@ -82,9 +83,9 @@ const paymentCtrl = {
 
       const deductBalance = user.wallet - price;
 
-      await Users.findOneAndUpdate({ user_id }, { wallet: deductBalance });
+      await Users.findOneAndUpdate({ user_id: id }, { wallet: deductBalance });
       const newOrder = new Payments({
-        user_id,
+        user_id: id,
         item_id,
         paymentType,
         price,
@@ -101,12 +102,13 @@ const paymentCtrl = {
   },
   createOrderFromCard: async (req, res) => {
     try {
-      const { user_id, item_id, payment_id, paymentType, price } = req.body;
-       if (!user_id && !item_id && !payment_id && !paymentType && !price)
+      const {item_id, payment_id, paymentType, price } = req.body;
+      const id = req.id
+       if (!item_id && !payment_id && !paymentType && !price)
         res.status(404).json({ msg: "Payment was not succssfully." });
         
       const newOrder = new Payments({
-        user_id,
+        user_id: id,
         item_id,
         payment_id,
         paymentType,
@@ -122,11 +124,12 @@ const paymentCtrl = {
   },
   verifyItemPurchase: async (req, res) => {
     try {
-      const { user_id, item_id } = req.body;
-      if (!user_id || !item_id)
+      const { item_id } = req.body;
+      const id = req.id
+      if (!item_id)
         return res.status(404).json({ msg: "wrong credentials" });
 
-      const verify = await Payments.findOne({ user_id, item_id });
+      const verify = await Payments.findOne({ user_id: id, item_id });
       if (!verify)
         return res
           .status(404)
@@ -142,19 +145,20 @@ const paymentCtrl = {
   },
   topUpWallet: async (req, res) => {
     try {
-      const { user_id, payment_id, paymentType, price } = req.body;
-      if (!user_id || !payment_id || !price)
+      const { payment_id, paymentType, price } = req.body;
+      const id = req.id
+      if (!payment_id || !price)
         return res.status(404).json({ msg: "payload not properly passed" });
 
-      const user = await Users.findOne({ user_id });
+      const user = await Users.findOne({ user_id: id });
       if (!user) return res.status(404).json({ msg: 'invalid user'})
       
       const addToWallet = user.wallet + price
       
-      const topUp = await Users.findOneAndUpdate({ user_id }, {wallet: addToWallet})
+      await Users.findOneAndUpdate({ user_id: id }, {wallet: addToWallet})
 
       const newTopup = new Payments({
-        user_id,
+        user_id: id,
         payment_id,
         paymentType,
         price,
@@ -172,8 +176,9 @@ const paymentCtrl = {
   },
   getUserOrders: async (req, res) => {
     try {
-      const { user_id, item_id } = req.body;
-      const orders = await Payments.find({ user_id, item_id }).populate('item_id')
+      const { item_id } = req.body;
+      const id = req.id
+      const orders = await Payments.find({ user_id: id, item_id }).populate('item_id')
       const movies = await Movies.find({item_id}).select('-video')
       const seasons = await Seasons.find({item_id}).select('-episodes')
       
