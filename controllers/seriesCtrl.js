@@ -125,8 +125,8 @@ const seriesCtrl = {
         populate: {
           path: "episodes",
         },
-        path: "discount"
-      });
+      })
+      .populate("discount")
 
       if (!series)
         return res.status(400).json({ msg: "Series does not exist" });
