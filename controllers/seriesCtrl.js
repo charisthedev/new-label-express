@@ -166,7 +166,7 @@ const seriesCtrl = {
       const seriesTitle = await Series.findById({ _id: req.params.id });
 
       await Series.findByIdAndUpdate(
-        { _id: rq.params.id },
+        { _id: req.params.id },
         {
           ...req.body,
         }
