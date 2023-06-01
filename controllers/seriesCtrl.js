@@ -51,7 +51,7 @@ const seriesCtrl = {
   getAllSeries: async (req, res) => {
     try {
       const features = new APIfeatures(
-        Series.find().populate("seasons"),
+        Series.find().populate("seasons discount"),
         req.query
       )
         .filtering()
@@ -125,6 +125,7 @@ const seriesCtrl = {
         populate: {
           path: "episodes",
         },
+        path: "discount"
       });
 
       if (!series)
@@ -159,7 +160,7 @@ const seriesCtrl = {
   },
   updateASeries: async (req, res) => {
     try {
-      if (req.body)
+      if (!req.body)
         return res.status(400).json({ msg: "All payload are required" });
 
       const seriesTitle = await Series.findById({ _id: req.params.id });

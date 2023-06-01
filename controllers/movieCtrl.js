@@ -75,7 +75,7 @@ const movieCtrl = {
   getMovie: async (req, res) => {
     try {
       const movie = await Movies.findById({ _id: req.params.id })
-        .populate("category")
+        .populate("category discount")
         .select("-video");
       if (!movie) return res.status(400).json({ msg: "Movie does not exist." });
 
