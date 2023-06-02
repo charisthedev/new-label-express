@@ -132,7 +132,7 @@ const paymentCtrl = {
       const verify = await Payments.findOne({ user_id: id, item_id });
       if (!verify)
         return res
-          .status(404)
+          .status(200)
           .json({ msg: "No payment has been made for this item" });
 
       res.json({ 

@@ -5,7 +5,6 @@ const fs = require("fs");
 const path = require("path");
 
 router.post("/video-upload", uploadCtrl.uploadVideo)
-router.post('/v-upload', uploadObject)
 
 
 module.exports = router
