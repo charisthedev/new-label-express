@@ -2,18 +2,12 @@ const mongoose = require("mongoose");
 
 const movieSchema = new mongoose.Schema(
   {
-    movie_id: {
-      type: String,
-      trim: true,
-    },
     title: {
       type: String,
-      trim: true,
       required: true,
     },
     price: {
       type: Number,
-      trim: true,
       required: true,
     },
     discount: {
