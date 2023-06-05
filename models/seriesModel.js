@@ -20,6 +20,9 @@ const seriesSchema = new mongoose.Schema(
     donate: {
       type: Number
     },
+    trailer: {
+      type: String
+    },
     price: {
       type: Number,
       trim: true,

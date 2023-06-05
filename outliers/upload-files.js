@@ -34,7 +34,7 @@ const uploadObject = async (fileBuffer, fileName, folder) => {
       Key: params.Key,
     };
 
-    const fileUrl = await getSignedUrl(s3Client, new GetObjectCommand(command), { expiresIn: 15 * 60 })
+    const fileUrl = await getSignedUrl(s3Client, new GetObjectCommand(command))
 
     return fileUrl
   } catch (err) {
