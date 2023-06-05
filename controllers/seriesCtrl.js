@@ -82,6 +82,7 @@ const seriesCtrl = {
         genre,
         image,
         banner,
+        price,
         seasons,
       } = req.body;
 
