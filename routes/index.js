@@ -1,0 +1,19 @@
+const router = require("express").Router();
+const userRouter = require("./userRouter");
+const movieRouter = require("./movieRouter");
+const categoryRouter = require("./categoryRouter");
+const seasonRouter = require("./seasonRouter");
+const episodeRouter = require("./episodeRouter");
+const uploadRouter = require("./uploadRouter");
+const bannerRouter = require("./bannerRouter");
+const sectionRouter = require("./sectionRouter");
+const paymentRouter = require("./paymentRouter");
+const adminRouter = require("./adminRouter");
+const genreRouter = require("./genreRouter");
+const continueWatchingRouter = require("./continueWatchingRouter");
+const seriesRouter = require("./seriesRouter");
+const discountRouter = require("./discountRouter");
+const videoUploadRouter = require("./video-uploadRouter");
+const videoStreamRouter = require("./video-streamRouter");
+
+module.exports = router
