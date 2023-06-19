@@ -20,10 +20,12 @@ const sectionSchema = new mongoose.Schema(
         ref: "Series",
       },
     ],
-    view: {
-      type: String,
-      required: true,
-    },
+    view: [
+      {
+        type: String,
+        required: true,
+      },
+    ],
   },
   {
     timestamps: true,

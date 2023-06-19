@@ -127,14 +127,15 @@ const userCtrl = {
       return res.status(500).json({ msg: err.message });
     }
   },
-  forgotPassword: async (req, res) => {
+  resetPassword: async (req, res) => {
     try {
       const { email } = req.body;
       const user = await Users.findOne({ email: email });
       if (!user) return res.status(400).json({ msg: "email not registered." });
       const accesstoken = createAccessToken({ id: user._id }, "2h");
+      console.log(user);
       const data = {
-        from: "Sender Name <sender@example.com>",
+        from: "sikirurazak1@gmail.com",
         to: user.email,
         subject: "Hello",
         text: `${accesstoken}`,
@@ -149,7 +150,7 @@ const userCtrl = {
       return res.status(500).json({ msg: err.message });
     }
   },
-  resetPassword: async (req, res) => {
+  changePassword: async (req, res) => {
     try {
       const { token, password } = req.body;
       if (!token) res.status(400).json({ msg: "please provide token" });

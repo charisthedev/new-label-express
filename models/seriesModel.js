@@ -28,10 +28,10 @@ const seriesSchema = new mongoose.Schema(
       trim: true,
       required: true,
     },
-    discount: {
+    discount: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: "Discount",
-    },
+    }],
     casts: [
       {
         type: String,

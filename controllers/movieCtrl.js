@@ -99,7 +99,6 @@ const movieCtrl = {
   createMovie: async (req, res) => {
     try {
       const {
-        movie_id,
         title,
         price,
         description,
@@ -121,7 +120,6 @@ const movieCtrl = {
         return res.status(400).json({ msg: "Asset upload not complete" });
 
       const newMovie = new Movies({
-        movie_id,
         title: title.toLowerCase(),
         price,
         discount,

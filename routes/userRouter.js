@@ -7,6 +7,10 @@ router.post("/register", userCtrl.register);
 
 router.post("/login", userCtrl.login);
 
+router.post("/resetpassword", userCtrl.resetPassword);
+
+router.post("/changepassword", userCtrl.changePassword);
+
 router.get("/:id", authAdmin, userCtrl.getUser);
 
 router.patch("/addcart", auth, userCtrl.addCart);
