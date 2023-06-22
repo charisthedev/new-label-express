@@ -18,20 +18,22 @@ const seriesSchema = new mongoose.Schema(
       type: Boolean,
     },
     donate: {
-      type: Number
+      type: Number,
     },
     trailer: {
-      type: String
+      type: String,
     },
     price: {
       type: Number,
       trim: true,
       required: true,
     },
-    discount: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Discount",
-    }],
+    discount: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Discount",
+      },
+    ],
     casts: [
       {
         type: String,
@@ -50,8 +52,8 @@ const seriesSchema = new mongoose.Schema(
     genre: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Genre"
-      }
+        ref: "Genre",
+      },
     ],
     seasons: [
       {

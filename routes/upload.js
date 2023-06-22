@@ -16,7 +16,7 @@ cloudinary.config({
   timeout: 60 * 1000, // 30 seconds
 });
 
-router.post("/upload", (req, res) => {
+router.post("/", (req, res) => {
   try {
     if (!req.files || Object.keys(req.files).length === 0)
       return res.status(400).json({ msg: "No files were uploaded." });
@@ -48,7 +48,7 @@ router.post("/upload", (req, res) => {
   }
 });
 
-router.post("/upload-asset", async (req, res) => {
+router.post("/asset", async (req, res) => {
   try {
     const upload = await Video.Uploads.create({
       new_asset_settings: { playback_policy: "public" },

@@ -97,7 +97,7 @@ const userCtrl = {
       res.json({
         msg: "Successfully made user an admin",
       });
-    } catch (er) {
+    } catch (err) {
       res.status(500).json({ msg: err.message });
     }
   },

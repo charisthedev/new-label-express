@@ -4,12 +4,12 @@ const auth = require("../middleware/auth");
 const authAdmin = require("../middleware/authAdmin");
 
 router
-  .route("/episodes")
+  .route("/")
   .get(auth, episodeCtrl.getEpisodes)
   .post(authAdmin, episodeCtrl.createEpisode);
 
 router
-  .route("/episodes/:id")
+  .route("/:id")
   .get(auth, episodeCtrl.getEpisode)
   .delete(authAdmin, episodeCtrl.deleteEpisode)
   .put(authAdmin, episodeCtrl.updateEpisode);

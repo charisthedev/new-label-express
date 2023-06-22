@@ -10,14 +10,16 @@ const movieSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    discount: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Discount",
-    },
-    description: [{
+    discount: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Discount",
+      },
+    ],
+    description: {
       type: String,
       required: true,
-    }],
+    },
     casts: [
       {
         type: String,

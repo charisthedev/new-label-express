@@ -4,12 +4,12 @@ const auth = require("../middleware/auth");
 const authAdmin = require("../middleware/authAdmin");
 
 router
-  .route("/category")
+  .route("/")
   .get( authAdmin, categoryCtrl.getCategories)
   .post(authAdmin, categoryCtrl.createCategory);
 
 router
-  .route("/category/:id", authAdmin)
+  .route("/:id", authAdmin)
   .get(authAdmin, categoryCtrl.getCategory)
   .delete(authAdmin, categoryCtrl.deleteCategory)
   .put(authAdmin, categoryCtrl.updateCategory);

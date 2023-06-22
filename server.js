@@ -5,7 +5,6 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const rateLimit = require("express-rate-limit");
 const bodyParser = require("body-parser");
-const userRouter = require("./routes/userRouter");
 
 const app = express();
 
@@ -24,22 +23,22 @@ app.use("/uploads", express.static("uploads"));
 
 // const http = require("http").createServer(app);
 
-app.use("/api", require("./routes/userRouter"));
-app.use("/api", require("./routes/movieRouter"));
-app.use("/api", require("./routes/categoryRouter"));
-app.use("/api", require("./routes/seasonRouter"));
-app.use("/api", require("./routes/episodeRouter"));
-app.use("/api", require("./routes/upload"));
-app.use("/api", require("./routes/bannerRouter"));
-app.use("/api", require("./routes/sectionRouter"));
-app.use("/api", require("./routes/paymentRouter"));
-app.use("/api", require("./routes/adminRouter"));
-app.use("/api", require("./routes/genreRouter"));
-app.use("/api", require("./routes/continueWatchingRouter"));
-app.use("/api", require("./routes/seriesRouter"));
-app.use("/api", require("./routes/discountRouter"));
-app.use("/api", require("./routes/video-uploadRouter"));
-app.use("/api", require("./routes/video-streamRouter"));
+app.use("/api/auth", require("./routes/userRouter"));
+app.use("/api/movies", require("./routes/movieRouter"));
+app.use("/api/category", require("./routes/categoryRouter"));
+app.use("/api/seasons", require("./routes/seasonRouter"));
+app.use("/api/episodes", require("./routes/episodeRouter"));
+app.use("/api/upload", require("./routes/upload"));
+app.use("/api/banner", require("./routes/bannerRouter"));
+app.use("/api/section", require("./routes/sectionRouter"));
+app.use("/api/orders", require("./routes/paymentRouter"));
+app.use("/api/admin", require("./routes/adminRouter"));
+app.use("/api/genre", require("./routes/genreRouter"));
+app.use("/api/continue-watching", require("./routes/continueWatchingRouter"));
+app.use("/api/series", require("./routes/seriesRouter"));
+app.use("/api/discount", require("./routes/discountRouter"));
+app.use("/api/upload", require("./routes/video-uploadRouter"));
+app.use("/api/stream", require("./routes/video-streamRouter"));
 app.get("/", (req, res) => {
   res.send("Hello, World!");
 });

@@ -3,12 +3,12 @@ const genreCtrl = require("../controllers/genreCtrl");
 const auth = require("../middleware/auth");
 const authAdmin = require("../middleware/authAdmin");
 
-router.post("/genre", authAdmin, genreCtrl.createGenre);
+router.post("/", authAdmin, genreCtrl.createGenre);
 
-router.get("/genre", auth, genreCtrl.getGenres);
+router.get("/", auth, genreCtrl.getGenres);
 
-router.get("/genre/:id", auth, genreCtrl.getGenre);
+router.get("/:id", auth, genreCtrl.getGenre);
 
-router.delete("/genre/:id", authAdmin, genreCtrl.deleteGenre);
+router.delete("/:id", authAdmin, genreCtrl.deleteGenre);
 
 module.exports = router;

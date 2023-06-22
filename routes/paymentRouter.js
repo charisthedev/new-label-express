@@ -4,16 +4,16 @@ const auth = require("../middleware/auth");
 const authAdmin = require("../middleware/authAdmin");
 
 router
-  .route("/orders")
+  .route("/")
   .get(authAdmin, paymentCtrl.getOrders)
   .post(auth, paymentCtrl.createOrderFromWallet);
 
-router.route("/orders/verify").post(auth, paymentCtrl.verifyItemPurchase);
-router.route("/orders/topup").post(auth, paymentCtrl.topUpWallet);
-router.route("/orders/user").get(auth, paymentCtrl.getUserOrders);
-router.route("/orders/card-payment").post(auth, paymentCtrl.createOrderFromCard);
+router.route("/verify").post(auth, paymentCtrl.verifyItemPurchase);
+router.route("/topup").post(auth, paymentCtrl.topUpWallet);
+router.route("/user").get(auth, paymentCtrl.getUserOrders);
+router.route("/card-payment").post(auth, paymentCtrl.createOrderFromCard);
 
-router.route("/orders/:id");
+router.route("/:id");
 //   .get(movieCtrl.getMovie)
 //   .delete(auth, authAdmin, movieCtrl.deleteMovie)
 //   .put(movieCtrl.updateMovie);

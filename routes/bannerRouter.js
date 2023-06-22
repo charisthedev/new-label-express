@@ -3,15 +3,15 @@ const bannerCtrl = require("../controllers/bannerCtrl");
 const auth = require("../middleware/auth");
 const authAdmin = require("../middleware/authAdmin");
 
-router.route("/banner/:type").get(auth, bannerCtrl.getBanner);
-router.route("/banner/client/:type").get(auth, bannerCtrl.getBannerClient);
+router.route("/:type").get(auth, bannerCtrl.getBanner);
+router.route("/client/:type").get(auth, bannerCtrl.getBannerClient);
 
-router.route("/banner").get(auth, bannerCtrl.getBanners);
+router.route("/").get(auth, bannerCtrl.getBanners);
 
-router.route("/banner").post(authAdmin, bannerCtrl.createBanner);
+router.route("/").post(authAdmin, bannerCtrl.createBanner);
 
 router
-  .route("/banner/:type")
+  .route("/:type")
   .delete(authAdmin, bannerCtrl.deleteBanner)
   .put(authAdmin, bannerCtrl.updateBanner);
 
