@@ -5,12 +5,12 @@ const authAdmin = require("../middleware/authAdmin");
 
 router
   .route("/")
-  .get(auth, episodeCtrl.getEpisodes)
+  .get(episodeCtrl.getEpisodes)
   .post(authAdmin, episodeCtrl.createEpisode);
 
 router
   .route("/:id")
-  .get(auth, episodeCtrl.getEpisode)
+  .get(episodeCtrl.getEpisode)
   .delete(authAdmin, episodeCtrl.deleteEpisode)
   .put(authAdmin, episodeCtrl.updateEpisode);
 

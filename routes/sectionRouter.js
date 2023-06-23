@@ -5,15 +5,15 @@ const authAdmin = require("../middleware/authAdmin");
 
 router
   .route("/")
-  .get(auth, sectionCtrl.getSections)
+  .get(sectionCtrl.getSections)
   .post(authAdmin, sectionCtrl.createSection);
 
 router
   .route("/:id")
-  .get(auth, sectionCtrl.getSection)
+  .get(sectionCtrl.getSection)
   .delete(authAdmin, sectionCtrl.deleteSection)
-  .put(auth, sectionCtrl.updateSection);
+  .put(authAdmin, sectionCtrl.updateSection);
 
-router.route("/search").get(auth, sectionCtrl.searchProduct);
+router.route("/search").get(sectionCtrl.searchProduct);
 
 module.exports = router;

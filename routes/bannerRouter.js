@@ -3,10 +3,10 @@ const bannerCtrl = require("../controllers/bannerCtrl");
 const auth = require("../middleware/auth");
 const authAdmin = require("../middleware/authAdmin");
 
-router.route("/:type").get(auth, bannerCtrl.getBanner);
-router.route("/client/:type").get(auth, bannerCtrl.getBannerClient);
+router.route("/:type").get(bannerCtrl.getBanner);
+router.route("/client/:type").get(bannerCtrl.getBannerClient);
 
-router.route("/").get(auth, bannerCtrl.getBanners);
+router.route("/").get(bannerCtrl.getBanners);
 
 router.route("/").post(authAdmin, bannerCtrl.createBanner);
 

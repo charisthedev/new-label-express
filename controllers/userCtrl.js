@@ -132,13 +132,14 @@ const userCtrl = {
       const { email } = req.body;
       const user = await Users.findOne({ email: email });
       if (!user) return res.status(400).json({ msg: "email not registered." });
-      const accesstoken = createAccessToken({ id: user._id }, "2h");
+      const accesstoken = createAccessToken({ id: user._id }, "4h");
       console.log(user);
       const data = {
-        from: "sikirurazak1@gmail.com",
-        to: user.email,
-        subject: "Hello",
-        text: `${accesstoken}`,
+        from: "info@newlabelproduction.com",
+        to: "sikirurazak1@gmail.com",
+        subject: "Password Reset Mail",
+        text: "",
+        html: `<a href='https://newlabeltvstage.netlify.app/changepassword?token=${accesstoken}'>click here to reset your password</a>`,
       };
       const status = await sendMail(data);
       if (status)
@@ -155,6 +156,10 @@ const userCtrl = {
       const { token, password } = req.body;
       if (!token) res.status(400).json({ msg: "please provide token" });
       if (!password) res.status(400).json({ msg: "please provide password" });
+      if (password.length < 6)
+        return res
+          .status(400)
+          .json({ msg: "Password is at least 6 characters long." });
       const passwordHash = await bcrypt.hash(password, 10);
       jwt.verify(
         token,
@@ -176,7 +181,9 @@ const userCtrl = {
               { _id: decoded.data.id },
               { password: passwordHash }
             );
-            res.status(200).json({ msg: "password updated successfully" });
+            return res
+              .status(200)
+              .json({ msg: "password updated successfully" });
           }
         }
       );

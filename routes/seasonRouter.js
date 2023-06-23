@@ -5,12 +5,12 @@ const authAdmin = require("../middleware/authAdmin");
 
 router
   .route("/")
-  .get(auth, seasonCtrl.getSeasons)
+  .get(seasonCtrl.getSeasons)
   .post(authAdmin, seasonCtrl.createSeason);
 
 router
   .route("/:id")
-  .get(auth, seasonCtrl.getSeason)
+  .get(seasonCtrl.getSeason)
   .delete(authAdmin, seasonCtrl.deleteSeason)
   .put(authAdmin, seasonCtrl.updateSeason);
 
