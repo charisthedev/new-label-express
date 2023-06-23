@@ -136,7 +136,7 @@ const userCtrl = {
       console.log(user);
       const data = {
         from: "info@newlabelproduction.com",
-        to: "sikirurazak1@gmail.com",
+        to: user.email,
         subject: "Password Reset Mail",
         text: "",
         html: `<a href='https://newlabeltvstage.netlify.app/changepassword?token=${accesstoken}'>click here to reset your password</a>`,
