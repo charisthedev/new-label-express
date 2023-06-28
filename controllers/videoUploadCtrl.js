@@ -65,11 +65,12 @@ const videoUpload = {
       if (lastChunk) {
         const finalFilename = md5(Date.now()).substr(0, 6) + "." + ext;
         fs.renameSync("./uploads/" + tmpFilename, "./uploads/" + finalFilename);
-        const filename = `./uploads/${finalFilename}`;
-        const data = await uploadVideo(filename, "video");
-        return res
-          .status(200)
-          .json({ message: "file uploaded successfully", link: data });
+        const fileData = fs.readFileSync(`./uploads/${finalFilename}`);
+        const data = await uploadVideo(fileData, finalFilename);
+        if (data)
+          return res
+            .status(200)
+            .json({ message: "file uploaded successfully", link: data });
       } else {
         res.json("ok");
       }
