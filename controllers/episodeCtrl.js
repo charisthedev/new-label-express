@@ -80,11 +80,10 @@ const episodeCtrl = {
         publication_date,
         video,
         image,
-        banner,
         series_id,
         season_id,
       } = req.body;
-      if (!image || !banner || !video)
+      if (!image || !video)
         return res.status(400).json({ msg: "Asset upload not complete" });
 
       // const episode = await Episodes.findOne({ episode_id });
@@ -98,7 +97,6 @@ const episodeCtrl = {
         publication_date,
         video,
         image,
-        banner,
         season_id,
         series_id,
       });

@@ -78,13 +78,17 @@ const seriesCtrl = {
         description,
         donation,
         donate,
+        price,
         casts,
         genre,
         image,
         banner,
-        price,
         seasons,
-        expirationSpan
+        expirationSpan,
+        year,
+        trailer,
+        discount,
+        validViews,
       } = req.body;
 
       if (!req.body)
@@ -102,7 +106,11 @@ const seriesCtrl = {
         image,
         banner,
         seasons,
-        expirationSpan
+        expirationSpan,
+        year,
+        trailer,
+        discount,
+        validViews
       });
 
       const newActivities = new Activities({

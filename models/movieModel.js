@@ -79,11 +79,9 @@ const movieSchema = new mongoose.Schema(
     },
     expirationSpan: {
       type: Number,
-      default: undefined,
     },
     validViews: {
       type: Number,
-      default: undefined,
     },
   },
   {

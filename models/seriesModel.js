@@ -41,6 +41,7 @@ const seriesSchema = new mongoose.Schema(
     ],
     image: {
       type: String,
+      required: true,
     },
     banner: {
       type: String,
@@ -64,6 +65,13 @@ const seriesSchema = new mongoose.Schema(
     ],
     expirationSpan: {
       type: Number,
+    },
+    validViews: {
+      type: Number,
+    },
+    acquired: {
+      type: Number,
+      default: 0,
     },
   },
   {
