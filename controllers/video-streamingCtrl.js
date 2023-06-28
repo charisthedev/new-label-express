@@ -1,24 +1,23 @@
 const path = require("path");
 const fs = require("fs");
+const Video = require("../models/videoModel");
 
 const cache = {}; // cache to store video data
-
 
 const videoStreamCtrl = {
   sendVideoFile: async (req, res) => {
     try {
-      const path = `./uploads/${req.params.file_name}.mp4`;
-      const stat = fs.statSync(path)
+      const file_name = await Video.findById({ _id: req.params.file_name });
+      const path = `./uploads/${file_name.link}.mp4`;
+      const stat = fs.statSync(path);
       const fileSize = stat.size;
       const range = req.headers.range;
       if (range) {
         const parts = range.replace(/bytes=/, "").split("-");
         const start = parseInt(parts[0], 10);
-        const end = parts[1]
-            ? parseInt(parts[1], 10)
-            : fileSize - 1;
-        const chunksize = (end-start) + 1;
-        const file = fs.createReadStream(path, {start, end})
+        const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+        const chunksize = end - start + 1;
+        const file = fs.createReadStream(path, { start, end });
         const head = {
           "Content-Range": `bytes ${start}-${end}/${fileSize}`,
           "Accept-Ranges": "bytes",
@@ -26,24 +25,24 @@ const videoStreamCtrl = {
           "Content-Type": "video/mp4",
         };
         res.writeHead(206, head);
-        file.pipe(res)
+        file.pipe(res);
       } else {
         const head = {
           "Content-Length": fileSize,
           "Content-Type": "video/mp4",
-        }
+        };
         res.writeHead(206, head);
-        fs.createReadStream(path).pipe(res)
+        fs.createReadStream(path).pipe(res);
       }
     } catch (err) {
-      res.status(500).json({ msg: err.message })
+      res.status(500).json({ msg: err.message });
     }
   },
   streamVideo: async (req, res) => {
     try {
       const range = req.headers.range;
       if (!range) {
-        res.status(400).json({ msg : "Requires Range header"})
+        res.status(400).json({ msg: "Requires Range header" });
       }
       const videoPath = `./uploads/${req.params.file_name}.mp4`;
       const videoSize = fs.statSync(videoPath).size;
@@ -53,17 +52,17 @@ const videoStreamCtrl = {
       const contentLength = end - start + 1;
       const headers = {
         "Content-Range": `bytes ${start}-${end}/${videoSize}`,
-        "Accept-Ranges": 'bytes',
+        "Accept-Ranges": "bytes",
         "Content-Length": contentLength,
-        "Content-Type": "video/mp4"
-      }
-      res.writeHead(206,headers);
-      const videoStream = fs.createReadStream(videoPath,{start, end});
+        "Content-Type": "video/mp4",
+      };
+      res.writeHead(206, headers);
+      const videoStream = fs.createReadStream(videoPath, { start, end });
       videoStream.pipe(res);
     } catch (err) {
-      res.status(500).json({ msg: err.message })
+      res.status(500).json({ msg: err.message });
     }
-  }
-}
+  },
+};
 
-module.exports = videoStreamCtrl
+module.exports = videoStreamCtrl;

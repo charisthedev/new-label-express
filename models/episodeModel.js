@@ -32,6 +32,11 @@ const episodeSchema = new mongoose.Schema(
     banner: {
       type: String,
     },
+    season_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Seasons",
+      required: true,
+    },
   },
   {
     timestamps: true,

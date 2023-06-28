@@ -82,7 +82,7 @@ const episodeCtrl = {
         banner,
         season,
       } = req.body;
-      if (!image && !banner)
+      if (!image || !banner || !video)
         return res.status(400).json({ msg: "Asset upload not complete" });
 
       const episode = await Episodes.findOne({ episode_id });
@@ -117,7 +117,7 @@ const episodeCtrl = {
     try {
       const episodeData = await Episodes.findById(req.params.id);
 
-      res.json({
+      return res.json({
         msg: "Queried",
         episodeData,
       });
@@ -136,7 +136,7 @@ const episodeCtrl = {
 
       await newActivities.save();
 
-      res.json({ msg: "Deleted an Epsiode" });
+      return res.status(200).json({ msg: "Deleted an Epsiode" });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }
@@ -161,7 +161,7 @@ const episodeCtrl = {
 
       await newActivities.save();
 
-      res.json({ msg: `Updated ${episode.title} Episode` });
+      return res.status(200).json({ msg: `Updated ${episode.title} Episode` });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }

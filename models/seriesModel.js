@@ -61,6 +61,10 @@ const seriesSchema = new mongoose.Schema(
         ref: "Seasons",
       },
     ],
+    expirationSpan: {
+      type: Number,
+      default: undefined,
+    },
   },
   {
     timestamps: true,

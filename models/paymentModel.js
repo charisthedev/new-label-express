@@ -20,6 +20,15 @@ const paymentSchema = new mongoose.Schema(
     },
     status: {
       type: Boolean,
+      default: true,
+    },
+    expirationDate: {
+      type: Date,
+      default: undefined,
+    },
+    validViews: {
+      type: Number,
+      default: undefined,
     },
   },
   {

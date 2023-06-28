@@ -13,27 +13,8 @@ const seasonSchema = new mongoose.Schema(
     year: {
       type: String,
     },
-    discount: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Discount",
-    },
     trailer: {
       type: String,
-    },
-    donation: {
-      type: Boolean,
-    },
-    donate: {
-      type: Number,
-    },
-    free: {
-      type: Boolean,
-      default: false,
-    },
-    price: {
-      type: Number,
-      trim: true,
-      required: true,
     },
     number: {
       type: Number,
@@ -45,13 +26,6 @@ const seasonSchema = new mongoose.Schema(
     banner: {
       type: String,
     },
-    discount: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Discount",
-    },
-    discountedPrice: {
-      type: Number,
-    },
     type: {
       type: String,
       default: "Seasons",
@@ -62,6 +36,11 @@ const seasonSchema = new mongoose.Schema(
         ref: "Episodes",
       },
     ],
+    series_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Series",
+      required: true,
+    },
   },
   {
     timestamps: true, //important

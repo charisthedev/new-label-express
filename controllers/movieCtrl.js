@@ -1,4 +1,5 @@
 const Movies = require("../models/movieModel");
+const Payment = require("../models/paymentModel");
 const Discount = require("../models/dicountModel");
 const Activities = require("../models/activityModel");
 
@@ -74,12 +75,12 @@ const movieCtrl = {
   },
   getMovie: async (req, res) => {
     try {
-      const movie = await Movies.findById({ _id: req.params.id })
-        .populate("category discount")
-        .select("-video");
+      const movie = await Movies.findById({ _id: req.params.id }).populate(
+        "category discount genre"
+      );
       if (!movie) return res.status(400).json({ msg: "Movie does not exist." });
 
-      res.json(movie);
+      return res.status(200).json(movie);
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }
@@ -87,11 +88,22 @@ const movieCtrl = {
   getVideoUrl: async (req, res) => {
     try {
       const movie = await Movies.findById({ _id: req.params.id }).populate(
-        "category"
+        "category genre"
       );
       if (!movie) return res.status(400).json({ msg: "Movie does not exist." });
+      const verify = await Payment.find({
+        user_id: req.id,
+        item_id: req.params.id,
+      });
+      if (!verify)
+        return res
+          .status(403)
+          .json({ msg: "No Payment has been made for this Item" });
+      const today = new Date();
+      if (verify.validViews < 1 || today > new Date(verify.expirationDate))
+        return res.status(403).json({ msg: "Access Expired" });
 
-      res.json(movie);
+      return res.status(200).json(movie);
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }
@@ -115,8 +127,10 @@ const movieCtrl = {
         genre,
         video,
         category,
+        expirationSpan,
+        validViews,
       } = req.body;
-      if (!image && !banner && !video)
+      if (!image || !banner || !video)
         return res.status(400).json({ msg: "Asset upload not complete" });
 
       const newMovie = new Movies({
@@ -137,6 +151,8 @@ const movieCtrl = {
         casts,
         genre,
         category,
+        expirationSpan,
+        validViews,
       });
 
       const newActivities = new Activities({

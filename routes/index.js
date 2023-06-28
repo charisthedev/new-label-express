@@ -16,4 +16,4 @@ const discountRouter = require("./discountRouter");
 const videoUploadRouter = require("./video-uploadRouter");
 const videoStreamRouter = require("./video-streamRouter");
 
-module.exports = router
+module.exports = router;

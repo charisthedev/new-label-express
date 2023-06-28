@@ -1,7 +1,7 @@
 const Payments = require("../models/paymentModel");
 const Users = require("../models/userModel");
-const Movies = require("../models/movieModel")
-const Seasons = require("../models/seasonModel")
+const Movies = require("../models/movieModel");
+const Seasons = require("../models/seasonModel");
 
 class APIfeatures {
   constructor(query, queryString) {
@@ -70,8 +70,9 @@ const paymentCtrl = {
   },
   createOrderFromWallet: async (req, res) => {
     try {
-      const { item_id, paymentType, price } = req.body;
-      const id = req.id
+      const { item_id, paymentType, price, item_span, item_validViews } =
+        req.body;
+      const id = req.id;
       if (!item_id && !paymentType && !price)
         res.status(404).json({ msg: "Payment was not succssfully." });
 
@@ -79,16 +80,25 @@ const paymentCtrl = {
       if (!user)
         res.status(404).json({ msg: "Please login to verify yourself" });
 
-      if (user.wallet < price) return res.status(404).json({ msg: "Insufficient Wallet ballance" });
+      if (user.wallet < price)
+        return res.status(404).json({ msg: "Insufficient Wallet ballance" });
 
       const deductBalance = user.wallet - price;
 
       await Users.findOneAndUpdate({ user_id: id }, { wallet: deductBalance });
+      const today = new Date();
+      const expirationDate = new Date(
+        today.getFullYear(),
+        today.getMonth() + item_span,
+        today.getDate()
+      );
       const newOrder = new Payments({
         user_id: id,
         item_id,
         paymentType,
         price,
+        expirationDate,
+        validViews: item_validViews,
       });
 
       await newOrder.save();
@@ -102,42 +112,62 @@ const paymentCtrl = {
   },
   createOrderFromCard: async (req, res) => {
     try {
-      const {item_id, payment_id, paymentType, price } = req.body;
-      const id = req.id
-       if (!item_id && !payment_id && !paymentType && !price)
+      const {
+        item_id,
+        payment_id,
+        paymentType,
+        price,
+        item_span,
+        item_validViews,
+      } = req.body;
+      const id = req.id;
+      if (!item_id && !payment_id && !paymentType && !price)
         res.status(404).json({ msg: "Payment was not succssfully." });
-        
+      const today = new Date();
+      const expirationDate = new Date(
+        today.getFullYear(),
+        today.getMonth() + item_span,
+        today.getDate()
+      );
       const newOrder = new Payments({
         user_id: id,
         item_id,
         payment_id,
         paymentType,
-        price
-      })
-      
-      await newOrder.save()
-      
-      res.json({ msg: "card payment successfully." })
+        price,
+        expirationDate,
+        validViews: item_validViews,
+      });
+
+      await newOrder.save();
+
+      res.json({ msg: "card payment successfully." });
     } catch (err) {
-      res.status(500).json({ msg: err.message})
+      res.status(500).json({ msg: err.message });
     }
   },
   verifyItemPurchase: async (req, res) => {
     try {
       const { item_id } = req.body;
-      const id = req.id
-      if (!item_id)
-        return res.status(404).json({ msg: "wrong credentials" });
+      const id = req.id;
+      if (!item_id) return res.status(404).json({ msg: "wrong credentials" });
 
       const verify = await Payments.findOne({ user_id: id, item_id });
       if (!verify)
         return res
           .status(200)
-          .json({ msg: "No payment has been made for this item" });
+          .json({
+            msg: "No payment has been made for this item",
+            status: false,
+          });
+      const today = new Date();
+      if (verify.expirationDate > today || verify.validViews < 1)
+        return res.status(200).json({ msg: "item Expired", status: false });
 
-      res.json({ 
+      return res.status(200).json({
         msg: "Item verified with user purschase",
-        verify: verify.item_id
+        verify: verify.item_id,
+        status: true,
       });
     } catch (err) {
       res.status(500).json({ msg: err.message });
@@ -146,16 +176,16 @@ const paymentCtrl = {
   topUpWallet: async (req, res) => {
     try {
       const { payment_id, paymentType, price } = req.body;
-      const id = req.id
+      const id = req.id;
       if (!payment_id || !price)
         return res.status(404).json({ msg: "payload not properly passed" });
 
       const user = await Users.findOne({ user_id: id });
-      if (!user) return res.status(404).json({ msg: 'invalid user'})
-      
-      const addToWallet = user.wallet + price
-      
-      await Users.findOneAndUpdate({ user_id: id }, {wallet: addToWallet})
+      if (!user) return res.status(404).json({ msg: "invalid user" });
+
+      const addToWallet = user.wallet + price;
+
+      await Users.findOneAndUpdate({ user_id: id }, { wallet: addToWallet });
 
       const newTopup = new Payments({
         user_id: id,
@@ -166,9 +196,9 @@ const paymentCtrl = {
 
       await newTopup.save();
 
-      res.json({ 
+      res.json({
         msg: "Your wallet has been funded",
-        user
+        user,
       });
     } catch (err) {
       res.status(500).json({ msg: err.message });
@@ -177,21 +207,22 @@ const paymentCtrl = {
   getUserOrders: async (req, res) => {
     try {
       const { item_id } = req.body;
-      const id = req.id
-      const orders = await Payments.find({ user_id: id, item_id }).populate('item_id')
-      const movies = await Movies.find({item_id}).select('-video')
-      const seasons = await Seasons.find({item_id}).select('-episodes')
-      
-      const combined = movies.concat(seasons)
-      
-      
-      res.json({ 
+      const id = req.id;
+      const orders = await Payments.find({ user_id: id, item_id }).populate(
+        "item_id"
+      );
+      const movies = await Movies.find({ item_id }).select("-video");
+      const seasons = await Seasons.find({ item_id }).select("-episodes");
+
+      const combined = movies.concat(seasons);
+
+      res.json({
         userOrders: combined,
-       })
+      });
     } catch (err) {
-      res.status(500).json({ msg: err.message })
+      res.status(500).json({ msg: err.message });
     }
-  }
+  },
 };
 
 module.exports = paymentCtrl;

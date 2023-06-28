@@ -77,6 +77,14 @@ const movieSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    expirationSpan: {
+      type: Number,
+      default: undefined,
+    },
+    validViews: {
+      type: Number,
+      default: undefined,
+    },
   },
   {
     timestamps: true, //important

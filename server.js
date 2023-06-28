@@ -17,7 +17,7 @@ const app = express();
 // app.use(limiter);
 app.use(express.json());
 app.use(cookieParser());
-app.use(bodyParser.raw({ type: "application/octet-stream", limit: "100mb" }));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 app.use("/uploads", express.static("uploads"));
 

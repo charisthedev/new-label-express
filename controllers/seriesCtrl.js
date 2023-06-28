@@ -84,6 +84,7 @@ const seriesCtrl = {
         banner,
         price,
         seasons,
+        expirationSpan
       } = req.body;
 
       if (!req.body)
@@ -101,6 +102,7 @@ const seriesCtrl = {
         image,
         banner,
         seasons,
+        expirationSpan
       });
 
       const newActivities = new Activities({
@@ -127,7 +129,7 @@ const seriesCtrl = {
           path: "episodes",
         },
       })
-      .populate("discount")
+      .populate("discount genre")
 
       if (!series)
         return res.status(400).json({ msg: "Series does not exist" });
