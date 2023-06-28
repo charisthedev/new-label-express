@@ -1,4 +1,5 @@
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
+const fs = require("fs");
 const Video = require("../models/videoModel");
 // Step 1: Import the S3Client object and all necessary SDK commands.
 const {
@@ -49,7 +50,8 @@ const uploadImage = async (fileBuffer, fileName, folder) => {
   }
 };
 
-const uploadVideo = async (file, folder) => {
+const uploadVideo = async (filename, folder) => {
+  const file = fs.readFileSync(filename)
   const fileStream = file.buffer;
   console.log(file);
   // Assuming you are using multer or similar middleware for file upload
