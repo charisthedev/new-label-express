@@ -1,4 +1,5 @@
 const Seasons = require("../models/seasonModel");
+const Series = require("../models/seriesModel");
 const Activities = require("../models/activityModel");
 
 class APIfeatures {
@@ -78,32 +79,28 @@ const seasonCtrl = {
     try {
       const {
         title,
-        price,
-        description,
-        image,
+        year,
         trailer,
-        donation,
-        donate,
-        free,
-        banner,
         number,
+        image,
+        banner,
         episodes,
+        series_id,
+        description,
       } = req.body;
       if (!image && !banner)
         return res.status(400).json({ msg: "Asset upload not complete" });
 
       const newSeason = new Seasons({
         title: title.toLowerCase(),
-        price,
         description,
         image,
         trailer,
-        donation,
-        donate,
-        free,
+        year,
         banner,
         number,
         episodes,
+        series_id,
       });
 
       const newActivities = new Activities({
@@ -112,8 +109,26 @@ const seasonCtrl = {
 
       await newActivities.save();
 
-      await newSeason.save();
-      res.json({ msg: "Created a season" });
+      await newSeason
+        .save()
+        .then((newSeason) => {
+          Series.findByIdAndUpdate(
+            { _id: series_id },
+            { $push: { seasons: newSeason._id } },
+            { new: true }
+          )
+            .then(() => {
+              return res
+                .status(200)
+                .json({ msg: "successfully created an season" });
+            })
+            .catch((err) => {
+              return res.status(400).json({ msg: err.message });
+            });
+        })
+        .catch((err) => {
+          return res.status(400).json({ msg: err.message });
+        });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }

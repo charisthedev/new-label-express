@@ -26,10 +26,6 @@ const seasonSchema = new mongoose.Schema(
     banner: {
       type: String,
     },
-    type: {
-      type: String,
-      default: "Seasons",
-    },
     episodes: [
       {
         type: mongoose.Schema.Types.ObjectId,

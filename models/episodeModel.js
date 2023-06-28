@@ -37,6 +37,11 @@ const episodeSchema = new mongoose.Schema(
       ref: "Seasons",
       required: true,
     },
+    series_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Series",
+      required: true,
+    },
   },
   {
     timestamps: true,

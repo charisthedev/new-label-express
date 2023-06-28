@@ -1,5 +1,6 @@
 const Episodes = require("../models/episodeModel");
 const Activities = require("../models/activityModel");
+const Seasons = require("../models/seasonModel");
 
 class APIfeatures {
   constructor(query, queryString) {
@@ -80,15 +81,15 @@ const episodeCtrl = {
         video,
         image,
         banner,
-        season,
+        series_id,
+        season_id,
       } = req.body;
       if (!image || !banner || !video)
         return res.status(400).json({ msg: "Asset upload not complete" });
 
-      const episode = await Episodes.findOne({ episode_id });
-      if (episode)
-        return res.status(400).json({ msg: "This episode already exists." });
-
+      // const episode = await Episodes.findOne({ episode_id });
+      // if (episode)
+      //   return res.status(400).json({ msg: "This episode already exists." });
       const newEpisode = new Episodes({
         episode_id,
         title: title.toLowerCase(),
@@ -98,7 +99,8 @@ const episodeCtrl = {
         video,
         image,
         banner,
-        season,
+        season_id,
+        series_id,
       });
 
       const newActivities = new Activities({
@@ -107,8 +109,26 @@ const episodeCtrl = {
 
       await newActivities.save();
 
-      await newEpisode.save();
-      res.json({ msg: "Created an Episode" });
+      await newEpisode
+        .save()
+        .then((newEpisode) => {
+          Seasons.findByIdAndUpdate(
+            { _id: season_id },
+            { $push: { episodes: newEpisode._id } },
+            { new: true }
+          )
+            .then(() => {
+              return res
+                .status(200)
+                .json({ msg: "successfully created an episode" });
+            })
+            .catch((err) => {
+              return res.status(400).json({ msg: err.message });
+            });
+        })
+        .catch((err) => {
+          return res.status(400).json({ msg: err.message });
+        });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }

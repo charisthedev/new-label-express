@@ -63,7 +63,6 @@ const seriesSchema = new mongoose.Schema(
     ],
     expirationSpan: {
       type: Number,
-      default: undefined,
     },
   },
   {
