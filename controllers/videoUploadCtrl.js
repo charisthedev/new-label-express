@@ -6,6 +6,7 @@ const multer = require("multer");
 const md5 = require("md5");
 const fs = require("fs");
 const Video = require("../models/videoModel");
+const uploadVideo = require("../outliers/upload-files").uploadVideo;
 
 const videoUpload = {
   uploadFile: async (req, res) => {
@@ -64,7 +65,9 @@ const videoUpload = {
       if (lastChunk) {
         const finalFilename = md5(Date.now()).substr(0, 6) + "." + ext;
         fs.renameSync("./uploads/" + tmpFilename, "./uploads/" + finalFilename);
-        res.json({ finalFilename });
+        const file = fs.readFileSync("./uploads/" + finalFilename);
+        const data =  await uploadVideo(file,"video");
+        return res.status(200).json({ message:"file uploaded successfully", link:data });
       } else {
         res.json("ok");
       }

@@ -23,9 +23,6 @@ const seasonSchema = new mongoose.Schema(
     image: {
       type: String,
     },
-    banner: {
-      type: String,
-    },
     episodes: [
       {
         type: mongoose.Schema.Types.ObjectId,

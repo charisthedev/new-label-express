@@ -10,7 +10,7 @@ const fileUploadConfig =
 // const upload = multer({ storage: storage });
 const upload = multer({ storage: multer.memoryStorage() }).single("file");
 
-router.post("/video", authAdmin, upload, uploadObject.VideoUpload);
+router.post("/video", authAdmin, videoUpload.chunkUpload);
 // router.post('/upload-video', upload.single('file'), uploadObject.VideoUpload)
 router.post("/image", upload, uploadObject.ImageUpload);
 

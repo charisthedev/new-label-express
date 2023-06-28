@@ -83,12 +83,11 @@ const seasonCtrl = {
         trailer,
         number,
         image,
-        banner,
         episodes,
         series_id,
         description,
       } = req.body;
-      if (!image && !banner)
+      if (!image)
         return res.status(400).json({ msg: "Asset upload not complete" });
 
       const newSeason = new Seasons({
@@ -97,7 +96,6 @@ const seasonCtrl = {
         image,
         trailer,
         year,
-        banner,
         number,
         episodes,
         series_id,

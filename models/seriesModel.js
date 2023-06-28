@@ -44,6 +44,7 @@ const seriesSchema = new mongoose.Schema(
     },
     banner: {
       type: String,
+      required: true,
     },
     type: {
       type: String,
