@@ -29,9 +29,8 @@ const uploadImage = async (fileBuffer, fileName, folder) => {
       Bucket: "newlabel-videos", // The path to the directory you want to upload the object to, starting with your Space name.
       Key: `image/${fileName}`, // Object key, referenced whenever you want to access this file later.
       Body: fileBuffer, // The object's contents. This variable is an object, not a string.
-      ACL: "private", // Defines ACL permissions, such as private or public.
+      ACL: "public-read", // Defines ACL permissions, such as private or public.
       Metadata: {
-        // Defines metadata tags.
         "x-amz-meta-my-key": "",
       },
     };
@@ -56,7 +55,7 @@ const uploadVideo = async (fileBuffer, fileName) => {
       Bucket: "newlabel-videos", // The path to the directory you want to upload the object to, starting with your Space name.
       Key: `video/${fileName}`, // Object key, referenced whenever you want to access this file later.
       Body: fileBuffer, // The object's contents. This variable is an object, not a string.
-      ACL: "private", // Defines ACL permissions, such as private or public.
+      ACL: "public-read", // Defines ACL permissions, such as private or public.
       Metadata: {
         // Defines metadata tags.
         "x-amz-meta-my-key": "",

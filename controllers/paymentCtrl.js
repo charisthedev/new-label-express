@@ -148,18 +148,16 @@ const paymentCtrl = {
   },
   verifyItemPurchase: async (req, res) => {
     try {
-      const { item_id } = req.body;
+      const { item_id, type } = req.body;
       const id = req.id;
       if (!item_id) return res.status(404).json({ msg: "wrong credentials" });
 
       const verify = await Payments.findOne({ user_id: id, item_id });
       if (!verify)
-        return res
-          .status(200)
-          .json({
-            msg: "No payment has been made for this item",
-            status: false,
-          });
+        return res.status(200).json({
+          msg: "No payment has been made for this item",
+          status: false,
+        });
       const today = new Date();
       if (verify.expirationDate > today || verify.validViews < 1)
         return res.status(200).json({ msg: "item Expired", status: false });
