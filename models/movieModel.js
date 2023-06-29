@@ -34,7 +34,6 @@ const movieSchema = new mongoose.Schema(
     },
     banner: {
       type: String,
-      required: true,
     },
     trailer: {
       type: String,

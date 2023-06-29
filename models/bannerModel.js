@@ -6,14 +6,18 @@ const bannerSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    movies: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Movies",
-    },
-    series: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Series",
-    },
+    movies: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Movies",
+      },
+    ],
+    series: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Series",
+      },
+    ],
   },
   {
     timestamps: true,
