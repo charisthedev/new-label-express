@@ -130,7 +130,7 @@ const movieCtrl = {
         expirationSpan,
         validViews,
       } = req.body;
-      if (!image || !banner || !video)
+      if (!image || !video)
         return res.status(400).json({ msg: "Asset upload not complete" });
 
       const newMovie = new Movies({
