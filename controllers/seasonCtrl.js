@@ -156,7 +156,7 @@ const seasonCtrl = {
       if (!season)
         return res.status(400).json({ msg: "Seasons does not exist." });
 
-      res.json(season);
+      res.json({ msg: "success", seasons: season });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }
