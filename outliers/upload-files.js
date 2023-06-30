@@ -41,7 +41,9 @@ const uploadImage = async (fileBuffer, fileName, folder) => {
       Key: params.Key,
     };
 
-    const fileUrl = await getSignedUrl(s3Client, new GetObjectCommand(command));
+    // const fileUrl = await getSignedUrl(s3Client, new GetObjectCommand(command));
+    const fileUrl = `https://newlabel-videos.sfo3.digitaloceanspaces.com/image/${fileName}`
+    
 
     return fileUrl;
   } catch (err) {
@@ -68,7 +70,8 @@ const uploadVideo = async (fileBuffer, fileName) => {
       Key: params.Key,
     };
 
-    const fileUrl = await getSignedUrl(s3Client, new GetObjectCommand(command));
+    // const fileUrl = await getSignedUrl(s3Client, new GetObjectCommand(command));
+    const fileUrl = `https://newlabel-videos.sfo3.digitaloceanspaces.com/video/${fileName}`
     const newVideo = new Video({ link: fileUrl });
     return await newVideo
       .save()
