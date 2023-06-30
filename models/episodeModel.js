@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 
 const episodeSchema = new mongoose.Schema(
   {
-    episode_id: {
-      type: String,
-      trim: true,
+    number: {
+      type: Number,
+      required: true,
     },
     title: {
       type: String,
