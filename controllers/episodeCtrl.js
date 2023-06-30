@@ -86,7 +86,7 @@ const episodeCtrl = {
   createEpisode: async (req, res) => {
     try {
       const {
-        episode_id,
+        number,
         title,
         description,
         duration,
@@ -103,7 +103,7 @@ const episodeCtrl = {
       // if (episode)
       //   return res.status(400).json({ msg: "This episode already exists." });
       const newEpisode = new Episodes({
-        episode_id,
+        number,
         title: title.toLowerCase(),
         description,
         duration,
