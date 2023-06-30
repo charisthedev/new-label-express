@@ -7,7 +7,7 @@ router
   .route("/")
   .get(episodeCtrl.getEpisodes)
   .post(authAdmin, episodeCtrl.createEpisode);
-
+router.route("/season/:id").get(episodeCtrl.getSeasonEpisodes);
 router
   .route("/:id")
   .get(episodeCtrl.getEpisode)

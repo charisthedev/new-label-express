@@ -145,6 +145,22 @@ const seasonCtrl = {
       return res.status(500).json({ msg: err.message });
     }
   },
+  getSeriesSeason: async (req, res) => {
+    try {
+      const season = await Seasons.find({
+        series_id: req.params.id,
+      }).populate({
+        path: "episodes",
+        select: "-video",
+      });
+      if (!season)
+        return res.status(400).json({ msg: "Seasons does not exist." });
+
+      res.json(season);
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
   deleteSeason: async (req, res) => {
     try {
       await Seasons.findByIdAndDelete({ _id: req.params.id });

@@ -70,6 +70,19 @@ const episodeCtrl = {
       return res.status(500).json({ msg: err.message });
     }
   },
+  getSeasonEpisodes: async (req, res) => {
+    try {
+      const episodes = await Episodes.find({
+        season_id: req.params.id,
+      }).select("-video");
+      if (!episodes)
+        return res.status(400).json({ msg: "episode does not exist." });
+
+      res.json({ msg: "success", episodes });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
   createEpisode: async (req, res) => {
     try {
       const {

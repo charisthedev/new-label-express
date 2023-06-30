@@ -8,6 +8,7 @@ router
   .get(seasonCtrl.getSeasons)
   .post(authAdmin, seasonCtrl.createSeason);
 
+router.route("/series/:id").get(seasonCtrl.getSeriesSeason);
 router
   .route("/:id")
   .get(seasonCtrl.getSeason)
