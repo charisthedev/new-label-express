@@ -57,53 +57,82 @@ const videoUpload = {
   },
   chunkUpload: async (req, res) => {
     try {
-      const { name, currentChunkIndex, totalChunks } = req.query;
+      const { name, currentChunkIndex, totalChunks, size } = req.query;
       const firstChunk = parseInt(currentChunkIndex) === 0;
       const lastChunk =
         parseInt(currentChunkIndex) === parseInt(totalChunks) - 1;
       const ext = name.split(".").pop();
       const data = req.body.toString().split(",")[1];
       const buffer = new Buffer(data, "base64");
+      const bufferStream = new stream.Readable();
+      bufferStream.push(buffer);
+      bufferStream.push(null);
       const tmpFilename = "tmp_" + md5(name + req.ip) + "." + ext;
-      const uploadResult = await cloudinary.uploader.upload(data, {
+      const uploadOptions = {
         resource_type: "video",
         public_id: name,
-        chunk_size: 6000000, // Set your desired chunk size (in bytes)
+        chunk_size: size, // Set your desired chunk size (in bytes)
         eager: [{ streaming_profile: "hls_1080p" }],
-      });
+      };
+      cloudinary.uploader.upload_chunked_stream(
+        uploadOptions,
+        async (error, result) => {
+          if (error) {
+            return res.json(error.message);
+          } else {
+            if (lastChunk) {
+              // const videoUrl = uploadResult.secure_url;
+              const newVideo = new Video({ link: result.secure_url });
+              return await newVideo
+                .save()
+                .then((link) => {
+                  return res.status(200).json({
+                    msg: "file uploaded successfully",
+                    link: link._id,
+                  });
+                })
+                .catch((err) => {
+                  // console.log(err);
+                });
+            } else {
+              return res.json("ok");
+            }
+          }
+        }
+      );
       // if (firstChunk && fs.existsSync("./uploads/" + tmpFilename)) {
       //   fs.unlinkSync("./uploads/" + tmpFilename);
       // }
       // fs.appendFileSync("./uploads/" + tmpFilename, buffer);
-      if (lastChunk) {
-        const videoUrl = uploadResult.secure_url;
-        const newVideo = new Video({ link: videoUrl });
-        return await newVideo
-          .save()
-          .then((link) => {
-            return res.status(200).json({
-              msg: "file uploaded successfully",
-              link: link._id,
-            });
-          })
-          .catch((err) => {
-            // console.log(err);
-          });
+      // if (lastChunk) {
+      //   const videoUrl = uploadResult.secure_url;
+      //   const newVideo = new Video({ link: videoUrl });
+      //   return await newVideo
+      //     .save()
+      //     .then((link) => {
+      //       return res.status(200).json({
+      //         msg: "file uploaded successfully",
+      //         link: link._id,
+      //       });
+      //     })
+      //     .catch((err) => {
+      //       // console.log(err);
+      //     });
 
-        // res.json({ url: videoUrl });
+      //   // res.json({ url: videoUrl });
 
-        // if (lastChunk) {
-        //   const finalFilename = md5(Date.now()).substr(0, 6) + "." + ext;
-        //   fs.renameSync("./uploads/" + tmpFilename, "./uploads/" + finalFilename);
-        //   const fileData = fs.readFileSync(`./uploads/${finalFilename}`);
-        //   const data = await uploadVideo(fileData, finalFilename);
-        //   if (data)
-        //     return res
-        //       .status(200)
-        //       .json({ message: "file uploaded successfully", link: data });
-      } else {
-        res.json("ok");
-      }
+      //   // if (lastChunk) {
+      //   //   const finalFilename = md5(Date.now()).substr(0, 6) + "." + ext;
+      //   //   fs.renameSync("./uploads/" + tmpFilename, "./uploads/" + finalFilename);
+      //   //   const fileData = fs.readFileSync(`./uploads/${finalFilename}`);
+      //   //   const data = await uploadVideo(fileData, finalFilename);
+      //   //   if (data)
+      //   //     return res
+      //   //       .status(200)
+      //   //       .json({ message: "file uploaded successfully", link: data });
+      // } else {
+      //   res.json("ok");
+      // }
     } catch (err) {
       res.status(500).json({ msg: err.message });
     }
