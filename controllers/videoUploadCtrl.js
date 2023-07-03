@@ -99,7 +99,7 @@ const videoUpload = {
             }
           }
         }
-      );
+      ).end(bufferStream);
       // if (firstChunk && fs.existsSync("./uploads/" + tmpFilename)) {
       //   fs.unlinkSync("./uploads/" + tmpFilename);
       // }
