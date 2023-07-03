@@ -74,16 +74,15 @@ const videoUpload = {
         chunk_size: size, // Set your desired chunk size (in bytes)
         eager: [{ streaming_profile: "hls_1080p" }],
       };
-      cloudinary.uploader.upload_chunked_stream(
-        uploadOptions,
-        async (error, result) => {
+      cloudinary.uploader
+        .upload_chunked_stream(uploadOptions, (error, result) => {
           if (error) {
             return res.json(error.message);
           } else {
             if (lastChunk) {
               // const videoUrl = uploadResult.secure_url;
               const newVideo = new Video({ link: result.secure_url });
-              return await newVideo
+              return newVideo
                 .save()
                 .then((link) => {
                   return res.status(200).json({
@@ -98,8 +97,8 @@ const videoUpload = {
               return res.json("ok");
             }
           }
-        }
-      ).end(bufferStream);
+        })
+        .end(bufferStream);
       // if (firstChunk && fs.existsSync("./uploads/" + tmpFilename)) {
       //   fs.unlinkSync("./uploads/" + tmpFilename);
       // }
