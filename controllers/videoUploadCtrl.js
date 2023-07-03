@@ -7,7 +7,7 @@ const md5 = require("md5");
 const fs = require("fs");
 const stream = require("stream");
 const Video = require("../models/videoModel");
-const uploadVideo = require("../outliers/upload-files").uploadVideo;
+// const uploadVideo = require("../outliers/upload-files").uploadVideo;
 const cloudinary = require("cloudinary").v2;
 
 cloudinary.config({
@@ -84,7 +84,7 @@ const videoUpload = {
         fs.renameSync("./uploads/" + tmpFilename, "./uploads/" + finalFilename);
         const fileData = fs.readFileSync(`./uploads/${finalFilename}`);
         cloudinary.uploader
-          .upload(uploadOptions, (error, result) => {
+          .upload_stream(uploadOptions, (error, result) => {
             if (error) {
               return res.json(error.message);
             } else {
@@ -123,6 +123,8 @@ const videoUpload = {
       //   res.json("ok");
       // }
     } catch (err) {
+      fs.unlinkSync("./uploads/" + tmpFilename);
+      fs.unlinkSync(`./uploads/${finalFilename}`);
       res.status(500).json({ msg: err.message });
     }
   },
