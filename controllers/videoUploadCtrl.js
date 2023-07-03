@@ -75,7 +75,7 @@ const videoUpload = {
         eager: [{ streaming_profile: "hls_1080p" }],
       };
       cloudinary.uploader
-        .upload_chunked_stream(uploadOptions, (error, result) => {
+        .upload_stream(uploadOptions, (error, result) => {
           if (error) {
             return res.json(error.message);
           } else {
