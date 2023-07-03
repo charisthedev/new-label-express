@@ -65,11 +65,11 @@ const videoUpload = {
       const data = req.body.toString().split(",")[1];
       const buffer = new Buffer(data, "base64");
       const tmpFilename = "tmp_" + md5(name + req.ip) + "." + ext;
-      const uploadResult = await cloudinary.uploader.upload(buffer, {
+      const uploadResult = await cloudinary.uploader.upload(data, {
         resource_type: "video",
         public_id: name,
         chunk_size: 6000000, // Set your desired chunk size (in bytes)
-        eager: [{ streaming_profile: "your_streaming_profile" }],
+        eager: [{ streaming_profile: "hls_1080p" }],
       });
       // if (firstChunk && fs.existsSync("./uploads/" + tmpFilename)) {
       //   fs.unlinkSync("./uploads/" + tmpFilename);
