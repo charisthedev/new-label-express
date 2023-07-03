@@ -84,12 +84,12 @@ const videoUpload = {
         fs.renameSync("./uploads/" + tmpFilename, "./uploads/" + finalFilename);
         const fileData = fs.readFileSync(`./uploads/${finalFilename}`);
         cloudinary.uploader
-          .upload_stream(uploadOptions, (error, result) => {
+          .upload_stream(uploadOptions, async (error, result) => {
             if (error) {
               return res.json(error.message);
             } else {
               const newVideo = new Video({ link: result.secure_url });
-              return newVideo
+              return await newVideo
                 .save()
                 .then((link) => {
                   fs.unlinkSync("./uploads/" + tmpFilename);
