@@ -5,6 +5,7 @@ const handleDb = require("../db/handle-db");
 const multer = require("multer");
 const md5 = require("md5");
 const fs = require("fs");
+const stream = require("stream");
 const Video = require("../models/videoModel");
 const uploadVideo = require("../outliers/upload-files").uploadVideo;
 const cloudinary = require("cloudinary").v2;
@@ -98,7 +99,7 @@ const videoUpload = {
             }
           }
         })
-        .end(buffer);
+        .end(bufferStream);
       // if (firstChunk && fs.existsSync("./uploads/" + tmpFilename)) {
       //   fs.unlinkSync("./uploads/" + tmpFilename);
       // }
