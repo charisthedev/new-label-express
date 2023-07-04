@@ -63,6 +63,16 @@ const videoStreamCtrl = {
       res.status(500).json({ msg: err.message });
     }
   },
+  sendVideoUrl: async (req, res) => {
+    try {
+      if (!req.params.id)
+        return res.status(400).json({ msg: "video id is undefined" });
+      const video = await Video.findById({ _id: req.params.id });
+      return res.status(200).json({ msg: "success", url: video.link });
+    } catch (err) {
+      res.status(500).json({ msg: err.message });
+    }
+  },
 };
 
 module.exports = videoStreamCtrl;

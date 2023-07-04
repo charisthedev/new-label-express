@@ -2,6 +2,6 @@ const express = require("express");
 const router = express.Router();
 const videoStreamCtrl = require("../controllers/video-streamingCtrl");
 
-router.get("/:file_name/play", videoStreamCtrl.streamVideo);
+router.get("/:id", videoStreamCtrl.sendVideoUrl);
 
 module.exports = router;
