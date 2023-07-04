@@ -21,13 +21,12 @@ const genreCtrl = {
   },
   updateGenre: async (req, res) => {
     try {
-      const { name, categories } = req.body;
+      const { name } = req.body;
 
       const genre = await Genre.findByIdUpdate(
         { _id: req.params.id },
         {
           name,
-          categories,
         }
       );
 
@@ -46,7 +45,7 @@ const genreCtrl = {
   },
   getGenres: async (req, res) => {
     try {
-      const genres = await Genre.find().populate("categories");
+      const genres = await Genre.find();
 
       res.json(genres);
     } catch (err) {
@@ -55,9 +54,7 @@ const genreCtrl = {
   },
   getGenre: async (req, res) => {
     try {
-      const genre = await Genre.findById({ _id: req.params.id }).populate(
-        "categories"
-      );
+      const genre = await Genre.findById({ _id: req.params.id });
 
       res.json(genre);
     } catch (err) {
@@ -68,7 +65,7 @@ const genreCtrl = {
     try {
       const genre = await Genre.findByIdAndDelete({
         _id: req.params.id,
-      }).populate("categories");
+      });
 
       res.json(genre);
     } catch (err) {
