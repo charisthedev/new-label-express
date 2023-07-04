@@ -83,7 +83,7 @@ const videoUpload = {
         const finalFilename = md5(Date.now()).substr(0, 6) + "." + ext;
         fs.renameSync("./uploads/" + tmpFilename, "./uploads/" + finalFilename);
         // const fileData = fs.readFileSync(`./uploads/${finalFilename}`);
-        cloudinary.uploader.upload(
+        return cloudinary.uploader.upload(
           `./uploads/${finalFilename}`,
           uploadOptions,
           async (error, result) => {
@@ -105,8 +105,9 @@ const videoUpload = {
             }
           }
         );
+      } else {
+        res.json("ok");
       }
-      res.json("ok");
 
       //   // res.json({ url: videoUrl });
 
