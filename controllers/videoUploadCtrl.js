@@ -82,9 +82,11 @@ const videoUpload = {
       if (lastChunk) {
         const finalFilename = md5(Date.now()).substr(0, 6) + "." + ext;
         fs.renameSync("./uploads/" + tmpFilename, "./uploads/" + finalFilename);
-        const fileData = fs.readFileSync(`./uploads/${finalFilename}`);
-        cloudinary.uploader
-          .upload_stream(uploadOptions, async (error, result) => {
+        // const fileData = fs.readFileSync(`./uploads/${finalFilename}`);
+        cloudinary.uploader.upload(
+          `./uploads/${finalFilename}`,
+          uploadOptions,
+          async (error, result) => {
             if (error) {
               return res.json(error.message);
             } else {
@@ -92,8 +94,6 @@ const videoUpload = {
               return await newVideo
                 .save()
                 .then((link) => {
-                  fs.unlinkSync("./uploads/" + tmpFilename);
-                  fs.unlinkSync(`./uploads/${finalFilename}`);
                   return res.status(200).json({
                     msg: "file uploaded successfully",
                     link: link._id,
@@ -103,8 +103,8 @@ const videoUpload = {
                   // console.log(err);
                 });
             }
-          })
-          .end(fileData.buffer);
+          }
+        );
       }
       res.json("ok");
 
