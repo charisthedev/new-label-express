@@ -8,12 +8,6 @@ const genreSchema = new mongoose.Schema(
       trim: true,
       unique: true,
     },
-    categories: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Category",
-      },
-    ],
   },
   {
     timestamps: true,

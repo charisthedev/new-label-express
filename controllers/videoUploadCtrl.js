@@ -91,6 +91,7 @@ const videoUpload = {
               return res.json(error.message);
             } else {
               const newVideo = new Video({ link: result.secure_url });
+              fs.unlinkSync(`./uploads/${finalFilename}`);
               return await newVideo
                 .save()
                 .then((link) => {

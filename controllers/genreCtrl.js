@@ -4,7 +4,7 @@ const Activities = require("../models/activityModel");
 const genreCtrl = {
   createGenre: async (req, res) => {
     try {
-      const { name, categories } = req.body;
+      const { name } = req.body;
       if (!name && !categories)
         return res
           .status(400)
@@ -12,7 +12,6 @@ const genreCtrl = {
 
       const newGenre = new Genre({
         name,
-        categories,
       });
 
       await newGenre.save();
