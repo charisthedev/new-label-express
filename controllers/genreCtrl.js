@@ -5,16 +5,15 @@ const genreCtrl = {
   createGenre: async (req, res) => {
     try {
       const { name } = req.body;
-      if (!name && !categories)
-        return res
-          .status(400)
-          .json({ msg: "please include genre name and categories" });
+      if (!name)
+        return res.status(400).json({ msg: "please include genre name" });
 
       const newGenre = new Genre({
         name,
       });
 
       await newGenre.save();
+      res.status(200).json({ msg: "genre created successfully" });
     } catch (err) {
       res.status(500).json({ msg: err.message });
     }
