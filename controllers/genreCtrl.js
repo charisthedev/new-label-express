@@ -7,6 +7,8 @@ const genreCtrl = {
       const { name } = req.body;
       if (!name)
         return res.status(400).json({ msg: "please include genre name" });
+      const genre = Genre.find({ name });
+      if (genre) return res.status(400).json({ msg: "genre already exists" });
 
       const newGenre = new Genre({
         name,
