@@ -2,8 +2,11 @@ const Payments = require("../models/paymentModel");
 const Users = require("../models/userModel");
 const Movies = require("../models/movieModel");
 const Series = require("../models/seriesModel");
-const Flutterwave = require('flutterwave-node-v3');
-const flw = new Flutterwave(process.env.FLUTTERWAVE_PUB_KEY, process.env.FLUTTERWAVE_SECRET_KEY);
+const Flutterwave = require("flutterwave-node-v3");
+const flw = new Flutterwave(
+  process.env.FLUTTERWAVE_PUB_KEY,
+  process.env.FLUTTERWAVE_SECRET_KEY
+);
 
 class APIfeatures {
   constructor(query, queryString) {
@@ -117,15 +120,15 @@ const paymentCtrl = {
         price,
         item_span,
         item_validViews,
-        tx_ref
+        tx_ref,
       } = req.body;
       const id = req.id;
       if (!item_id && !payment_id && !paymentType && !price)
         res.status(404).json({ msg: "Payment was not succssfully." });
       const today = new Date();
       const expirationDate = today.setDate(today.getDate() + item_span);
-const response = await flw.Transaction.verify(payment_id);
-      if(response.status === "success" && tx_ref === response.data.tx_ref){
+      const response = await flw.Transaction.verify(payment_id);
+      if (response.status === "success" && tx_ref === response.data.tx_ref) {
         const newOrder = new Payments({
           user_id: id,
           item_id,
@@ -135,10 +138,13 @@ const response = await flw.Transaction.verify(payment_id);
           expirationDate,
           validViews: item_validViews,
         });
-  
+
         await newOrder.save();
       }
-      res.json({ msg: "card payment successfully.",verified:response.status });
+      res.json({
+        msg: "card payment successfully.",
+        verified: response.status,
+      });
     } catch (err) {
       res.status(500).json({ msg: err.message });
     }
@@ -170,18 +176,18 @@ const response = await flw.Transaction.verify(payment_id);
   },
   topUpWallet: async (req, res) => {
     try {
-      const { payment_id, paymentType, price } = req.body;
+      const { payment_id, paymentType, price, tx_ref } = req.body;
       const id = req.id;
       if (!payment_id || !price)
-        return res.status(404).json({ msg: "payload not properly passed" });
+        return res.status(400).json({ msg: "payload not properly passed" });
 
       const user = await Users.findOne({ user_id: id });
       if (!user) return res.status(404).json({ msg: "invalid user" });
-
-      const addToWallet = user.wallet + price;
-
-      await Users.findOneAndUpdate({ user_id: id }, { wallet: addToWallet });
-
+      const response = await flw.Transaction.verify(payment_id);
+      if (response.status === "success" && tx_ref === response.data.tx_ref) {
+        const addToWallet = user.wallet + price;
+        await Users.findOneAndUpdate({ user_id: id }, { wallet: addToWallet });
+      }
       const newTopup = new Payments({
         user_id: id,
         payment_id,
