@@ -11,9 +11,9 @@ const Video = require("../models/videoModel");
 const cloudinary = require("cloudinary").v2;
 
 cloudinary.config({
-  cloud_name: "dhwwbydrg",
-  api_key: "599563973965869",
-  api_secret: "W56umDOfiOzsJ3C0S4hvuXUHzmc",
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_API_SECRET,
 });
 
 const videoUpload = {
@@ -29,7 +29,7 @@ const videoUpload = {
             errorMessage =
               "Maximum file size allowed is " + process.env.FILE_SIZE + "MB";
           }
-          return res.json({
+          return res.status(400).json({
             error: errorMessage,
           });
         }
@@ -74,6 +74,7 @@ const videoUpload = {
         public_id: name,
         chunk_size: size, // Set your desired chunk size (in bytes)
         eager: [{ streaming_profile: "hls_1080p" }],
+        type: "private"
       };
       if (firstChunk && fs.existsSync("./uploads/" + tmpFilename)) {
         fs.unlinkSync("./uploads/" + tmpFilename);
@@ -90,7 +91,7 @@ const videoUpload = {
             if (error) {
               return res.json(error.message);
             } else {
-              const newVideo = new Video({ link: result.secure_url });
+              const newVideo = new Video({ link: result.public_id });
               fs.unlinkSync(`./uploads/${finalFilename}`);
               return await newVideo
                 .save()

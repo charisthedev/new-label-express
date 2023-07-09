@@ -1,7 +1,9 @@
 const Payments = require("../models/paymentModel");
 const Users = require("../models/userModel");
 const Movies = require("../models/movieModel");
-const Seasons = require("../models/seasonModel");
+const Series = require("../models/seriesModel");
+const Flutterwave = require('flutterwave-node-v3');
+const flw = new Flutterwave(process.env.FLUTTERWAVE_PUB_KEY, process.env.FLUTTERWAVE_SECRET_KEY);
 
 class APIfeatures {
   constructor(query, queryString) {
@@ -74,24 +76,20 @@ const paymentCtrl = {
         req.body;
       const id = req.id;
       if (!item_id && !paymentType && !price)
-        res.status(404).json({ msg: "Payment was not succssfully." });
+        res.status(400).json({ msg: "Payment was not succssfully." });
 
       const user = await Users.findOne({ user_id: id });
       if (!user)
-        res.status(404).json({ msg: "Please login to verify yourself" });
+        res.status(400).json({ msg: "Please login to verify yourself" });
 
       if (user.wallet < price)
-        return res.status(404).json({ msg: "Insufficient Wallet ballance" });
+        return res.status(400).json({ msg: "Insufficient Wallet ballance" });
 
       const deductBalance = user.wallet - price;
 
       await Users.findOneAndUpdate({ user_id: id }, { wallet: deductBalance });
       const today = new Date();
-      const expirationDate = new Date(
-        today.getFullYear(),
-        today.getMonth() + item_span,
-        today.getDate()
-      );
+      const expirationDate = today.setDate(today.getDate() + item_span);
       const newOrder = new Payments({
         user_id: id,
         item_id,
@@ -119,29 +117,28 @@ const paymentCtrl = {
         price,
         item_span,
         item_validViews,
+        tx_ref
       } = req.body;
       const id = req.id;
       if (!item_id && !payment_id && !paymentType && !price)
         res.status(404).json({ msg: "Payment was not succssfully." });
       const today = new Date();
-      const expirationDate = new Date(
-        today.getFullYear(),
-        today.getMonth() + item_span,
-        today.getDate()
-      );
-      const newOrder = new Payments({
-        user_id: id,
-        item_id,
-        payment_id,
-        paymentType,
-        price,
-        expirationDate,
-        validViews: item_validViews,
-      });
-
-      await newOrder.save();
-
-      res.json({ msg: "card payment successfully." });
+      const expirationDate = today.setDate(today.getDate() + item_span);
+const response = await flw.Transaction.verify(payment_id);
+      if(response.status === "success" && tx_ref === response.data.tx_ref){
+        const newOrder = new Payments({
+          user_id: id,
+          item_id,
+          payment_id,
+          paymentType,
+          price,
+          expirationDate,
+          validViews: item_validViews,
+        });
+  
+        await newOrder.save();
+      }
+      res.json({ msg: "card payment successfully.",verified:response.status });
     } catch (err) {
       res.status(500).json({ msg: err.message });
     }
@@ -210,9 +207,9 @@ const paymentCtrl = {
         "item_id"
       );
       const movies = await Movies.find({ item_id }).select("-video");
-      const seasons = await Seasons.find({ item_id }).select("-episodes");
+      const series = await Series.find({ item_id }).select("-episodes");
 
-      const combined = movies.concat(seasons);
+      const combined = movies.concat(series);
 
       res.json({
         userOrders: combined,
