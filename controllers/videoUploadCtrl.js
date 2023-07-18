@@ -74,7 +74,7 @@ const videoUpload = {
         public_id: name,
         chunk_size: size, // Set your desired chunk size (in bytes)
         eager: [{ streaming_profile: "hls_1080p" }],
-        type: "private"
+        type: "public",
       };
       if (firstChunk && fs.existsSync("./uploads/" + tmpFilename)) {
         fs.unlinkSync("./uploads/" + tmpFilename);
@@ -91,7 +91,7 @@ const videoUpload = {
             if (error) {
               return res.json(error.message);
             } else {
-              const newVideo = new Video({ link: result.public_id });
+              const newVideo = new Video({ link: result.secure_url });
               fs.unlinkSync(`./uploads/${finalFilename}`);
               return await newVideo
                 .save()

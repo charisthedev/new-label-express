@@ -1,7 +1,7 @@
 const path = require("path");
 const fs = require("fs");
 const Video = require("../models/videoModel");
-const cloudinary = require("cloudinary").v3;
+const cloudinary = require("cloudinary").v2;
 const cloudinaryUtils = require("cloudinary").utils;
 
 const cache = {}; // cache to store video data
@@ -74,14 +74,16 @@ const videoStreamCtrl = {
         secure: true,
         expires_at: Math.floor(Date.now() / 1000) + 43200, // URL expiration time in seconds (12 hours)
         resource_type: "video",
-        streaming_profile: "hls_1080p",
+        type: "private",
+        // streaming_profile: "hls_1080p",
       };
       const signedUrl = cloudinaryUtils.private_download_url(
         video.link,
         "mp4",
         options
       );
-      return res.status(200).json({ msg: "success", url: signedUrl });
+
+      return res.status(200).json({ msg: "success", url: video.link });
     } catch (err) {
       res.status(500).json({ msg: err.message });
     }

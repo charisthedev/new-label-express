@@ -72,45 +72,18 @@ const seriesCtrl = {
   },
   createSeries: async (req, res) => {
     try {
-      const {
-        title,
-        free,
-        description,
-        donation,
-        donate,
-        price,
-        casts,
-        genre,
-        image,
-        banner,
-        seasons,
-        expirationSpan,
-        year,
-        trailer,
-        discount,
-        validViews,
-      } = req.body;
+      const { title, description, casts, genre, image, banner } = req.body;
 
       if (!req.body)
         return res.status(400).json({ msg: "All payload are required" });
 
       const newSeries = new Series({
         title: title.toLowerCase(),
-        free,
         description,
-        donation,
-        donate,
-        price,
         casts,
         genre,
         image,
         banner,
-        seasons,
-        expirationSpan,
-        year,
-        trailer,
-        discount,
-        validViews
       });
 
       const newActivities = new Activities({
@@ -131,13 +104,14 @@ const seriesCtrl = {
   },
   getSingleSeries: async (req, res) => {
     try {
-      const series = await Series.findById({ _id: req.params.id }).populate({
-        path: "seasons",
-        populate: {
-          path: "episodes",
-        },
-      })
-      .populate("discount genre")
+      const series = await Series.findById({ _id: req.params.id })
+        .populate({
+          path: "seasons",
+          populate: {
+            path: "episodes",
+          },
+        })
+        .populate("genre");
 
       if (!series)
         return res.status(400).json({ msg: "Series does not exist" });

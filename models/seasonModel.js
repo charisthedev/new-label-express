@@ -10,18 +10,31 @@ const seasonSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    year: {
-      type: String,
-    },
     trailer: {
       type: String,
-    },
-    number: {
-      type: Number,
       required: true,
+    },
+    price: {
+      type: Number,
+      default: 0,
+    },
+    free: {
+      type: Boolean,
+      default: false,
+    },
+    expirationSpan: {
+      type: Number,
+    },
+    validViews: {
+      type: Number,
     },
     image: {
       type: String,
+      required: true,
+    },
+    banner: {
+      type: String,
+      required: true,
     },
     episodes: [
       {
@@ -33,6 +46,10 @@ const seasonSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Series",
       required: true,
+    },
+    acquired: {
+      type: Number,
+      default: 0,
     },
   },
   {

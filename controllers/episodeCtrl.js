@@ -86,32 +86,42 @@ const episodeCtrl = {
   createEpisode: async (req, res) => {
     try {
       const {
-        number,
         title,
         description,
         duration,
         publication_date,
         video,
         image,
-        series_id,
-        season_id,
+        banner,
+        trailer,
+        expirationSpan,
+        validViews,
+        series,
+        season,
+        price,
+        free,
       } = req.body;
-      if (!image || !video)
+      if (!image || !video || !banner || !trailer)
         return res.status(400).json({ msg: "Asset upload not complete" });
 
       // const episode = await Episodes.findOne({ episode_id });
       // if (episode)
       //   return res.status(400).json({ msg: "This episode already exists." });
       const newEpisode = new Episodes({
-        number,
         title: title.toLowerCase(),
         description,
         duration,
         publication_date,
         video,
         image,
-        season_id,
-        series_id,
+        banner,
+        trailer,
+        expirationSpan,
+        validViews,
+        series,
+        season,
+        free,
+        price,
       });
 
       const newActivities = new Activities({
@@ -124,7 +134,7 @@ const episodeCtrl = {
         .save()
         .then((newEpisode) => {
           Seasons.findByIdAndUpdate(
-            { _id: season_id },
+            { _id: season },
             { $push: { episodes: newEpisode._id } },
             { new: true }
           )

@@ -4,36 +4,12 @@ const seriesSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-    },
-    free: {
-      type: Boolean,
+      required: true
     },
     description: {
       type: String,
+      required: true
     },
-    year: {
-      type: String,
-    },
-    donation: {
-      type: Boolean,
-    },
-    donate: {
-      type: Number,
-    },
-    trailer: {
-      type: String,
-    },
-    price: {
-      type: Number,
-      trim: true,
-      required: true,
-    },
-    discount: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Discount",
-      },
-    ],
     casts: [
       {
         type: String,
@@ -56,22 +32,18 @@ const seriesSchema = new mongoose.Schema(
         ref: "Genre",
       },
     ],
+    category: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Category",
+      },
+    ],
     seasons: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Seasons",
       },
     ],
-    expirationSpan: {
-      type: Number,
-    },
-    validViews: {
-      type: Number,
-    },
-    acquired: {
-      type: Number,
-      default: 0,
-    },
   },
   {
     timestamps: true,

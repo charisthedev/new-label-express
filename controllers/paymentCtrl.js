@@ -1,8 +1,9 @@
 const Payments = require("../models/paymentModel");
 const Users = require("../models/userModel");
 const Movies = require("../models/movieModel");
-const Series = require("../models/seriesModel");
+const Season = require("../models/seasonModel");
 const Flutterwave = require("flutterwave-node-v3");
+const { getSeasons } = require("./seasonCtrl");
 const flw = new Flutterwave(
   process.env.FLUTTERWAVE_PUB_KEY,
   process.env.FLUTTERWAVE_SECRET_KEY
@@ -154,6 +155,31 @@ const paymentCtrl = {
       const { item_id, type } = req.body;
       const id = req.id;
       if (!item_id) return res.status(404).json({ msg: "wrong credentials" });
+      if (type === "Episode") {
+        const season = await Season.find({
+          episodes: { $elemMatch: { $eq: item_id } },
+        });
+        if (season) {
+          const verify = await Payments.findOne({
+            user_id: id,
+            item_id: season._id,
+          });
+          if (!verify)
+            return res.status(200).json({
+              msg: "No payment has been made for this item",
+              status: false,
+            });
+          const today = new Date();
+          if (verify.expirationDate > today || verify.validViews < 1)
+            return res.status(200).json({ msg: "item Expired", status: false });
+
+          return res.status(200).json({
+            msg: "Item verified with user purschase",
+            verify: verify.item_id,
+            status: true,
+          });
+        }
+      }
 
       const verify = await Payments.findOne({ user_id: id, item_id });
       if (!verify)
@@ -213,7 +239,7 @@ const paymentCtrl = {
         "item_id"
       );
       const movies = await Movies.find({ item_id }).select("-video");
-      const series = await Series.find({ item_id }).select("-episodes");
+      const season = await Season.find({ item_id }).select("-episodes");
 
       const combined = movies.concat(series);
 

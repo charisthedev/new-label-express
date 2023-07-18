@@ -79,26 +79,32 @@ const seasonCtrl = {
     try {
       const {
         title,
-        year,
-        trailer,
-        number,
-        image,
-        episodes,
-        series_id,
         description,
+        image,
+        trailer,
+        banner,
+        episodes,
+        series,
+        price,
+        free,
+        expirationSpan,
+        validViews,
       } = req.body;
-      if (!image)
+      if (!image || !trailer || !banner)
         return res.status(400).json({ msg: "Asset upload not complete" });
-
+      if (!series) return res.status(400).json({ msg: "Provide series" });
       const newSeason = new Seasons({
         title: title.toLowerCase(),
         description,
         image,
         trailer,
-        year,
-        number,
+        banner,
         episodes,
-        series_id,
+        series,
+        price,
+        free,
+        expirationSpan,
+        validViews,
       });
 
       const newActivities = new Activities({
@@ -111,7 +117,7 @@ const seasonCtrl = {
         .save()
         .then((newSeason) => {
           Series.findByIdAndUpdate(
-            { _id: series_id },
+            { _id: series },
             { $push: { seasons: newSeason._id } },
             { new: true }
           )
@@ -179,35 +185,33 @@ const seasonCtrl = {
   updateSeason: async (req, res) => {
     try {
       const {
-        season_id,
         title,
-        price,
         description,
         image,
         trailer,
-        donation,
-        donate,
-        free,
         banner,
-        number,
         episodes,
+        series,
+        price,
+        free,
+        expirationSpan,
+        validViews,
       } = req.body;
 
       await Seasons.findOneAndUpdate(
         { _id: req.params.id },
         {
-          season_id,
           title: title.toLowerCase(),
-          price,
-          description,
-          image,
-          banner,
-          number,
-          trailer,
-          donation,
-          donate,
-          free,
-          episodes,
+        description,
+        image,
+        trailer,
+        banner,
+        episodes,
+        series,
+        price,
+        free,
+        expirationSpan,
+        validViews,
         }
       );
 

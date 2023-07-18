@@ -8,7 +8,7 @@ const movieSchema = new mongoose.Schema(
     },
     price: {
       type: Number,
-      required: true,
+      default: 0
     },
     discount: [
       {
@@ -34,6 +34,7 @@ const movieSchema = new mongoose.Schema(
     },
     banner: {
       type: String,
+      required: true,
     },
     trailer: {
       type: String,
