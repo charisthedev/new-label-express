@@ -6,23 +6,22 @@ const categoryCtrl = {
   getCategories: async (req, res) => {
     try {
       const categories = await Category.find();
-      res.json(categories);
+      res.status(200).json(categories);
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }
   },
   getCategory: async (req, res) => {
     try {
-      const category = await Category.findById({ _id: req.params.id })
-      if (!category) return res.status(404).json({ msg: "Category not found"})
+      const category = await Category.findById({ _id: req.params.id });
+      if (!category) return res.status(404).json({ msg: "Category not found" });
 
       res.json({
         status: "success",
-        data: category
-      })
-      
+        data: category,
+      });
     } catch (err) {
-      return res.status(500).json({ msg: err.message })
+      return res.status(500).json({ msg: err.message });
     }
   },
   createCategory: async (req, res) => {

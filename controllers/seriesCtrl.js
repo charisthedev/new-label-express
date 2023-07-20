@@ -51,7 +51,7 @@ const seriesCtrl = {
   getAllSeries: async (req, res) => {
     try {
       const features = new APIfeatures(
-        Series.find().populate("seasons discount"),
+        Series.find().populate("seasons"),
         req.query
       )
         .filtering()
