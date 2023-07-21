@@ -80,7 +80,7 @@ const paymentCtrl = {
         req.body;
       const id = req.id;
       if (!item_id && !paymentType && !price)
-        res.status(400).json({ msg: "Payment was not succssfully." });
+        res.status(400).json({ msg: "Payment was not successfull." });
 
       const user = await Users.findOne({ user_id: id });
       if (!user)
@@ -105,8 +105,9 @@ const paymentCtrl = {
 
       await newOrder.save();
 
-      res.json({
+      res.status(200).json({
         msg: "Order created successfully ",
+        success: true,
       });
     } catch (err) {
       res.status(500).json({ msg: err.message });
