@@ -42,7 +42,7 @@ const seasonSchema = new mongoose.Schema(
         ref: "Episodes",
       },
     ],
-    series_id: {
+    series: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Series",
       required: true,
