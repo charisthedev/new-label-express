@@ -3,7 +3,7 @@ const Users = require("../models/userModel");
 const Movies = require("../models/movieModel");
 const Season = require("../models/seasonModel");
 const Flutterwave = require("flutterwave-node-v3");
-const { getSeasons } = require("./seasonCtrl");
+const moment = require("moment");
 const flw = new Flutterwave(
   process.env.FLUTTERWAVE_PUB_KEY,
   process.env.FLUTTERWAVE_SECRET_KEY
@@ -82,7 +82,7 @@ const paymentCtrl = {
       if (!item_id && !paymentType && !price)
         res.status(400).json({ msg: "Payment was not successfull." });
 
-      const user = await Users.findOne({ user_id: id });
+      const user = await Users.findOne({ _id: id });
       if (!user)
         res.status(400).json({ msg: "Please login to verify yourself" });
 
@@ -91,9 +91,9 @@ const paymentCtrl = {
 
       const deductBalance = user.wallet - price;
 
-      await Users.findOneAndUpdate({ user_id: id }, { wallet: deductBalance });
-      const today = new Date();
-      const expirationDate = today.setDate(today.getDate() + item_span);
+      await Users.findOneAndUpdate({ _id: id }, { wallet: deductBalance });
+      const date = moment().add(-moment().utcOffset(), "minutes").toDate();
+      const expirationDate = moment(date).add(item_span, "days").toDate();
       const newOrder = new Payments({
         user_id: id,
         item_id,
@@ -128,9 +128,13 @@ const paymentCtrl = {
       if (!item_id && !payment_id && !paymentType && !price)
         res.status(404).json({ msg: "Payment was not succssfully." });
       const today = new Date();
-      const expirationDate = today.setDate(today.getDate() + item_span);
-      const response = await flw.Transaction.verify(payment_id);
-      if (response.status === "success" && tx_ref === response.data.tx_ref) {
+      const date = moment().add(-moment().utcOffset(), "minutes").toDate();
+      const expirationDate = moment(date).add(item_span, "days").toDate();
+      const response = await flw.Transaction.verify({ id: `${payment_id}` });
+      if (
+        response.data.status === "successful" &&
+        tx_ref === response.data.tx_ref
+      ) {
         const newOrder = new Payments({
           user_id: id,
           item_id,
@@ -156,6 +160,7 @@ const paymentCtrl = {
       const { item_id, type } = req.body;
       const id = req.id;
       if (!item_id) return res.status(404).json({ msg: "wrong credentials" });
+      const date = moment().add(-moment().utcOffset(), "minutes").toDate();
       if (type === "Episode") {
         const season = await Season.find({
           episodes: { $elemMatch: { $eq: item_id } },
@@ -170,9 +175,11 @@ const paymentCtrl = {
               msg: "No payment has been made for this item",
               status: false,
             });
-          const today = new Date();
-          if (verify.expirationDate > today || verify.validViews < 1)
-            return res.status(200).json({ msg: "item Expired", status: false });
+          if (
+            moment(verify.expirationDate).isSameOrBefore(moment(date)) ||
+            verify.validViews < 1
+          )
+            return res.status(400).json({ msg: "item Expired", status: false });
 
           return res.status(200).json({
             msg: "Item verified with user purschase",
@@ -184,13 +191,16 @@ const paymentCtrl = {
 
       const verify = await Payments.findOne({ user_id: id, item_id });
       if (!verify)
-        return res.status(200).json({
+        return res.status(400).json({
           msg: "No payment has been made for this item",
           status: false,
         });
       const today = new Date();
-      if (verify.expirationDate > today || verify.validViews < 1)
-        return res.status(200).json({ msg: "item Expired", status: false });
+      if (
+        moment(verify.expirationDate).isSameOrBefore(moment(date)) ||
+        verify.validViews < 1
+      )
+        return res.status(400).json({ msg: "item Expired", status: false });
 
       return res.status(200).json({
         msg: "Item verified with user purschase",
@@ -208,12 +218,15 @@ const paymentCtrl = {
       if (!payment_id || !price)
         return res.status(400).json({ msg: "payload not properly passed" });
 
-      const user = await Users.findOne({ user_id: id });
+      const user = await Users.findOne({ _id: id });
       if (!user) return res.status(404).json({ msg: "invalid user" });
-      const response = await flw.Transaction.verify(payment_id);
-      if (response.status === "success" && tx_ref === response.data.tx_ref) {
+      const response = await flw.Transaction.verify({ id: `${payment_id}` });
+      if (
+        response.data.status === "successful" &&
+        tx_ref === response.data.tx_ref
+      ) {
         const addToWallet = user.wallet + price;
-        await Users.findOneAndUpdate({ user_id: id }, { wallet: addToWallet });
+        await Users.findOneAndUpdate({ _id: id }, { wallet: addToWallet });
       }
       const newTopup = new Payments({
         user_id: id,
