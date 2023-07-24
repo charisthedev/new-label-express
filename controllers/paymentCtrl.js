@@ -127,7 +127,6 @@ const paymentCtrl = {
       const id = req.id;
       if (!item_id && !payment_id && !paymentType && !price)
         res.status(404).json({ msg: "Payment was not succssfully." });
-      const today = new Date();
       const date = moment().add(-moment().utcOffset(), "minutes").toDate();
       const expirationDate = moment(date).add(item_span, "days").toDate();
       const response = await flw.Transaction.verify({ id: `${payment_id}` });
@@ -195,7 +194,6 @@ const paymentCtrl = {
           msg: "No payment has been made for this item",
           status: false,
         });
-      const today = new Date();
       if (
         moment(verify.expirationDate).isSameOrBefore(moment(date)) ||
         verify.validViews < 1
