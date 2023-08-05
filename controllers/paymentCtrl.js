@@ -156,30 +156,22 @@ const paymentCtrl = {
   },
   verifyItemPurchase: async (req, res) => {
     try {
-      const { item_id, type } = req.body;
+      const { item_id, season } = req.body;
       const id = req.id;
       if (!item_id) return res.status(404).json({ msg: "wrong credentials" });
       const date = moment().add(-moment().utcOffset(), "minutes").toDate();
-      if (type === "Episode") {
-        const season = await Season.find({
-          episodes: { $elemMatch: { $eq: item_id } },
+      if (season) {
+        const verify = await Payments.findOne({
+          user_id: id,
+          item_id: season,
         });
-        if (season) {
-          const verify = await Payments.findOne({
-            user_id: id,
-            item_id: season._id,
-          });
-          if (!verify)
-            return res.status(200).json({
-              msg: "No payment has been made for this item",
-              status: false,
-            });
+        if (verify) {
           if (
             moment(verify.expirationDate).isSameOrBefore(moment(date)) ||
             verify.validViews < 1
-          )
-            return res.status(400).json({ msg: "item Expired", status: false });
-
+          ) {
+            return res.status(403).json({ msg: "item Expired", status: false });
+          }
           return res.status(200).json({
             msg: "Item verified with user purschase",
             verify: verify.item_id,
@@ -190,7 +182,7 @@ const paymentCtrl = {
 
       const verify = await Payments.findOne({ user_id: id, item_id });
       if (!verify)
-        return res.status(400).json({
+        return res.status(403).json({
           msg: "No payment has been made for this item",
           status: false,
         });
