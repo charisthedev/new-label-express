@@ -83,29 +83,54 @@ const videoUpload = {
         const finalFilename = md5(Date.now()).substr(0, 6) + "." + ext;
         fs.renameSync("./uploads/" + tmpFilename, "./uploads/" + finalFilename);
         // const fileData = fs.readFileSync(`./uploads/${finalFilename}`);
-        return cloudinary.uploader.upload(
-          `./uploads/${finalFilename}`,
-          uploadOptions,
-          async (error, result) => {
-            if (error) {
-              return res.json(error.message);
-            } else {
-              const newVideo = new Video({ link: result.secure_url });
-              fs.unlinkSync(`./uploads/${finalFilename}`);
-              return await newVideo
-                .save()
-                .then((link) => {
-                  return res.status(200).json({
-                    msg: "file uploaded successfully",
-                    link: link._id,
+        const filePath = `./uploads/${finalFilename}`;
+        const chunkSize = 20 * 1024 * 1024;
+        const fileStats = fs.statSync(filePath);
+        const totalChunks = Math.ceil(fileStats.size / chunkSize);
+        const fileStream = fs.createReadStream(filePath);
+
+        for (let i = 0; i < totalChunks; i++) {
+          const start = i * chunkSize;
+          const end = Math.min(start + chunkSize, fileStats.size);
+          const chunkData = await new Promise((resolve) => {
+            const chunkBuffer = Buffer.alloc(end - start);
+            let bytesRead = 0;
+
+            fileStream.on("data", (data) => {
+              data.copy(chunkBuffer, bytesRead);
+              bytesRead += data.length;
+              if (bytesRead === chunkBuffer.length) {
+                resolve(chunkBuffer);
+              }
+            });
+
+            fileStream.read(start, end);
+          });
+        }
+        return cloudinary.uploader
+          .upload_stream(
+            { folder: "uploads", public_id: `chunk_${i}` },
+            async (error, result) => {
+              if (error) {
+                return res.json(error.message);
+              } else {
+                const newVideo = new Video({ link: result.secure_url });
+                fs.unlinkSync(`./uploads/${finalFilename}`);
+                return await newVideo
+                  .save()
+                  .then((link) => {
+                    return res.status(200).json({
+                      msg: "file uploaded successfully",
+                      link: link._id,
+                    });
+                  })
+                  .catch((err) => {
+                    // console.log(err);
                   });
-                })
-                .catch((err) => {
-                  // console.log(err);
-                });
+              }
             }
-          }
-        );
+          )
+          .end(chunkData);
       } else {
         res.json("ok");
       }
