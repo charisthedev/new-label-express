@@ -74,6 +74,22 @@ const videoUpload = {
         public_id: name,
         chunk_size: size, // Set your desired chunk size (in bytes)
         eager: [{ streaming_profile: "hls_1080p" }],
+        chunk_size: 10000000,
+      };
+      const options = {
+        // Specify the folder where you want to upload the file.
+        folder: "video",
+
+        // Use the `use_filename` option to preserve the original filename.
+        use_filename: true,
+
+        // Set the chunk size (in bytes) for large file uploads.
+        chunk_size: 6000000, // 6 MB (adjust as needed)
+
+        // Callback function to monitor progress.
+        onProgress: (progress) => {
+          console.log(`Progress: ${progress.percent}%`);
+        },
       };
       if (firstChunk && fs.existsSync("./uploads/" + tmpFilename)) {
         fs.unlinkSync("./uploads/" + tmpFilename);
@@ -83,54 +99,29 @@ const videoUpload = {
         const finalFilename = md5(Date.now()).substr(0, 6) + "." + ext;
         fs.renameSync("./uploads/" + tmpFilename, "./uploads/" + finalFilename);
         // const fileData = fs.readFileSync(`./uploads/${finalFilename}`);
-        const filePath = `./uploads/${finalFilename}`;
-        const chunkSize = 20 * 1024 * 1024;
-        const fileStats = fs.statSync(filePath);
-        const totalChunks = Math.ceil(fileStats.size / chunkSize);
-        const fileStream = fs.createReadStream(filePath);
-
-        for (let i = 0; i < totalChunks; i++) {
-          const start = i * chunkSize;
-          const end = Math.min(start + chunkSize, fileStats.size);
-          const chunkData = await new Promise((resolve) => {
-            const chunkBuffer = Buffer.alloc(end - start);
-            let bytesRead = 0;
-
-            fileStream.on("data", (data) => {
-              data.copy(chunkBuffer, bytesRead);
-              bytesRead += data.length;
-              if (bytesRead === chunkBuffer.length) {
-                resolve(chunkBuffer);
-              }
-            });
-
-            fileStream.read(start, end);
-          });
-        }
-        return cloudinary.uploader
-          .upload_stream(
-            { folder: "uploads", public_id: `chunk_${i}` },
-            async (error, result) => {
-              if (error) {
-                return res.json(error.message);
-              } else {
-                const newVideo = new Video({ link: result.secure_url });
-                fs.unlinkSync(`./uploads/${finalFilename}`);
-                return await newVideo
-                  .save()
-                  .then((link) => {
-                    return res.status(200).json({
-                      msg: "file uploaded successfully",
-                      link: link._id,
-                    });
-                  })
-                  .catch((err) => {
-                    // console.log(err);
+        return cloudinary.uploader.upload_large(
+          `./uploads/${finalFilename}`,
+          uploadOptions,
+          async (error, result) => {
+            if (error) {
+              return res.json(error.message);
+            } else {
+              const newVideo = new Video({ link: result.secure_url });
+              fs.unlinkSync(`./uploads/${finalFilename}`);
+              return await newVideo
+                .save()
+                .then((link) => {
+                  return res.status(200).json({
+                    msg: "file uploaded successfully",
+                    link: link._id,
                   });
-              }
+                })
+                .catch((err) => {
+                  // console.log(err);
+                });
             }
-          )
-          .end(chunkData);
+          }
+        );
       } else {
         res.json("ok");
       }
