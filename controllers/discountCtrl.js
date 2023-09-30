@@ -168,6 +168,14 @@ const discountCtrl = {
       res.status(500).json({ msg: err.message });
     }
   },
+  verifyDiscount: async (req, res) => {
+    try {
+      const { code } = req.body;
+      if (!code)
+        return res.status(400).json({ msg: "please provide discount details" });
+      const { percentage } = await Discount.findOne({ code });
+    } catch (error) {}
+  },
 };
 
 module.exports = discountCtrl;

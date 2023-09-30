@@ -72,9 +72,7 @@ const videoUpload = {
       const uploadOptions = {
         resource_type: "video",
         public_id: name,
-        chunk_size: size, // Set your desired chunk size (in bytes)
         eager: [{ streaming_profile: "hls_1080p" }],
-        chunk_size: 10000000,
       };
       const options = {
         // Specify the folder where you want to upload the file.
@@ -98,7 +96,6 @@ const videoUpload = {
       if (lastChunk) {
         const finalFilename = md5(Date.now()).substr(0, 6) + "." + ext;
         fs.renameSync("./uploads/" + tmpFilename, "./uploads/" + finalFilename);
-        // const fileData = fs.readFileSync(`./uploads/${finalFilename}`);
         return cloudinary.uploader.upload_large(
           `./uploads/${finalFilename}`,
           uploadOptions,
@@ -125,21 +122,6 @@ const videoUpload = {
       } else {
         res.json("ok");
       }
-
-      //   // res.json({ url: videoUrl });
-
-      //   // if (lastChunk) {
-      // const finalFilename = md5(Date.now()).substr(0, 6) + "." + ext;
-      // fs.renameSync("./uploads/" + tmpFilename, "./uploads/" + finalFilename);
-      // const fileData = fs.readFileSync(`./uploads/${finalFilename}`);
-      //   //   const data = await uploadVideo(fileData, finalFilename);
-      //   //   if (data)
-      //   //     return res
-      //   //       .status(200)
-      //   //       .json({ message: "file uploaded successfully", link: data });
-      // } else {
-      //   res.json("ok");
-      // }
     } catch (err) {
       fs.unlinkSync("./uploads/" + tmpFilename);
       fs.unlinkSync(`./uploads/${finalFilename}`);
