@@ -7,6 +7,13 @@ const rateLimit = require("express-rate-limit");
 const bodyParser = require("body-parser");
 
 const app = express();
+const cloudinary = require("cloudinary").v2;
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_API_SECRET,
+});
 
 // const limiter = rateLimit({
 //   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -42,7 +49,6 @@ app.use("/api/stream", require("./routes/video-streamRouter"));
 app.get("/", (req, res) => {
   res.send("Hello, World!");
 });
-
 const URI = process.env.MONGODB_URL;
 mongoose.connect(
   URI,
@@ -55,7 +61,6 @@ mongoose.connect(
     console.log("Connected to mongodb");
   }
 );
-
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
   console.log("Server is running on port", port);
