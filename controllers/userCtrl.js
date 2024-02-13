@@ -80,13 +80,57 @@ const userCtrl = {
     try {
       const { id } = req.params;
       const user = await Users.findById({ _id: id }).select(
-        "-password -createdAt -updatedAt -__v"
+        "-password -createdAt -updatedAt -__v -role"
       );
       if (!user) return res.status(400).json({ msg: "User does not exist." });
 
       res.json(user);
     } catch (err) {
       return res.status(500).json({ msg: err.message });
+    }
+  },
+  getMe: async (req, res) => {
+    try {
+      const user = await Users.findById({ _id: req.id }).select(
+        "-createdAt -updatedAt -__v -password -role"
+      );
+      res.status(200).json({ msg: "success", data: user });
+    } catch (err) {
+      res.status(500).json({ msg: err.message });
+    }
+  },
+  updateUser: async (req, res) => {
+    try {
+      const { name } = req.body;
+      await Users.findByIdAndUpdate({ _id: req.id }, { name });
+      res.json({
+        msg: "Successfully updated profile",
+      });
+    } catch (err) {
+      res.status(500).json({ msg: err.message });
+    }
+  },
+  updatePassword: async (req, res) => {
+    try {
+      const oldPassword = req.body.oldPassword;
+      const newPassword = req.body.newPassword;
+      const user = await Users.findById({ _id: req.id }).select(
+        "-createdAt -updatedAt -__v"
+      );
+      const isMatch = bcrypt.compare(oldPassword, user.password);
+      if (!isMatch) {
+        return res.status(400).json({ msg: "Incorrect password." });
+      }
+      const passwordHash = await bcrypt.hash(newPassword, 10);
+      await Users.findByIdAndUpdate(
+        { _id: user._id },
+        { password: passwordHash }
+      );
+      res.status(200).json({
+        msg: "Successfully updated password",
+      });
+    } catch (err) {
+      res.status(500).json({ msg: err.message });
     }
   },
   makeUserAdmin: async (req, res) => {
