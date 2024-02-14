@@ -58,7 +58,10 @@ class APIfeatures {
 const paymentCtrl = {
   getOrders: async (req, res) => {
     try {
-      const features = new APIfeatures(Payments.find(), req.query)
+      const features = new APIfeatures(
+        Payments.find().populate("item"),
+        req.query
+      )
         .filtering()
         .sorting()
         .paginating();
@@ -76,10 +79,16 @@ const paymentCtrl = {
   },
   createOrderFromWallet: async (req, res) => {
     try {
-      const { item_id, paymentType, price, item_span, item_validViews } =
-        req.body;
+      const {
+        item,
+        item_type,
+        paymentType,
+        price,
+        item_span,
+        item_validViews,
+      } = req.body;
       const id = req.id;
-      if (!item_id && !paymentType && !price)
+      if (!item && !paymentType && !price)
         res.status(400).json({ msg: "Payment was not successfull." });
 
       const user = await Users.findOne({ _id: id });
@@ -95,12 +104,13 @@ const paymentCtrl = {
       const date = moment().add(-moment().utcOffset(), "minutes").toDate();
       const expirationDate = moment(date).add(item_span, "days").toDate();
       const newOrder = new Payments({
-        user_id: id,
-        item_id,
+        user: id,
+        item,
         paymentType,
         price,
         expirationDate,
         validViews: item_validViews,
+        item_type,
       });
 
       await newOrder.save();
@@ -116,7 +126,8 @@ const paymentCtrl = {
   createOrderFromCard: async (req, res) => {
     try {
       const {
-        item_id,
+        item,
+        item_type,
         payment_id,
         paymentType,
         price,
@@ -125,7 +136,7 @@ const paymentCtrl = {
         tx_ref,
       } = req.body;
       const id = req.id;
-      if (!item_id && !payment_id && !paymentType && !price)
+      if (!item && !payment_id && !paymentType && !price)
         res.status(404).json({ msg: "Payment was not succssfully." });
       const date = moment().add(-moment().utcOffset(), "minutes").toDate();
       const expirationDate = moment(date).add(item_span, "days").toDate();
@@ -135,13 +146,14 @@ const paymentCtrl = {
         tx_ref === response.data.tx_ref
       ) {
         const newOrder = new Payments({
-          user_id: id,
-          item_id,
+          user: id,
+          item,
           payment_id,
           paymentType,
           price,
           expirationDate,
           validViews: item_validViews,
+          item_type,
         });
 
         await newOrder.save();
@@ -156,31 +168,31 @@ const paymentCtrl = {
   },
   verifyItemPurchase: async (req, res) => {
     try {
-      const { item_id, season } = req.body;
+      const { item } = req.body;
       const id = req.id;
-      if (!item_id) return res.status(404).json({ msg: "wrong credentials" });
+      if (!item) return res.status(400).json({ msg: "wrong credentials" });
       const date = moment().add(-moment().utcOffset(), "minutes").toDate();
-      if (season) {
-        const verify = await Payments.findOne({
-          user_id: id,
-          item_id: season,
-        });
-        if (verify) {
-          if (
-            moment(verify.expirationDate).isSameOrBefore(moment(date)) ||
-            verify.validViews < 1
-          ) {
-            return res.status(403).json({ msg: "item Expired", status: false });
-          }
-          return res.status(200).json({
-            msg: "Item verified with user purschase",
-            verify: verify.item_id,
-            status: true,
-          });
-        }
-      }
+      // if (season) {
+      //   const verify = await Payments.findOne({
+      //     user: id,
+      //     item: season,
+      //   });
+      //   if (verify) {
+      //     if (
+      //       moment(verify.expirationDate).isSameOrBefore(moment(date)) ||
+      //       verify.validViews < 1
+      //     ) {
+      //       return res.status(403).json({ msg: "item Expired", status: false });
+      //     }
+      //     return res.status(200).json({
+      //       msg: "Item verified with user purschase",
+      //       verify: verify.item_id,
+      //       status: true,
+      //     });
+      //   }
+      // }
 
-      const verify = await Payments.findOne({ user_id: id, item_id });
+      const verify = await Payments.findOne({ user_id: id, item });
       if (!verify)
         return res.status(403).json({
           msg: "No payment has been made for this item",
@@ -237,18 +249,26 @@ const paymentCtrl = {
   },
   getUserOrders: async (req, res) => {
     try {
-      const { item_id } = req.body;
+      // const { item } = req.body;
       const id = req.id;
-      const orders = await Payments.find({ user_id: id, item_id }).populate(
-        "item_id"
-      );
-      const movies = await Movies.find({ item_id }).select("-video");
-      const season = await Season.find({ item_id }).select("-episodes");
-
-      const combined = movies.concat(series);
+      const orders = await Payments.find({ user_id: id })
+        .populate("item")
+        .select("-video -episodes");
+      const features = new APIfeatures(
+        Payments.find({ user_id: id })
+          .populate("item")
+          .select("-video -episodes"),
+        req.query
+      )
+        .filtering()
+        .sorting()
+        .paginating();
+      // const movies = await Movies.find({ item_id }).select("-video");
+      // const season = await Season.find({ item_id }).select("-episodes");
 
       res.json({
-        userOrders: combined,
+        msg: "success",
+        data: features.query,
       });
     } catch (err) {
       res.status(500).json({ msg: err.message });

@@ -2,12 +2,18 @@ const mongoose = require("mongoose");
 
 const paymentSchema = new mongoose.Schema(
   {
-    user_id: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Users",
     },
-    item_id: {
+    item: {
+      type: mongoose.Schema.Types.ObjectId,
+      refPath: "item_type",
+    },
+    item_type: {
       type: String,
+      required: true,
+      enum: ["Series", "Movies"],
     },
     price: {
       type: Number,
