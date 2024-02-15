@@ -6,6 +6,7 @@ const Episodes = require("../models/episodeModel");
 const Movies = require("../models/movieModel");
 const Activities = require("../models/activityModel");
 const Category = require("../models/categoryModel");
+const Users = require("../models/userModel");
 
 const adminCtrl = {
   getDashboardCount: async (req, res) => {
@@ -77,6 +78,31 @@ const adminCtrl = {
 
       res.json({
         data: activities,
+      });
+    } catch (err) {
+      res.status(500).json({ msg: err.message });
+    }
+  },
+  getUser: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const user = await Users.findById({ _id: id }).select(
+        "-password -createdAt -updatedAt -__v -role"
+      );
+      if (!user) return res.status(400).json({ msg: "User does not exist." });
+
+      res.json(user);
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
+  makeUserAdmin: async (req, res) => {
+    try {
+      const { user_id } = req.body;
+      const user = await Users.findByIdAndUpdate({ _id: user_id }, { role: 1 });
+
+      res.json({
+        msg: "Successfully made user an admin",
       });
     } catch (err) {
       res.status(500).json({ msg: err.message });

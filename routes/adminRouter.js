@@ -10,5 +10,6 @@ router
 router
   .route("/dashboard-activities", authAdmin)
   .get(adminCtrl.getRecentActivities);
-
+router.route("/user/:id",authAdmin).get(adminCtrl.getUser);
+router.route("/make-admin",authAdmin).put(adminCtrl.makeUserAdmin);
 module.exports = router;
