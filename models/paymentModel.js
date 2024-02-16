@@ -6,14 +6,14 @@ const paymentSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Users",
     },
-    item: {
-      type: mongoose.Schema.Types.ObjectId,
-      refPath: "item_type",
-    },
     item_type: {
       type: String,
       required: true,
-      enum: ["Series", "Movies"],
+      enum: ["Episodes", "Movies", "Seasons"],
+    },
+    item: {
+      type: mongoose.Schema.Types.ObjectId,
+      refPath: "item_type",
     },
     price: {
       type: Number,
@@ -38,7 +38,7 @@ const paymentSchema = new mongoose.Schema(
     },
   },
   {
-    timestamps: true,
+    timestamps: true
   }
 );
 

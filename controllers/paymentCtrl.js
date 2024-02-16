@@ -2,12 +2,25 @@ const Payments = require("../models/paymentModel");
 const Users = require("../models/userModel");
 const Movies = require("../models/movieModel");
 const Season = require("../models/seasonModel");
+const Episodes = require("../models/episodeModel");
 const Flutterwave = require("flutterwave-node-v3");
 const moment = require("moment");
 const flw = new Flutterwave(
   process.env.FLUTTERWAVE_PUB_KEY,
   process.env.FLUTTERWAVE_SECRET_KEY
 );
+
+const findItem = async (type, item) => {
+  if (type === "Movies") {
+    return await Movies.findById({ _id: item });
+  }
+  if (type === "Seasons") {
+    return await Season.findById({ _id: item });
+  }
+  if (type === "Episodes") {
+    return await Episodes.findById({ _id: item });
+  }
+}
 
 class APIfeatures {
   constructor(query, queryString) {
@@ -59,7 +72,7 @@ const paymentCtrl = {
   getOrders: async (req, res) => {
     try {
       const features = new APIfeatures(
-        Payments.find().populate("item"),
+        Payments.find().populate(["item",{ path: "user", select: "name id" }]),
         req.query
       )
         .filtering()
@@ -81,35 +94,31 @@ const paymentCtrl = {
     try {
       const {
         item,
-        item_type,
-        paymentType,
-        price,
-        item_span,
-        item_validViews,
+        item_type
       } = req.body;
       const id = req.id;
-      if (!item && !paymentType && !price)
+      if (!item)
         res.status(400).json({ msg: "Payment was not successfull." });
-
+      const content = await findItem(item_type, item);
       const user = await Users.findOne({ _id: id });
       if (!user)
         res.status(400).json({ msg: "Please login to verify yourself" });
 
-      if (user.wallet < price)
+      if (user.wallet < content?.price)
         return res.status(400).json({ msg: "Insufficient Wallet ballance" });
 
-      const deductBalance = user.wallet - price;
+      const deductBalance = user.wallet - content?.price;
 
-      await Users.findOneAndUpdate({ _id: id }, { wallet: deductBalance });
+      await Users.findOneAndUpdate({ _id: id }, { wallet: Number(deductBalance) });
       const date = moment().add(-moment().utcOffset(), "minutes").toDate();
-      const expirationDate = moment(date).add(item_span, "days").toDate();
+      const expirationDate = moment(date).add(content?.expirationSpan, "days").toDate();
       const newOrder = new Payments({
         user: id,
         item,
-        paymentType,
-        price,
+        paymentType:"",
+        price:content?.price,
         expirationDate,
-        validViews: item_validViews,
+        validViews: content?.validViews,
         item_type,
       });
 
