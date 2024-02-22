@@ -72,7 +72,8 @@ const seriesCtrl = {
   },
   createSeries: async (req, res) => {
     try {
-      const { title, description, casts, genre, image, banner } = req.body;
+      const { title, description, casts, genre, image, banner, donation } =
+        req.body;
 
       if (!req.body)
         return res.status(400).json({ msg: "All payload are required" });
@@ -84,6 +85,7 @@ const seriesCtrl = {
         genre,
         image,
         banner,
+        donation,
       });
 
       const newActivities = new Activities({

@@ -44,6 +44,9 @@ const seriesSchema = new mongoose.Schema(
         ref: "Seasons",
       },
     ],
+    donation: {
+      type: Boolean,
+    },
   },
   {
     timestamps: true,
