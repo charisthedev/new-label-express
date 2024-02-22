@@ -20,7 +20,7 @@ const findItem = async (type, item) => {
   if (type === "Episodes") {
     return await Episodes.findById({ _id: item });
   }
-}
+};
 
 class APIfeatures {
   constructor(query, queryString) {
@@ -71,20 +71,47 @@ class APIfeatures {
 const paymentCtrl = {
   getOrders: async (req, res) => {
     try {
-      const features = new APIfeatures(
-        Payments.find().populate(["item",{ path: "user", select: "name id" }]),
-        req.query
-      )
-        .filtering()
-        .sorting()
-        .paginating();
+      const searchTerm = req.query.term || "";
+      const page = parseInt(req.query.page, 10) || 1;
+      const limit = parseInt(req.query.limit, 10) || 10;
+      const skip = (page - 1) * limit;
+      // const orders = await Payments.find({
+      //   $or: [
+      //     { "user.name": { $regex: searchTerm, $options: "i" } },
+      //     { "item.description": { $regex: searchTerm, $options: "i" } },
+      //   ],
+      // })
+      //   .populate([
+      //     { path: "item" }, // Corrected
+      //     { path: "user", select: "name id" }, // Corrected
+      //   ])
+      //   .skip(skip)
+      //   .limit(limit)
+      //   .exec();
+      const orders = await Payments.find({})
+        .populate([
+          { path: "item" },
+          { path: "user", select: "name id" }, // Make sure to populate the user field
+        ])
+        .skip(skip)
+        .exec();
 
-      const orders = await features.query;
+      // Filter the orders based on the populated user name
+      const filteredOrders = orders.filter((order) => {
+        return (
+          (order.user && order.user.name.includes(searchTerm)) ||
+          (order.item &&
+            (order.item.description.includes(searchTerm) ||
+              order.item.title.includes(searchTerm)))
+        );
+      });
+      const total = filteredOrders.length;
 
       res.json({
         status: "success",
-        result: orders.length,
-        orders: orders,
+        orders: filteredOrders.splice(0, limit),
+        currentPage: page,
+        total,
       });
     } catch (err) {
       res.status(500).json({ msg: err.message });
@@ -92,13 +119,9 @@ const paymentCtrl = {
   },
   createOrderFromWallet: async (req, res) => {
     try {
-      const {
-        item,
-        item_type
-      } = req.body;
+      const { item, item_type } = req.body;
       const id = req.id;
-      if (!item)
-        res.status(400).json({ msg: "Payment was not successfull." });
+      if (!item) res.status(400).json({ msg: "Payment was not successfull." });
       const content = await findItem(item_type, item);
       const user = await Users.findOne({ _id: id });
       if (!user)
@@ -109,14 +132,19 @@ const paymentCtrl = {
 
       const deductBalance = user.wallet - content?.price;
 
-      await Users.findOneAndUpdate({ _id: id }, { wallet: Number(deductBalance) });
+      await Users.findOneAndUpdate(
+        { _id: id },
+        { wallet: Number(deductBalance) }
+      );
       const date = moment().add(-moment().utcOffset(), "minutes").toDate();
-      const expirationDate = moment(date).add(content?.expirationSpan, "days").toDate();
+      const expirationDate = moment(date)
+        .add(content?.expirationSpan, "days")
+        .toDate();
       const newOrder = new Payments({
         user: id,
         item,
-        paymentType:"",
-        price:content?.price,
+        paymentType: "",
+        price: content?.price,
         expirationDate,
         validViews: content?.validViews,
         item_type,
@@ -177,31 +205,17 @@ const paymentCtrl = {
   },
   verifyItemPurchase: async (req, res) => {
     try {
-      const { item } = req.body;
+      const { item, item_type } = req.body;
       const id = req.id;
-      if (!item) return res.status(400).json({ msg: "wrong credentials" });
+      if (!item || !item_type)
+        return res.status(400).json({ msg: "Bad request" });
       const date = moment().add(-moment().utcOffset(), "minutes").toDate();
-      // if (season) {
-      //   const verify = await Payments.findOne({
-      //     user: id,
-      //     item: season,
-      //   });
-      //   if (verify) {
-      //     if (
-      //       moment(verify.expirationDate).isSameOrBefore(moment(date)) ||
-      //       verify.validViews < 1
-      //     ) {
-      //       return res.status(403).json({ msg: "item Expired", status: false });
-      //     }
-      //     return res.status(200).json({
-      //       msg: "Item verified with user purschase",
-      //       verify: verify.item_id,
-      //       status: true,
-      //     });
-      //   }
-      // }
 
-      const verify = await Payments.findOne({ user_id: id, item });
+      if (item_type === "Episodes") {
+        const content = await Episodes.findById({ _id: item });
+      }
+
+      const verify = await Payments.findOne({ user: id, item, item_type });
       if (!verify)
         return res.status(403).json({
           msg: "No payment has been made for this item",
@@ -213,9 +227,9 @@ const paymentCtrl = {
       )
         return res.status(400).json({ msg: "item Expired", status: false });
 
-      return res.status(200).json({
+      res.status(200).json({
         msg: "Item verified with user purschase",
-        verify: verify.item_id,
+        verify: verify.item,
         status: true,
       });
     } catch (err) {
@@ -249,7 +263,7 @@ const paymentCtrl = {
       await newTopup.save();
 
       res.json({
-        msg: "Your wallet has been funded",
+        msg: "Your wallet have been funded",
         user,
       });
     } catch (err) {
