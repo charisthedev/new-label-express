@@ -75,28 +75,11 @@ const paymentCtrl = {
       const page = parseInt(req.query.page, 10) || 1;
       const limit = parseInt(req.query.limit, 10) || 10;
       const skip = (page - 1) * limit;
-      // const orders = await Payments.find({
-      //   $or: [
-      //     { "user.name": { $regex: searchTerm, $options: "i" } },
-      //     { "item.description": { $regex: searchTerm, $options: "i" } },
-      //   ],
-      // })
-      //   .populate([
-      //     { path: "item" }, // Corrected
-      //     { path: "user", select: "name id" }, // Corrected
-      //   ])
-      //   .skip(skip)
-      //   .limit(limit)
-      //   .exec();
       const orders = await Payments.find({})
-        .populate([
-          { path: "item" },
-          { path: "user", select: "name id" }, // Make sure to populate the user field
-        ])
+        .populate([{ path: "item" }, { path: "user", select: "name id" }])
         .skip(skip)
         .exec();
 
-      // Filter the orders based on the populated user name
       const filteredOrders = orders.filter((order) => {
         return (
           (order.user && order.user.name.includes(searchTerm)) ||
@@ -205,17 +188,17 @@ const paymentCtrl = {
   },
   verifyItemPurchase: async (req, res) => {
     try {
-      const { item, item_type } = req.body;
+      const { item, item_type, season } = req.body;
       const id = req.id;
       if (!item || !item_type)
         return res.status(400).json({ msg: "Bad request" });
       const date = moment().add(-moment().utcOffset(), "minutes").toDate();
-
-      if (item_type === "Episodes") {
-        const content = await Episodes.findById({ _id: item });
-      }
-
-      const verify = await Payments.findOne({ user: id, item, item_type });
+      // const verify = await Payments.findOne({ user: id, item, item_type });
+      const verify = await Payments.findOne({
+        user: id,
+        $or: [{ item: item }, { item: season }],
+        item_type,
+      });
       if (!verify)
         return res.status(403).json({
           msg: "No payment has been made for this item",

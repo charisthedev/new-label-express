@@ -16,15 +16,15 @@ const bannerCtrl = {
   },
   getBannerAdmin: async (req, res) => {
     try {
-    const banners = await Banner.find().populate(["movies", "series"]);
+      const banners = await Banner.find().populate(["movies", "series"]);
 
-    res.json({
-      status: "success",
-      data: banners,
-    });
-  } catch (error) {
-    res.status(500).json({ msg: err.message });
-  }
+      res.json({
+        status: "success",
+        data: banners,
+      });
+    } catch (error) {
+      res.status(500).json({ msg: err.message });
+    }
   },
   getBanner: async (req, res) => {
     try {
@@ -36,7 +36,7 @@ const bannerCtrl = {
         })
         .populate({
           path: "series",
-          select: "-seasons",
+          select: "-video",
         });
 
       // Use reduce to combine the elements of the array into a single object
@@ -59,7 +59,7 @@ const bannerCtrl = {
         })
         .populate({
           path: "series",
-          select: "-seasons",
+          select: "-video",
         });
 
       res.json({ banner });

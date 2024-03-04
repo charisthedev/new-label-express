@@ -7,6 +7,10 @@ const Movies = require("../models/movieModel");
 const Activities = require("../models/activityModel");
 const Category = require("../models/categoryModel");
 const Users = require("../models/userModel");
+const Permissions = require("../models/permissionModel");
+const Roles = require("../models/RoleModel");
+const bcrypt = require("bcryptjs");
+const generatePassword = require("generate-password");
 
 const adminCtrl = {
   getDashboardCount: async (req, res) => {
@@ -103,6 +107,176 @@ const adminCtrl = {
 
       res.json({
         msg: "Successfully made user an admin",
+      });
+    } catch (err) {
+      res.status(500).json({ msg: err.message });
+    }
+  },
+  createPermission: async (req, res) => {
+    try {
+      const { title } = req.body;
+      if (!title) {
+        res.status(400).json({
+          msg: "title is required",
+        });
+      }
+      const permission = await Permissions.create({ permission: title });
+      res.status(200).json({
+        permission,
+        msg: "Successfully created permission",
+      });
+    } catch (err) {
+      res.status(500).json({ msg: err.message });
+    }
+  },
+  getPermissions: async (req, res) => {
+    try {
+      const permission = await Permissions.find();
+      res.status(200).json({
+        permission,
+        msg: "Successfully fetched permission",
+      });
+    } catch (err) {
+      res.status(500).json({ msg: err.message });
+    }
+  },
+  createRole: async (req, res) => {
+    try {
+      const { permissions, name } = req.body;
+      if (!name) {
+        res.status(400).json({
+          msg: "title is required",
+        });
+      }
+      if (!permissions || !permissions.length > 0) {
+        res.status(400).json({
+          msg: "permission is required",
+        });
+      }
+      const role = await Roles.create({ name, permissions });
+      res.status(200).json({
+        role,
+        msg: "Successfully created role",
+      });
+    } catch (err) {
+      res.status(500).json({ msg: err.message });
+    }
+  },
+  updateRole: async (req, res) => {
+    try {
+      const { permissions, name } = req.body;
+      const id = req.params.id;
+      if (!name) {
+        res.status(400).json({
+          msg: "title is required",
+        });
+      }
+      if (!permissions || !permissions.length > 0) {
+        res.status(400).json({
+          msg: "permission is required",
+        });
+      }
+      await Roles.findByIdAndUpdate(id, { name, permissions });
+      res.status(200).json({
+        msg: "Successfully updated role",
+      });
+    } catch (err) {
+      res.status(500).json({ msg: err.message });
+    }
+  },
+  getRoles: async (req, res) => {
+    try {
+      const roles = await Roles.find().select("-permissions");
+      res.status(200).json({
+        roles,
+        msg: "Successfully fetched roles",
+      });
+    } catch (err) {
+      res.status(500).json({ msg: err.message });
+    }
+  },
+  getRoleById: async (req, res) => {
+    try {
+      const id = req.params.id;
+      const role = await Roles.findById(id).populate("permissions");
+      res.status(200).json({
+        role,
+        msg: "Successfully fetched role",
+      });
+    } catch (err) {
+      res.status(500).json({ msg: err.message });
+    }
+  },
+  createAdmin: async (req, res) => {
+    try {
+      const { role, name, email } = req.body;
+      if (!name) {
+        res.status(400).json({
+          msg: "title is required",
+        });
+      }
+      if (!name) {
+        res.status(400).json({
+          msg: "name is required",
+        });
+      }
+      if (!email) {
+        res.status(400).json({
+          msg: "email is required",
+        });
+      }
+      const password = generatePassword.generate({
+        length: 10,
+        numbers: true,
+        symbols: true,
+      });
+      const passwordHash = await bcrypt.hash(password, 10);
+      const user = await Users.create({
+        name,
+        email,
+        role,
+        password: passwordHash,
+      });
+      res.status(200).json({
+        user,
+        msg: "Successfully created user",
+      });
+    } catch (err) {
+      res.status(500).json({ msg: err.message });
+    }
+  },
+  getAdmin: async (req, res) => {
+    try {
+      const users = await Users.find({ role: { $exists: true } }).select(
+        "-password -wallet -cart"
+      );
+      res.status(200).json({
+        users,
+        msg: "Successfully fetched admins",
+      });
+    } catch (err) {
+      res.status(500).json({ msg: err.message });
+    }
+  },
+  getAdminById: async (req, res) => {
+    try {
+      const id = req.params.id;
+      const user = await Users.findById(id).populate("roles");
+      res.status(200).json({
+        user,
+        msg: "Successfully fetched user",
+      });
+    } catch (err) {
+      res.status(500).json({ msg: err.message });
+    }
+  },
+  updateAdmin: async (req, res) => {
+    try {
+      const id = req.params.id;
+      const { status } = req.body;
+      await Users.findByIdAndUpdate(id, { active: status });
+      res.status(200).json({
+        msg: "Successfully updated Admin status",
       });
     } catch (err) {
       res.status(500).json({ msg: err.message });
