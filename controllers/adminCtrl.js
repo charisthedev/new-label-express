@@ -261,7 +261,10 @@ const adminCtrl = {
   getAdminById: async (req, res) => {
     try {
       const id = req.params.id;
-      const user = await Users.findById(id).populate("roles");
+      const user = await Users.findById(id)
+        .populate("role")
+        .populate("role.permissions")
+        .select("-password -wallet -cart");
       res.status(200).json({
         user,
         msg: "Successfully fetched user",
