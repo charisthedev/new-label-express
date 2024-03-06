@@ -131,7 +131,7 @@ const adminCtrl = {
   },
   getPermissions: async (req, res) => {
     try {
-      const permission = await Permissions.find();
+      const permission = await Permissions.find({});
       res.status(200).json({
         permission,
         msg: "Successfully fetched permission",

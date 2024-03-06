@@ -12,19 +12,23 @@ router
   .get(adminCtrl.getRecentActivities);
 router.route("/user/:id", authAdmin).get(adminCtrl.getUser);
 router.route("/make-admin", authAdmin).put(adminCtrl.makeUserAdmin);
-router.route("", authAdmin).post(adminCtrl.createAdmin).get(adminCtrl.getAdmin);
 router
-  .route("/:id", authAdmin)
+  .route("/user", authAdmin)
+  .post(adminCtrl.createAdmin)
+  .get(adminCtrl.getAdmin);
+router
+  .route("/user/:id", authAdmin)
   .get(adminCtrl.getAdminById)
   .patch(adminCtrl.updateAdmin);
 router
   .route("/permission", authAdmin)
-  .post(adminCtrl.createPermission)
-  .get(adminCtrl.getPermissions);
+  .get(adminCtrl.getPermissions)
+  .post(adminCtrl.createPermission);
+
 router
   .route("/role", authAdmin)
-  .post(adminCtrl.createRole)
-  .get(adminCtrl.getRoles);
+  .get(adminCtrl.getRoles)
+  .post(adminCtrl.createRole);
 router
   .route("/role/:id", authAdmin)
   .get(adminCtrl.getRoleById)
