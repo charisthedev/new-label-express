@@ -262,8 +262,10 @@ const adminCtrl = {
     try {
       const id = req.params.id;
       const user = await Users.findById(id)
-        .populate("role")
-        .populate("role.permissions")
+        .populate({
+          path: "role",
+          populate: { path: "permissions" },
+        })
         .select("-password -wallet -cart");
       res.status(200).json({
         user,
@@ -280,6 +282,23 @@ const adminCtrl = {
       await Users.findByIdAndUpdate(id, { active: status });
       res.status(200).json({
         msg: "Successfully updated Admin status",
+      });
+    } catch (err) {
+      res.status(500).json({ msg: err.message });
+    }
+  },
+  getMe: async (req, res) => {
+    try {
+      const id = req.id;
+      const data = await Users.findById(id)
+        .populate({
+          path: "role",
+          populate: { path: "permissions" },
+        })
+        .select("-cart -wallet -password");
+      res.status(200).json({
+        msg: "Successfully retrieved admin",
+        data,
       });
     } catch (err) {
       res.status(500).json({ msg: err.message });

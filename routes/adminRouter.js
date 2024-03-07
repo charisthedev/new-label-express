@@ -3,34 +3,35 @@ const adminCtrl = require("../controllers/adminCtrl");
 const auth = require("../middleware/auth");
 const authAdmin = require("../middleware/authAdmin");
 
-router.route("/dashboard-count", authAdmin).get(adminCtrl.getDashboardCount);
+router.route("/dashboard-count").get(authAdmin, adminCtrl.getDashboardCount);
 router
-  .route("/dashboard-analytics", authAdmin)
-  .get(adminCtrl.getTotalOrdersByDay);
+  .route("/dashboard-analytics")
+  .get(authAdmin, adminCtrl.getTotalOrdersByDay);
 router
-  .route("/dashboard-activities", authAdmin)
-  .get(adminCtrl.getRecentActivities);
-router.route("/user/:id", authAdmin).get(adminCtrl.getUser);
-router.route("/make-admin", authAdmin).put(adminCtrl.makeUserAdmin);
+  .route("/dashboard-activities")
+  .get(authAdmin, adminCtrl.getRecentActivities);
+router.route("/getuser/:id").get(authAdmin, adminCtrl.getUser);
+router.route("/me").get(authAdmin, adminCtrl.getMe);
+router.route("/make-admin").put(authAdmin, adminCtrl.makeUserAdmin);
 router
-  .route("/user", authAdmin)
-  .post(adminCtrl.createAdmin)
-  .get(adminCtrl.getAdmin);
+  .route("/user")
+  .post(authAdmin, adminCtrl.createAdmin)
+  .get(authAdmin, adminCtrl.getAdmin);
 router
-  .route("/user/:id", authAdmin)
-  .get(adminCtrl.getAdminById)
-  .patch(adminCtrl.updateAdmin);
+  .route("/user/:id")
+  .get(authAdmin, adminCtrl.getAdminById)
+  .patch(authAdmin, adminCtrl.updateAdmin);
 router
-  .route("/permission", authAdmin)
-  .get(adminCtrl.getPermissions)
-  .post(adminCtrl.createPermission);
+  .route("/permission")
+  .get(authAdmin, adminCtrl.getPermissions)
+  .post(authAdmin, adminCtrl.createPermission);
 
 router
-  .route("/role", authAdmin)
-  .get(adminCtrl.getRoles)
-  .post(adminCtrl.createRole);
+  .route("/role")
+  .get(authAdmin, adminCtrl.getRoles)
+  .post(authAdmin, adminCtrl.createRole);
 router
-  .route("/role/:id", authAdmin)
-  .get(adminCtrl.getRoleById)
-  .patch(adminCtrl.updateRole);
+  .route("/role/:id")
+  .get(authAdmin, adminCtrl.getRoleById)
+  .patch(authAdmin, adminCtrl.updateRole);
 module.exports = router;
