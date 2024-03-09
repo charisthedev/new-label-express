@@ -71,28 +71,48 @@ class APIfeatures {
 const paymentCtrl = {
   getOrders: async (req, res) => {
     try {
-      const searchTerm = req.query.term || "";
+      const searchTerm = req.query.title || "";
+      const user = req.query.paidBy || "";
+      const minPrice = req.query.minPrice || 0;
+      const maxPrice = req.query.maxPrice || Number.MAX_VALUE;
+      const startDate = req.query.startDate
+        ? new Date(req.query.startDate)
+        : new Date(1970, 0, 1);
+      const endDate = req.query.endDate
+        ? new Date(req.query.endDate)
+        : new Date();
       const page = parseInt(req.query.page, 10) || 1;
       const limit = parseInt(req.query.limit, 10) || 10;
       const skip = (page - 1) * limit;
-      const orders = await Payments.find({})
-        .populate([{ path: "item" }, { path: "user", select: "name id" }])
+      const orders = await Payments.find({
+        price: { $gte: minPrice, $lte: maxPrice },
+        createdAt: { $gte: startDate, $lte: endDate },
+      })
+        .populate([
+          {
+            path: "item",
+            match: {
+              $or: [{ title: searchTerm }, { description: searchTerm }],
+            },
+          },
+          { path: "user", select: "name id", match: { name: user } },
+        ])
         .skip(skip)
-        .exec();
+        .limit(limit);
 
-      const filteredOrders = orders.filter((order) => {
-        return (
-          (order.user && order.user.name.includes(searchTerm)) ||
-          (order.item &&
-            (order.item.description.includes(searchTerm) ||
-              order.item.title.includes(searchTerm)))
-        );
-      });
-      const total = filteredOrders.length;
+      // const filteredOrders = orders.filter((order) => {
+      //   return (
+      //     (order.user && order.user.name.includes(searchTerm)) ||
+      //     (order.item &&
+      //       (order.item.description.includes(searchTerm) ||
+      //         order.item.title.includes(searchTerm)))
+      //   );
+      // });
+      const total = orders.length;
 
       res.json({
         status: "success",
-        orders: filteredOrders.splice(0, limit),
+        orders,
         currentPage: page,
         total,
       });

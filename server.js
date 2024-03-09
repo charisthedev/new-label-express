@@ -47,6 +47,7 @@ app.use("/api/discount", require("./routes/discountRouter"));
 app.use("/api/upload", require("./routes/video-uploadRouter"));
 app.use("/api/stream", require("./routes/video-streamRouter"));
 app.use("/api/browse", require("./routes/browseRouter"));
+app.use("/api/channels", require("./routes/channelRouter"));
 app.get("/", (req, res) => {
   res.send("Hello, World!");
 });
