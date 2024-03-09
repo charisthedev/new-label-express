@@ -16,11 +16,29 @@ const channelCtrl = {
         const movies = await Movies.find({ category: e._id }).limit(10);
         const series = await Series.find({ category: e._id }).limit(10);
         const items = combineArrays(movies, series);
-        channels.push({ title: e.name, items });
+        channels.push({ title: e.name, id: e._id, items });
       }
       res.status(200).json({ msg: "successfully fetched channels", channels });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
+    }
+  },
+  getSingleChannel: async (req, res) => {
+    try {
+      const queryChannel = req.params.id;
+      const channel = await Category.findById({ _id: queryChannel });
+      if (!channel) {
+        res.status(400).json({ msg: "channel doesn't exist" });
+      }
+      const movies = await Movies.find({ category: queryChannel });
+      const series = await Series.find({ category: queryChannel });
+      res.status(200).json({
+        msg: "sucessfully fetched channel",
+        name: channel.name,
+        items: combineArrays(movies, series),
+      });
+    } catch (err) {
+      res.status(500).json({ msg: err.message });
     }
   },
 };
