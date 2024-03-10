@@ -6,13 +6,14 @@ const ContinueWatchingSchema = new mongoose.Schema({
     ref: "Users",
     required: true,
   },
-  movieId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Movies",
+  item_type: {
+    type: String,
+    required: true,
+    enum: ["Episodes", "Movies"],
   },
-  episodeId: {
+  item: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Episodes",
+    refPath: "item_type",
   },
   timestamp: {
     type: Date,

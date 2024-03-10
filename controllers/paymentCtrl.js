@@ -310,9 +310,13 @@ const paymentCtrl = {
       if (!code)
         return res.status(400).json({ msg: "please provide discount details" });
       const { percentage } = await Discount.findOne({ code });
-      res
-        .status(200)
-        .json({ msg: "successfully verified discount", percentage });
+      if (percentage)
+        res
+          .status(200)
+          .json({ msg: "successfully verified discount", percentage });
+      else {
+        res.status(400).json({ msg: "invalid coupon code" });
+      }
     } catch (error) {
       res.status(500).json({ msg: error.message });
     }
