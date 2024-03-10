@@ -155,7 +155,7 @@ const seasonCtrl = {
   getSeriesSeason: async (req, res) => {
     try {
       const season = await Seasons.find({
-        series_id: req.params.id,
+        series: req.params.id,
       }).populate({
         path: "episodes",
         select: "-video",
