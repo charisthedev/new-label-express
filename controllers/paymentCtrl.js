@@ -99,7 +99,7 @@ const paymentCtrl = {
               ],
             },
           },
-          { path: "user", select: "name id", match: { name: user } },
+          { path: "user", select: "name id", match: { name: { $regex: user, $options: "i" } } },
         ])
         .skip(skip)
         .limit(limit);
@@ -284,21 +284,12 @@ const paymentCtrl = {
       const orders = await Payments.find({ user_id: id })
         .populate("item")
         .select("-video -episodes");
-      const features = new APIfeatures(
-        Payments.find({ user_id: id })
-          .populate("item")
-          .select("-video -episodes"),
-        req.query
-      )
-        .filtering()
-        .sorting()
-        .paginating();
       // const movies = await Movies.find({ item_id }).select("-video");
       // const season = await Season.find({ item_id }).select("-episodes");
 
       res.json({
         msg: "success",
-        data: features.query,
+        data: orders,
       });
     } catch (err) {
       res.status(500).json({ msg: err.message });

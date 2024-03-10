@@ -6,14 +6,12 @@ const modifiedAuthAdmin = require("../middleware/modifiedAuthAdmin");
 
 router
   .route("/")
-  .get(authAdmin, paymentCtrl.getOrders)
+  .get(auth, paymentCtrl.getUserOrders)
   .post(auth, paymentCtrl.createOrderFromWallet);
 
 router.route("/verify").post(auth, paymentCtrl.verifyItemPurchase);
 router.route("/topup").post(auth, paymentCtrl.topUpWallet);
-router
-  .route("/user")
-  .get(modifiedAuthAdmin("Orders"), paymentCtrl.getUserOrders);
+router.route("/user").get(modifiedAuthAdmin("Orders"), paymentCtrl.getOrders);
 router.route("/card-payment").post(auth, paymentCtrl.createOrderFromCard);
 router.route("/coupon").post(auth, paymentCtrl.verifyDiscount);
 
