@@ -126,7 +126,7 @@ const paymentCtrl = {
   },
   createOrderFromWallet: async (req, res) => {
     try {
-      const { item, item_type } = req.body;
+      const { item, item_type, paymentType } = req.body;
       const id = req.id;
       if (!item) res.status(400).json({ msg: "Payment was not successfull." });
       const content = await findItem(item_type, item);
@@ -150,7 +150,7 @@ const paymentCtrl = {
       const newOrder = new Payments({
         user: id,
         item,
-        paymentType: "",
+        paymentType,
         price: content?.price,
         expirationDate,
         validViews: content?.validViews,
@@ -308,16 +308,18 @@ const paymentCtrl = {
     try {
       const { code } = req.body;
       if (!code)
-        return res.status(400).json({ msg: "please provide discount details" });
-      const previousDocument = await Discount.find({ name: code });
-      const { percentage } = await Discount.findOneAndUpdate(
+        return res.status(400).json({ msg: "please provide coupon details" });
+      const discount = await Discount.findOne({ name: code });
+      // console.log(previousDocument, previousDocument.usage);
+      await Discount.findOneAndUpdate(
         { name: code },
-        { ...previousDocument, usage: previousDocument.usage + 1 }
+        { ...discount, usage: discount.usage + 1 }
       );
-      if (percentage)
-        res
-          .status(200)
-          .json({ msg: "successfully verified discount", percentage });
+      if (discount)
+        res.status(200).json({
+          msg: "successfully verified discount",
+          percentage: discount.percentage,
+        });
       else {
         res.status(400).json({ msg: "invalid coupon code" });
       }

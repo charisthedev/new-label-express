@@ -62,6 +62,10 @@ const episodeSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    type: {
+      type: String,
+      default: "Episodes",
+    },
   },
   {
     timestamps: true,
