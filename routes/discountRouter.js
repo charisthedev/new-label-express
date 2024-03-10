@@ -4,12 +4,12 @@ const auth = require("../middleware/auth");
 const authAdmin = require("../middleware/authAdmin");
 const modifiedAuthAdmin = require("../middleware/modifiedAuthAdmin");
 
-router.post("/", modifiedAuthAdmin("Coupon"), discountCtrl.createDiscount);
-router.get("/", modifiedAuthAdmin("Coupon"), discountCtrl.getAllDiscounts);
+router.post("/", modifiedAuthAdmin("Coupons"), discountCtrl.createDiscount);
+router.get("/", modifiedAuthAdmin("Coupons"), discountCtrl.getAllDiscounts);
 router
   .route("/:id")
-  .get(modifiedAuthAdmin("Coupon"), discountCtrl.getSingleDiscount)
-  .put(modifiedAuthAdmin("Coupon"), discountCtrl.updateDiscount)
-  .delete(modifiedAuthAdmin("Coupon"), discountCtrl.deleteDiscount);
+  .get(modifiedAuthAdmin("Coupons"), discountCtrl.getSingleDiscount)
+  .put(modifiedAuthAdmin("Coupons"), discountCtrl.updateDiscount)
+  .delete(modifiedAuthAdmin("Coupons"), discountCtrl.deleteDiscount);
 
 module.exports = router;
