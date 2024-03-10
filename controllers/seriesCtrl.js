@@ -90,6 +90,7 @@ const seriesCtrl = {
 
       const newActivities = new Activities({
         description: `Successfully created a new series with title ${title}`,
+        userId: req.id,
       });
 
       await newActivities.save();
@@ -134,6 +135,7 @@ const seriesCtrl = {
 
       const newActivities = new Activities({
         description: `Successfully deleted ${seriesTitle.title} series`,
+        userId: req.id,
       });
 
       await newActivities.save();
@@ -161,6 +163,7 @@ const seriesCtrl = {
 
       const newActivities = new Activities({
         description: `Successfully updated ${seriesTitle.title} series`,
+        userId: req.id,
       });
 
       await newActivities.save();

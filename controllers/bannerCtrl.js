@@ -90,6 +90,7 @@ const bannerCtrl = {
 
       const newActivity = new Activities({
         description: `Successfully created ${type} banner`,
+        userId: req.id,
       });
 
       await newActivity.save();
@@ -118,6 +119,7 @@ const bannerCtrl = {
 
       const newActivity = new Activities({
         description: `Successfully Updated ${type} banner`,
+        userId: req.id,
       });
 
       await newActivity.save();
@@ -133,6 +135,7 @@ const bannerCtrl = {
 
       const newActivity = new Activities({
         description: `Successfully Deleted ${req.params.type} banner`,
+        userId: req.id,
       });
 
       await newActivity.save();

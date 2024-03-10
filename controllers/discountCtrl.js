@@ -85,6 +85,7 @@ const discountCtrl = {
 
       const newActivities = new Activities({
         description: `Successfully created a new discount ${name}`,
+        userId: req.id,
       });
 
       await newActivities.save();
@@ -138,6 +139,7 @@ const discountCtrl = {
 
       const newActivities = new Activities({
         description: `Successfully Update discount ${getDiscount.name}`,
+        userId: req.id,
       });
 
       await newActivities.save();
@@ -157,6 +159,7 @@ const discountCtrl = {
 
       const newActivities = new Activities({
         description: `Successfully deleted discount ${getDiscount.name}`,
+        userId: req.id,
       });
 
       await newActivities.save();
@@ -174,7 +177,12 @@ const discountCtrl = {
       if (!code)
         return res.status(400).json({ msg: "please provide discount details" });
       const { percentage } = await Discount.findOne({ code });
-    } catch (error) {}
+      res
+        .status(200)
+        .json({ msg: "successfully verified discount", percentage });
+    } catch (error) {
+      res.status(500).json({ msg: error.message });
+    }
   },
 };
 

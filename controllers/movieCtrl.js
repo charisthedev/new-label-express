@@ -156,6 +156,7 @@ const movieCtrl = {
 
       const newActivities = new Activities({
         description: `Successfully created movie ${title}`,
+        userId: req.id,
       });
 
       await newActivities.save();
@@ -172,6 +173,7 @@ const movieCtrl = {
 
       const newActivities = new Activities({
         description: `Successfully deleted movie with id ${req.params.id}`,
+        userId:req.id
       });
 
       await newActivities.save();
@@ -193,6 +195,7 @@ const movieCtrl = {
 
       const newActivities = new Activities({
         description: `Successfully updated movie ${movie.title}`,
+        userId: req.id,
       });
 
       await newActivities.save();

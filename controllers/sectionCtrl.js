@@ -26,22 +26,22 @@ const sectionCtrl = {
   },
   getSection: async (req, res) => {
     try {
-      const section = await Section.findById({ _id: req.params.id})
+      const section = await Section.findById({ _id: req.params.id })
         .populate({
           path: "movies",
-          select: "-video"
+          select: "-video",
         })
         .populate({
-          path: "series"
-        })
-      if (!section) return res.status(404).json({ msg: "Section not found" })
+          path: "series",
+        });
+      if (!section) return res.status(404).json({ msg: "Section not found" });
 
       res.json({
         status: "success",
-        data: section
-      })
+        data: section,
+      });
     } catch (error) {
-      res.status(500).json({ msg: err.message })
+      res.status(500).json({ msg: err.message });
     }
   },
   createSection: async (req, res) => {
@@ -63,6 +63,7 @@ const sectionCtrl = {
 
       const newActivities = new Activities({
         description: `Successfully created section ${name}`,
+        userId: req.id,
       });
 
       await newActivities.save();
@@ -72,21 +73,20 @@ const sectionCtrl = {
       res.json({ message: "Section created successfully." });
     } catch (error) {
       console.error(error);
-      res
-        .status(500)
-        .json({ message: error.message });
+      res.status(500).json({ message: error.message });
     }
   },
   updateSection: async (req, res) => {
     try {
       const { name, movies, series, view } = req.body;
-      await Section.findByIdAndUpdate(
+      const section = await Section.findByIdAndUpdate(
         { _id: req.params.id },
         { name, movies, series, view }
       );
 
       const newActivities = new Activities({
-        description: `Successfully updated section with id ${req.params.id}`,
+        description: `Successfully updated section with name ${section.name}`,
+        userId: req.id,
       });
 
       await newActivities.save();
@@ -94,19 +94,18 @@ const sectionCtrl = {
       res.json({ message: "Updated a section." });
     } catch (error) {
       console.error(error);
-      res
-        .status(500)
-        .json({ message: error.message });
+      res.status(500).json({ message: error.message });
     }
   },
   deleteSection: async (req, res) => {
     try {
       const sections = await Section.findOne({ _id: req.params.id });
 
-      await Section.findByIdAndDelete(req.params.id);
+      const section = await Section.findByIdAndDelete(req.params.id);
 
       const newActivities = new Activities({
-        description: `Successfully deleted section with id ${req.params.id}`,
+        description: `Successfully deleted section with id ${section.name}`,
+        userId: req.id,
       });
 
       await newActivities.save();

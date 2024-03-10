@@ -109,6 +109,7 @@ const seasonCtrl = {
 
       const newActivities = new Activities({
         description: `Successfully created season ${title}`,
+        userId: req.id,
       });
 
       await newActivities.save();
@@ -169,10 +170,9 @@ const seasonCtrl = {
   },
   deleteSeason: async (req, res) => {
     try {
-      await Seasons.findByIdAndDelete({ _id: req.params.id });
-
+      const season = await Seasons.findByIdAndDelete({ _id: req.params.id });
       const newActivities = new Activities({
-        description: `Successfully deleted season with id ${req.params.id}`,
+        description: `Successfully deleted season with title ${season.title}`,
       });
 
       await newActivities.save();
@@ -198,25 +198,25 @@ const seasonCtrl = {
         validViews,
       } = req.body;
 
-      await Seasons.findOneAndUpdate(
+      const season = await Seasons.findOneAndUpdate(
         { _id: req.params.id },
         {
           title: title.toLowerCase(),
-        description,
-        image,
-        trailer,
-        banner,
-        episodes,
-        series,
-        price,
-        free,
-        expirationSpan,
-        validViews,
+          description,
+          image,
+          trailer,
+          banner,
+          episodes,
+          series,
+          price,
+          free,
+          expirationSpan,
+          validViews,
         }
       );
 
       const newActivities = new Activities({
-        description: `Successfully updated season with id ${req.params.id}`,
+        description: `Successfully updated season with title ${season.title}`,
       });
 
       await newActivities.save();

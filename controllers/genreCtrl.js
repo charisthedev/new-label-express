@@ -35,6 +35,7 @@ const genreCtrl = {
 
       const newActivities = new Activities({
         description: `Successfully updated ${name} genre`,
+        userId: req.id,
       });
 
       await newActivities.save();
@@ -67,6 +68,12 @@ const genreCtrl = {
       const genre = await Genre.findByIdAndDelete({
         _id: req.params.id,
       });
+      const newActivities = new Activities({
+        description: `Successfully deleted ${genre.name} genre`,
+        userId: req.id,
+      });
+
+      await newActivities.save();
 
       res.json(genre);
     } catch (err) {

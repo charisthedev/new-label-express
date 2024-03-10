@@ -78,10 +78,61 @@ const adminCtrl = {
   },
   getRecentActivities: async (req, res) => {
     try {
-      const activities = await Activities.find().sort({ _id: -1 }).limit(5);
+      const activities = await Activities.find()
+        .populate({
+          path: "userId",
+          select: "name email role",
+          populate: {
+            path: "role",
+            select: "name",
+          },
+        })
+        .sort({ _id: -1 })
+        .limit(5);
 
       res.json({
         data: activities,
+      });
+    } catch (err) {
+      res.status(500).json({ msg: err.message });
+    }
+  },
+  getAllActivities: async (req, res) => {
+    try {
+      const limit = req.query.limit || 10;
+      const page = req.query.page || 1;
+      const startDate = req.query.startDate
+        ? new Date(req.query.startDate)
+        : new Date(1970, 0, 1);
+      const endDate = req.query.endDate
+        ? new Date(req.query.endDate)
+        : new Date();
+      const term = req.query.user || "";
+      const total = await Activities.countDocuments();
+      const activities = await Activities.find({
+        createdAt: { $gte: startDate, $lte: endDate },
+      })
+        .populate([
+          {
+            path: "userId",
+            match: {
+              $or: [
+                { name: { $regex: term, $options: "i" } },
+                { email: { $regex: term, $options: "i" } },
+              ],
+            },
+            select: "name email role",
+            populate: {
+              path: "role",
+              select: "name",
+            },
+          },
+        ])
+        .skip((page - 1) * limit)
+        .limit(limit);
+      res.status(200).json({
+        msg: "successfully fetched Activities",
+        data: { data: activities, total, page },
       });
     } catch (err) {
       res.status(500).json({ msg: err.message });

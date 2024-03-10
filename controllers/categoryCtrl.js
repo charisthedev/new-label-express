@@ -37,6 +37,7 @@ const categoryCtrl = {
 
       const newActivities = new Activities({
         description: `Successfully created ${name} category`,
+        userId:req.id
       });
 
       await newActivities.save();
@@ -55,6 +56,7 @@ const categoryCtrl = {
 
       const newActivities = new Activities({
         description: `Successfully deleted category ${category.name}`,
+        userId:req.id
       });
 
       await newActivities.save();
@@ -71,6 +73,7 @@ const categoryCtrl = {
 
       const newActivities = new Activities({
         description: `Successfully updated category ${name}`,
+        userId:req.id
       });
 
       await newActivities.save();

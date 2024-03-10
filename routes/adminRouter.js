@@ -10,6 +10,7 @@ router
 router
   .route("/dashboard-activities")
   .get(authAdmin, adminCtrl.getRecentActivities);
+router.route("/all-activities").get(authAdmin, adminCtrl.getAllActivities);
 router.route("/getuser/:id").get(authAdmin, adminCtrl.getUser);
 router.route("/me").get(authAdmin, adminCtrl.getMe);
 router.route("/make-admin").put(authAdmin, adminCtrl.makeUserAdmin);

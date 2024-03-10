@@ -126,6 +126,7 @@ const episodeCtrl = {
 
       const newActivities = new Activities({
         description: `Successfully created ${title}`,
+        userId: req.id,
       });
 
       await newActivities.save();
@@ -173,6 +174,7 @@ const episodeCtrl = {
 
       const newActivities = new Activities({
         description: `Successfully deleted episode ${episode.title}`,
+        userId: req.id,
       });
 
       await newActivities.save();
@@ -198,6 +200,7 @@ const episodeCtrl = {
 
       const newActivities = new Activities({
         description: `Successfully updated ${episode.title}`,
+        userId: req.id,
       });
 
       await newActivities.save();

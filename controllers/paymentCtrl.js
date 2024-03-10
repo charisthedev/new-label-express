@@ -92,7 +92,10 @@ const paymentCtrl = {
           {
             path: "item",
             match: {
-              $or: [{ title: searchTerm }, { description: searchTerm }],
+              $or: [
+                { title: { $regex: searchTerm, $options: "i" } },
+                { description: { $regex: searchTerm, $options: "i" } },
+              ],
             },
           },
           { path: "user", select: "name id", match: { name: user } },
