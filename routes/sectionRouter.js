@@ -2,17 +2,18 @@ const router = require("express").Router();
 const sectionCtrl = require("../controllers/sectionCtrl");
 const auth = require("../middleware/auth");
 const authAdmin = require("../middleware/authAdmin");
+const modifiedAuthAdmin = require("../middleware/modifiedAuthAdmin");
 
 router
   .route("/")
   .get(sectionCtrl.getSections)
-  .post(authAdmin, sectionCtrl.createSection);
+  .post(modifiedAuthAdmin("Sections"), sectionCtrl.createSection);
 
 router
   .route("/:id")
   .get(sectionCtrl.getSection)
   .delete(authAdmin, sectionCtrl.deleteSection)
-  .put(authAdmin, sectionCtrl.updateSection);
+  .put(modifiedAuthAdmin("Sections"), sectionCtrl.updateSection);
 
 router.route("/search").get(sectionCtrl.searchProduct);
 

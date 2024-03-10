@@ -2,6 +2,7 @@ const router = require("express").Router();
 const adminCtrl = require("../controllers/adminCtrl");
 const auth = require("../middleware/auth");
 const authAdmin = require("../middleware/authAdmin");
+const modifiedAuthAdmin = require("../middleware/modifiedAuthAdmin");
 
 router.route("/dashboard-count").get(authAdmin, adminCtrl.getDashboardCount);
 router
@@ -16,23 +17,23 @@ router.route("/me").get(authAdmin, adminCtrl.getMe);
 router.route("/make-admin").put(authAdmin, adminCtrl.makeUserAdmin);
 router
   .route("/user")
-  .post(authAdmin, adminCtrl.createAdmin)
-  .get(authAdmin, adminCtrl.getAdmin);
+  .post(modifiedAuthAdmin("Admins"), adminCtrl.createAdmin)
+  .get(modifiedAuthAdmin("Admins"), adminCtrl.getAdmin);
 router
   .route("/user/:id")
   .get(authAdmin, adminCtrl.getAdminById)
-  .patch(authAdmin, adminCtrl.updateAdmin);
+  .patch(modifiedAuthAdmin("Admins"), adminCtrl.updateAdmin);
 router
   .route("/permission")
   .get(authAdmin, adminCtrl.getPermissions)
-  .post(authAdmin, adminCtrl.createPermission);
+  .post(modifiedAuthAdmin("Admins"), adminCtrl.createPermission);
 
 router
   .route("/role")
   .get(authAdmin, adminCtrl.getRoles)
-  .post(authAdmin, adminCtrl.createRole);
+  .post(modifiedAuthAdmin("Admins"), adminCtrl.createRole);
 router
   .route("/role/:id")
   .get(authAdmin, adminCtrl.getRoleById)
-  .patch(authAdmin, adminCtrl.updateRole);
+  .patch(modifiedAuthAdmin("Admins"), adminCtrl.updateRole);
 module.exports = router;

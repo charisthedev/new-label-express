@@ -2,16 +2,17 @@ const router = require("express").Router();
 const categoryCtrl = require("../controllers/categoryCtrl");
 const auth = require("../middleware/auth");
 const authAdmin = require("../middleware/authAdmin");
+const modifiedAuthAdmin = require("../middleware/modifiedAuthAdmin");
 
 router
   .route("/")
-  .get( authAdmin, categoryCtrl.getCategories)
-  .post(authAdmin, categoryCtrl.createCategory);
+  .get(modifiedAuthAdmin("Channels"), categoryCtrl.getCategories)
+  .post(modifiedAuthAdmin("Channels"), categoryCtrl.createCategory);
 
 router
-  .route("/:id", authAdmin)
-  .get(authAdmin, categoryCtrl.getCategory)
-  .delete(authAdmin, categoryCtrl.deleteCategory)
-  .put(authAdmin, categoryCtrl.updateCategory);
+  .route("/:id", modifiedAuthAdmin("Channels"))
+  .get(modifiedAuthAdmin("Channels"), categoryCtrl.getCategory)
+  .delete(modifiedAuthAdmin("Channels"), categoryCtrl.deleteCategory)
+  .put(modifiedAuthAdmin("Channels"), categoryCtrl.updateCategory);
 
 module.exports = router;

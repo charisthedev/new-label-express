@@ -2,16 +2,17 @@ const router = require("express").Router();
 const seriesCtrl = require("../controllers/seriesCtrl");
 const auth = require("../middleware/auth");
 const authAdmin = require("../middleware/authAdmin");
+const modifiedAuthAdmin = require("../middleware/modifiedAuthAdmin");
 
 router
   .route("/")
   .get(seriesCtrl.getAllSeries)
-  .post(authAdmin, seriesCtrl.createSeries);
+  .post(modifiedAuthAdmin("Series"), seriesCtrl.createSeries);
 
 router
   .route("/:id")
   .get(seriesCtrl.getSingleSeries)
-  .delete(authAdmin, seriesCtrl.deleteASeries)
-  .put(authAdmin, seriesCtrl.updateASeries);
+  .delete(modifiedAuthAdmin("Series"), seriesCtrl.deleteASeries)
+  .put(modifiedAuthAdmin("Series"), seriesCtrl.updateASeries);
 
 module.exports = router;
