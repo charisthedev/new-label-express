@@ -3,6 +3,7 @@ const Users = require("../models/userModel");
 const Movies = require("../models/movieModel");
 const Season = require("../models/seasonModel");
 const Episodes = require("../models/episodeModel");
+const Discount = require("../models/dicountModel");
 const Flutterwave = require("flutterwave-node-v3");
 const moment = require("moment");
 const flw = new Flutterwave(
@@ -301,6 +302,19 @@ const paymentCtrl = {
       });
     } catch (err) {
       res.status(500).json({ msg: err.message });
+    }
+  },
+  verifyDiscount: async (req, res) => {
+    try {
+      const { code } = req.body;
+      if (!code)
+        return res.status(400).json({ msg: "please provide discount details" });
+      const { percentage } = await Discount.findOne({ code });
+      res
+        .status(200)
+        .json({ msg: "successfully verified discount", percentage });
+    } catch (error) {
+      res.status(500).json({ msg: error.message });
     }
   },
 };

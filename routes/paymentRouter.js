@@ -12,6 +12,7 @@ router.route("/verify").post(auth, paymentCtrl.verifyItemPurchase);
 router.route("/topup").post(auth, paymentCtrl.topUpWallet);
 router.route("/user").get(auth, paymentCtrl.getUserOrders);
 router.route("/card-payment").post(auth, paymentCtrl.createOrderFromCard);
+router.router("/coupon").post(auth, paymentCtrl.verifyDiscount);
 
 router.route("/:id");
 //   .get(movieCtrl.getMovie)
