@@ -51,12 +51,12 @@ class APIfeatures {
 const discountCtrl = {
   getAllDiscounts: async (req, res) => {
     try {
-      const features = new APIfeatures(Discount.find(), req.query)
-        .filtering()
-        .sorting()
-        .paginating();
+      // const features = new APIfeatures(Discount.find(), req.query)
+      //   .filtering()
+      //   .sorting()
+      //   .paginating();
 
-      const discounts = await features.query;
+      const discounts = await Discount.find();
 
       res.json({
         message: "Successfully fetched discounts",
