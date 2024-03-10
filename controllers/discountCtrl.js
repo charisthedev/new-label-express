@@ -68,19 +68,17 @@ const discountCtrl = {
   },
   createDiscount: async (req, res) => {
     try {
-      const { name, percentage, active } = req.body;
+      const { name, percentage } = req.body;
 
-      const generateCode = (discountPercent) => {
-        let code = crypto.randomBytes(4).toString("hex").toUpperCase();
-        code += Math.round(discountPercent);
-        return code;
-      };
+      // const generateCode = (discountPercent) => {
+      //   let code = crypto.randomBytes(4).toString("hex").toUpperCase();
+      //   code += Math.round(discountPercent);
+      //   return code;
+      // };
 
       const newDiscount = new Discount({
         name,
         percentage,
-        active,
-        code: generateCode(percentage),
       });
 
       const newActivities = new Activities({
@@ -121,11 +119,11 @@ const discountCtrl = {
       if (!getDiscount)
         return res.status(400).json({ msg: "discount does not exist" });
 
-      const generateCode = (discountPercent) => {
-        let code = crypto.randomBytes(4).toString("hex").toUpperCase();
-        code += Math.round(discountPercent);
-        return code;
-      };
+      // const generateCode = (discountPercent) => {
+      //   let code = crypto.randomBytes(4).toString("hex").toUpperCase();
+      //   code += Math.round(discountPercent);
+      //   return code;
+      // };
 
       await Discount.findByIdAndUpdate(
         { _id: req.params.id },
@@ -133,7 +131,6 @@ const discountCtrl = {
           name,
           percentage,
           active,
-          code: generateCode(percentage),
         }
       );
 

@@ -309,7 +309,11 @@ const paymentCtrl = {
       const { code } = req.body;
       if (!code)
         return res.status(400).json({ msg: "please provide discount details" });
-      const { percentage } = await Discount.findOne({ code });
+      const previousDocument = await Discount.find({ name: code });
+      const { percentage } = await Discount.findOneAndUpdate(
+        { name: code },
+        { ...previousDocument, usage: previousDocument.usage + 1 }
+      );
       if (percentage)
         res
           .status(200)
