@@ -99,7 +99,11 @@ const paymentCtrl = {
               ],
             },
           },
-          { path: "user", select: "name id", match: { name: { $regex: user, $options: "i" } } },
+          {
+            path: "user",
+            select: "name id",
+            match: { name: { $regex: user, $options: "i" } },
+          },
         ])
         .skip(skip)
         .limit(limit);
