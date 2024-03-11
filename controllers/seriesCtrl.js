@@ -108,12 +108,17 @@ const seriesCtrl = {
   getSingleSeries: async (req, res) => {
     try {
       const series = await Series.findById({ _id: req.params.id })
-        .populate({
-          path: "seasons",
-          populate: {
-            path: "episodes",
+        .populate([
+          {
+            path: "seasons",
+            populate: {
+              path: "episodes",
+            },
           },
-        })
+          {
+            path: "category",
+          },
+        ])
         .populate("genre");
 
       if (!series)
