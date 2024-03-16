@@ -298,9 +298,12 @@ const adminCtrl = {
   },
   getAdmin: async (req, res) => {
     try {
-      const users = await Users.find({ role: { $exists: true } }).select(
-        "-password -wallet -cart"
-      );
+      const users = await Users.find({ role: { $exists: true } })
+        .select("-password -wallet -cart")
+        .populate({
+          path: "role",
+          select: "-permissions -createdAt -updatedAt -__v",
+        });
       res.status(200).json({
         users,
         msg: "Successfully fetched admins",

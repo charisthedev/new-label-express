@@ -26,16 +26,21 @@ const channelCtrl = {
   getSingleChannel: async (req, res) => {
     try {
       const queryChannel = req.params.id;
-      const channel = await Category.findById({ _id: queryChannel });
+      const channel = await Category.find({ name: queryChannel });
       if (!channel) {
         res.status(400).json({ msg: "channel doesn't exist" });
       }
-      const movies = await Movies.find({ category: queryChannel });
-      const series = await Series.find({ category: queryChannel });
+      const movies = await Movies.find({ category: channel[0]._id });
+      const series = await Series.find({ category: channel[0]._id });
       res.status(200).json({
         msg: "sucessfully fetched channel",
-        name: channel.name,
-        items: combineArrays(movies, series),
+        channels: [
+          {
+            items: combineArrays(movies, series),
+            title: channel[0].name,
+            id: channel[0]._id,
+          },
+        ],
       });
     } catch (err) {
       res.status(500).json({ msg: err.message });
