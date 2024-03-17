@@ -309,6 +309,7 @@ const adminCtrl = {
         role,
         password: passwordHash,
         isDefaultPassword: true,
+        isEmailVerified: true,
       });
       res.status(200).json({
         user,
