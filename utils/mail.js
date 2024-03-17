@@ -13,7 +13,7 @@ const mg = mailgun.client({
 
 const sendMail = async (data) => {
   const status = await mg.messages
-    .create("sandboxe7de0cacc9394833b41e3081befbd144.mailgun.org", data)
+    .create(process.env.MAILGUN_DOMAIN, data)
     .then((msg) => {
       console.log(msg);
       return true;
