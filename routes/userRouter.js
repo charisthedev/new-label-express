@@ -21,4 +21,7 @@ router.patch("/updatepassword", auth, userCtrl.updatePassword);
 
 router.get("/history", auth, userCtrl.history);
 
+router.post("/verify-email", userCtrl.verifyEmail);
+router.post("/resend-email", userCtrl.resendVerification);
+
 module.exports = router;

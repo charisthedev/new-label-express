@@ -11,6 +11,7 @@ const Permissions = require("../models/permissionModel");
 const Roles = require("../models/RoleModel");
 const bcrypt = require("bcryptjs");
 const generatePassword = require("generate-password");
+const sendMail = require("../utils/mail");
 
 const adminCtrl = {
   getDashboardCount: async (req, res) => {
@@ -282,11 +283,32 @@ const adminCtrl = {
         symbols: true,
       });
       const passwordHash = await bcrypt.hash(password, 10);
+      const data = {
+        from: "info@newlabelproduction.com",
+        to: email,
+        subject: "Welcome to New Label Tv",
+        text: "",
+        html: `<!DOCTYPE html>
+        <html>
+        <head>
+          <title>Welcome to New Label Tv</title>
+        </head>
+        <body>
+          <h1>Welcome to New Label Tv</h1>
+          <p>You've been invited to new label Tv as a(n) ${role} role</p>
+          <h3>here is your default password: ${password}<h3>
+          <span>NB: you are required to reset your password</span>
+          <h2>Congratulations</h2>
+        </body>
+        </html>`,
+      };
+      await sendMail(data);
       const user = await Users.create({
         name,
         email,
         role,
         password: passwordHash,
+        isDefaultPassword: true,
       });
       res.status(200).json({
         user,

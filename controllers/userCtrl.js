@@ -39,13 +39,98 @@ const userCtrl = {
 
       // Save mongodb
       await newUser.save();
-
-      // Then create jsonwebtoken to authentication
       const accesstoken = createAccessToken({ id: newUser._id }, "3d");
-
-      res.json({
-        accesstoken,
+      const data = {
+        from: "info@newlabelproduction.com",
+        to: email,
+        subject: "Welcome to New Label Tv",
+        text: "",
+        html: `<!DOCTYPE html>
+        <html>
+        <head>
+          <title>Welcome to New Label Tv</title>
+        </head>
+        <body>
+          <h1>Welcome to New Label Tv</h1>
+          <p>Thank you for signing up. Please click the link below to verify your email address:</p>
+          <a href="https://newlabeltvstage.netlify.app/verify-email?token=${accesstoken}">
+        Verify Email
+      </a>
+          <p>If you did not sign up for our service, please ignore this email.</p>
+        </body>
+        </html>`,
+      };
+      await sendMail(data);
+      res.status(200).json({
+        msg: "registration successful, please check your email address for a verification mail",
       });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
+  resendVerification: async (req, res) => {
+    try {
+      const { email } = req.body;
+      const user = await Users.findOne({ email });
+      const accesstoken = createAccessToken({ id: user._id }, "3d");
+      const data = {
+        from: "info@newlabelproduction.com",
+        to: email,
+        subject: "Welcome to New Label Tv",
+        text: "",
+        html: `<!DOCTYPE html>
+        <html>
+        <head>
+          <title>Welcome to New Label Tv</title>
+        </head>
+        <body>
+          <h1>Welcome to New Label Tv</h1>
+          <p>Thank you for signing up. Please click the link below to verify your email address:</p>
+          <a href="https://newlabeltvstage.netlify.app/verify-email?token=${accesstoken}">
+        Verify Email
+      </a>
+          <p>If you did not sign up for our service, please ignore this email.</p>
+        </body>
+        </html>`,
+      };
+      await sendMail(data);
+      res.status(200).json({
+        msg: "email verification sent",
+      });
+    } catch (err) {
+      res.status(500).json({
+        msg: err?.message,
+      });
+    }
+  },
+  verifyEmail: async (req, res) => {
+    try {
+      const { token } = req.body;
+      if (!token) res.status(400).json({ msg: "please provide token" });
+      jwt.verify(
+        token,
+        process.env.ACCESS_TOKEN_SECRET,
+        async (error, decoded) => {
+          if (error) {
+            if (error.name === "TokenExpiredError") {
+              // Token has expired
+              return res.status(400).json({ msg: "token expired" });
+            } else if (error.name === "JsonWebTokenError") {
+              // Invalid token
+              return res.status(400).json({ msg: "Invalid Token" });
+            } else {
+              // Other JWT verification errors
+              res.status(500).json({ msg: error.message });
+            }
+          } else {
+            const user = await Users.findByIdAndUpdate(
+              { _id: decoded.data.id },
+              { isEmailVerified: true }
+            );
+            return res.status(200).json({ msg: "email verified" });
+          }
+        }
+      );
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }
@@ -59,11 +144,13 @@ const userCtrl = {
 
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) return res.status(400).json({ msg: "Incorrect password." });
+      if (!user.isEmailVerified)
+        res.status(200).json({ msg: "email is not verified", verified: false });
 
       // If login success , create access token and refresh token
       const accesstoken = createAccessToken({ id: user._id }, "3d");
 
-      res.json({
+      res.status(200).json({
         accesstoken,
         user: {
           id: user._id,
@@ -71,6 +158,8 @@ const userCtrl = {
           email: user.email,
           wallet: user.wallet,
         },
+        verified: true,
+        isDefaultPassword: user.isDefaultPassword,
       });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
@@ -111,7 +200,7 @@ const userCtrl = {
       const passwordHash = await bcrypt.hash(newPassword, 10);
       await Users.findByIdAndUpdate(
         { _id: user._id },
-        { password: passwordHash }
+        { password: passwordHash, isDefaultPassword: false }
       );
       res.status(200).json({
         msg: "Successfully updated password",
@@ -164,7 +253,10 @@ const userCtrl = {
         res
           .status(200)
           .json({ msg: `password reset email has been sent to ${email}` });
-      if (!status) res.status(500).json({ msg: "An unexpected error occured" });
+      if (!status)
+        res
+          .status(500)
+          .json({ msg: "An unexpected error occured with mail provider" });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }
@@ -197,7 +289,7 @@ const userCtrl = {
           } else {
             const user = await Users.findByIdAndUpdate(
               { _id: decoded.data.id },
-              { password: passwordHash }
+              { password: passwordHash, isDefaultPassword: false }
             );
             return res
               .status(200)
