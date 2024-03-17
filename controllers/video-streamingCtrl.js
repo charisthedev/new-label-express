@@ -3,6 +3,7 @@ const fs = require("fs");
 const Video = require("../models/videoModel");
 const cloudinary = require("cloudinary").v2;
 const cloudinaryUtils = require("cloudinary").utils;
+const Payments = require("../models/paymentModel");
 
 const cache = {}; // cache to store video data
 
@@ -67,6 +68,8 @@ const videoStreamCtrl = {
   },
   sendVideoUrl: async (req, res) => {
     try {
+      const userId = req.id;
+      const item = req.params.id;
       if (!req.params.id)
         return res.status(400).json({ msg: "video id is undefined" });
       const video = await Video.findById({ _id: req.params.id });
@@ -82,7 +85,11 @@ const videoStreamCtrl = {
         "mp4",
         options
       );
-
+      const paymentInstance = await Payments.findOne({ user: userId, item });
+      await Payments.findOneAndUpdate(
+        { _id: paymentInstance._id },
+        { validViews: paymentInstance.validViews - 1 }
+      );
       return res.status(200).json({ msg: "success", url: video.link });
     } catch (err) {
       res.status(500).json({ msg: err.message });
