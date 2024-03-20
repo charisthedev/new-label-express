@@ -277,6 +277,7 @@ const adminCtrl = {
           msg: "email is required",
         });
       }
+      const userRole = await Roles.findById({ _id: role });
       const password = generatePassword.generate({
         length: 10,
         numbers: true,
@@ -295,7 +296,7 @@ const adminCtrl = {
         </head>
         <body>
           <h1>Welcome to New Label Tv</h1>
-          <p>You've been invited to new label Tv as a(n) ${role} role</p>
+          <p>You've been invited to new label Tv as a(n) ${userRole.name} role</p>
           <h3>here is your default password: ${password}<h3>
           <span>NB: you are required to reset your password</span>
           <h2>Congratulations</h2>
