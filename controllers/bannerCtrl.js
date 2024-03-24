@@ -56,10 +56,16 @@ const bannerCtrl = {
         .populate({
           path: "movies",
           select: "-video",
+          populate: {
+            path: "genre category",
+          },
         })
         .populate({
           path: "series",
           select: "-video",
+          populate: {
+            path: "genre category seasons",
+          },
         });
 
       res.json({ banner });

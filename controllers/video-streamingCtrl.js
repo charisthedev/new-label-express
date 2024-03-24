@@ -69,7 +69,7 @@ const videoStreamCtrl = {
   sendVideoUrl: async (req, res) => {
     try {
       const userId = req.id;
-      const item = req.params.id;
+      const media = req.body.item;
       if (!req.params.id)
         return res.status(400).json({ msg: "video id is undefined" });
       const video = await Video.findById({ _id: req.params.id });
@@ -85,11 +85,15 @@ const videoStreamCtrl = {
         "mp4",
         options
       );
-      const paymentInstance = await Payments.findOne({ user: userId, item });
-      await Payments.findOneAndUpdate(
-        { _id: paymentInstance._id },
-        { validViews: paymentInstance.validViews - 1 }
-      );
+      const paymentInstance = await Payments.findOne({
+        user: userId,
+        item: media,
+      });
+      if (paymentInstance?.validViews)
+        await Payments.findOneAndUpdate(
+          { _id: paymentInstance._id },
+          { validViews: paymentInstance.validViews - 1 }
+        );
       return res.status(200).json({ msg: "success", url: video.link });
     } catch (err) {
       res.status(500).json({ msg: err.message });

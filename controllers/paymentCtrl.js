@@ -130,7 +130,7 @@ const paymentCtrl = {
   },
   createOrderFromWallet: async (req, res) => {
     try {
-      const { item, item_type, paymentType } = req.body;
+      const { item, item_type, paymentType, price } = req.body;
       const id = req.id;
       if (!item) res.status(400).json({ msg: "Payment was not successfull." });
       const content = await findItem(item_type, item);
@@ -138,10 +138,13 @@ const paymentCtrl = {
       if (!user)
         res.status(400).json({ msg: "Please login to verify yourself" });
 
-      if (user.wallet < content?.price)
+      if (user.wallet < (price || content?.price))
         return res.status(400).json({ msg: "Insufficient Wallet ballance" });
 
-      const deductBalance = user.wallet - content?.price;
+      const deductBalance =
+        price && paymentType === "donation"
+          ? user.wallet - price
+          : user.wallet - content?.price;
 
       await Users.findOneAndUpdate(
         { _id: id },
@@ -222,11 +225,17 @@ const paymentCtrl = {
         return res.status(400).json({ msg: "Bad request" });
       const date = moment().add(-moment().utcOffset(), "minutes").toDate();
       // const verify = await Payments.findOne({ user: id, item, item_type });
-      const verify = await Payments.findOne({
-        user: id,
-        $or: [{ item: item }, { item: season }],
-        item_type,
-      });
+      const verify = season
+        ? await Payments.findOne({
+            user: id,
+            $or: [{ item: item }, { item: season }],
+            $or: [{ item_type }, { item_type: "Seasons" }],
+          })
+        : Payments.findOne({
+            user: id,
+            item,
+            item_type,
+          });
       if (!verify)
         return res.status(403).json({
           msg: "No payment has been made for this item",

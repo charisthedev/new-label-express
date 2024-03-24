@@ -11,9 +11,18 @@ const sectionCtrl = {
         .populate({
           path: "movies",
           select: "-video",
+          populate: {
+            path: "genre",
+          },
         })
         .populate({
           path: "series",
+          populate: {
+            path: "genre",
+          },
+          populate: {
+            path: "seasons",
+          },
         });
 
       res.json({ sections });
