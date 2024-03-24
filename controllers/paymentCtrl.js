@@ -230,11 +230,13 @@ const paymentCtrl = {
             user: id,
             $or: [{ item: item }, { item: season }],
             $or: [{ item_type }, { item_type: "Seasons" }],
+            paymentType: { $ne: "donation" },
           })
         : Payments.findOne({
             user: id,
             item,
             item_type,
+            paymentType: { $ne: "donation" },
           });
       if (!verify)
         return res.status(403).json({
