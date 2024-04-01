@@ -244,16 +244,17 @@ const paymentCtrl = {
           status: false,
         });
       if (
-        moment(verify.expirationDate).isSameOrBefore(moment(date)) ||
-        verify.validViews < 1
+        verify &&
+        (moment(verify.expirationDate).isSameOrBefore(moment(date)) ||
+          verify.validViews < 1)
       )
         return res.status(400).json({ msg: "item Expired", status: false });
-
-      res.status(200).json({
-        msg: "Item verified with user purschase",
-        verify: verify.item,
-        status: true,
-      });
+      if (verify)
+        res.status(200).json({
+          msg: "Item verified with user purschase",
+          verify: verify.item,
+          status: true,
+        });
     } catch (err) {
       res.status(500).json({ msg: err.message });
     }
