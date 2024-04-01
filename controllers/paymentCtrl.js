@@ -238,7 +238,7 @@ const paymentCtrl = {
             item_type,
             paymentType: { $ne: "donation" },
           });
-      if (!verify)
+      if (!verify?.item)
         return res.status(403).json({
           msg: "No payment has been made for this item",
           status: false,
@@ -248,7 +248,7 @@ const paymentCtrl = {
         (verify.expirationDate <= new Date() || verify.validViews < 1)
       ) {
         return res.status(400).json({ msg: "item Expired", status: false });
-      } else {
+      } else if (verify?.item) {
         res.status(200).json({
           msg: "Item verified with user purschase",
           verify: verify.item,
