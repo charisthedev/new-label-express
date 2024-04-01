@@ -232,7 +232,7 @@ const paymentCtrl = {
             $or: [{ item_type }, { item_type: "Seasons" }],
             paymentType: { $ne: "donation" },
           })
-        : Payments.findOne({
+        : await Payments.findOne({
             user: id,
             item,
             item_type,
