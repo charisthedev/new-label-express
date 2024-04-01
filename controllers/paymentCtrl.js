@@ -245,8 +245,7 @@ const paymentCtrl = {
         });
       if (
         verify &&
-        (moment(verify.expirationDate).isSameOrBefore(moment(date)) ||
-          verify.validViews < 1)
+        (verify.expirationDate <= new Date() || verify.validViews < 1)
       )
         return res.status(400).json({ msg: "item Expired", status: false });
       if (verify)
