@@ -150,22 +150,37 @@ const paymentCtrl = {
         { _id: id },
         { wallet: Number(deductBalance) }
       );
-      const date = moment().add(-moment().utcOffset(), "minutes").toDate();
-      const expirationDate = moment(date)
-        .add(content?.expirationSpan, "days")
-        .toDate();
-      const newOrder = new Payments({
+      const verify = await Payments.findOne({
         user: id,
         item,
-        paymentType,
-        price: content?.price,
-        expirationDate,
-        validViews: content?.validViews,
         item_type,
+        paymentType: { $ne: "donation" },
       });
+      const date = moment().add(-moment().utcOffset(), "minutes").toDate();
+      const expirationDate = moment(date)
+        .add(
+          content?.expirationSpan ? content?.expirationSpan : 100000000000000,
+          "days"
+        )
+        .toDate();
+      if (!verify?.item) {
+        const newOrder = new Payments({
+          user: id,
+          item,
+          paymentType,
+          price: content?.price,
+          expirationDate,
+          validViews: content?.validViews,
+          item_type,
+        });
 
-      await newOrder.save();
-
+        await newOrder.save();
+      } else {
+        await Payments.findByIdAndUpdate(
+          { _id: verify?._id },
+          { expirationDate }
+        );
+      }
       res.status(200).json({
         msg: "Order created successfully ",
         success: true,
@@ -190,11 +205,20 @@ const paymentCtrl = {
       if (!item && !payment_id && !paymentType && !price)
         res.status(404).json({ msg: "Payment was not succssfully." });
       const date = moment().add(-moment().utcOffset(), "minutes").toDate();
-      const expirationDate = moment(date).add(item_span, "days").toDate();
+      const expirationDate = moment(date)
+        .add(item_span ? item_span : 100000000000000, "days")
+        .toDate();
       const response = await flw.Transaction.verify({ id: `${payment_id}` });
+      const verify = await Payments.findOne({
+        user: id,
+        item,
+        item_type,
+        paymentType: { $ne: "donation" },
+      });
       if (
         response.data.status === "successful" &&
-        tx_ref === response.data.tx_ref
+        tx_ref === response.data.tx_ref &&
+        !verify?.item
       ) {
         const newOrder = new Payments({
           user: id,
@@ -208,7 +232,13 @@ const paymentCtrl = {
         });
 
         await newOrder.save();
+      } else {
+        await Payments.findByIdAndUpdate(
+          { _id: verify?._id },
+          { expirationDate }
+        );
       }
+      git;
       res.json({
         msg: "card payment successfully.",
         verified: response.status,
@@ -245,7 +275,8 @@ const paymentCtrl = {
         });
       if (
         verify?.item &&
-        (verify.expirationDate <= new Date() || verify.validViews < 1)
+        ((verify.expirationDate ? verify.expirationDate <= new Date() : true) ||
+          verify.validViews < 1)
       ) {
         return res.status(400).json({ msg: "item Expired", status: false });
       } else if (verify?.item) {
