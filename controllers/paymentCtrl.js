@@ -244,16 +244,17 @@ const paymentCtrl = {
           status: false,
         });
       if (
-        verify &&
+        verify?.item &&
         (verify.expirationDate <= new Date() || verify.validViews < 1)
-      )
+      ) {
         return res.status(400).json({ msg: "item Expired", status: false });
-      if (verify)
+      } else {
         res.status(200).json({
           msg: "Item verified with user purschase",
           verify: verify.item,
           status: true,
         });
+      }
     } catch (err) {
       res.status(500).json({ msg: err.message });
     }
@@ -296,9 +297,10 @@ const paymentCtrl = {
     try {
       // const { item } = req.body;
       const id = req.id;
-      const orders = await Payments.find({ user_id: id })
-        .populate("item")
-        .select("-video -episodes");
+      const orders = await Payments.find({
+        user_id: id,
+        paymentType: { $ne: "donation" },
+      }).populate({ path: "item", select: "-video -episodes" });
       // const movies = await Movies.find({ item_id }).select("-video");
       // const season = await Season.find({ item_id }).select("-episodes");
 
