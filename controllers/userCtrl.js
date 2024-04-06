@@ -249,7 +249,9 @@ const userCtrl = {
         to: user.email,
         subject: "Password Reset Mail",
         text: "",
-        html: `<a href='https://newlabeltvstage.netlify.app/changepassword?token=${accesstoken}'>click here to reset your password</a>`,
+        html: user?.role
+          ? `<a href='https://newllabeltv.netlify.app/reset_password?token=${accesstoken}'>click here to reset your password</a>`
+          : `<a href='https://newlabeltvstage.netlify.app/changepassword?token=${accesstoken}'>click here to reset your password</a>`,
       };
       const status = await sendMail(data);
       if (status)
