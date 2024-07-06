@@ -18,7 +18,7 @@ router.route("/make-admin").put(authAdmin, adminCtrl.makeUserAdmin);
 router
   .route("/user")
   .post(modifiedAuthAdmin("Admins"), adminCtrl.createAdmin)
-  .get(modifiedAuthAdmin("Admins"), adminCtrl.getAdmin);
+  .get(modifiedAuthAdmin("Admins"),adminCtrl.getAdmin);
 router
   .route("/user/:id")
   .get(authAdmin, adminCtrl.getAdminById)

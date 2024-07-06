@@ -10,16 +10,23 @@ const flw = new Flutterwave(
   process.env.FLUTTERWAVE_PUB_KEY,
   process.env.FLUTTERWAVE_SECRET_KEY
 );
+const sendMail = require("../utils/mail");
 
 const findItem = async (type, item) => {
   if (type === "Movies") {
     return await Movies.findById({ _id: item });
   }
   if (type === "Seasons") {
-    return await Season.findById({ _id: item });
+    return await Season.findById({ _id: item }).populate({
+      path: 'series',
+      select: 'emails',
+    });
   }
   if (type === "Episodes") {
-    return await Episodes.findById({ _id: item });
+    return await Episodes.findById({ _id: item }).populate({
+      path: 'series',
+      select: 'emails',
+    });
   }
 };
 
@@ -136,7 +143,7 @@ const paymentCtrl = {
       const content = await findItem(item_type, item);
       const user = await Users.findOne({ _id: id });
       if (!user)
-        res.status(400).json({ msg: "Please login to verify yourself" });
+        res.status(400).json({ msg: "Unauthorised access" });
 
       if (user.wallet < (price || content?.price))
         return res.status(400).json({ msg: "Insufficient Wallet ballance" });
@@ -187,6 +194,28 @@ const paymentCtrl = {
           { expirationDate }
         );
       }
+      const data = {
+        from: "info@newlabelproduction.com",
+        to: (content?.emails||content?.series?.emails).join(","),
+        subject: "Order Notification",
+        text: "",
+        html: `<!DOCTYPE html>
+        <html>
+        <head>
+          <title>New Label Tv Order Notification</title>
+        </head>
+        <body>
+          <h1>Order Notification</h1>
+          <p>An Order have been created on the item ${content.title}</p>
+          <h3>type:${item_type}<h3>
+          <h3>title:${content?.title}<h3>
+          <h3>price:${content?.price}<h3>
+          <span>NB: this is an order notification as you were added as a beneficiary</span>
+          <h2>Congratulations</h2>
+        </body>
+        </html>`,
+      };
+      await sendMail(data);
       res.status(200).json({
         msg: "Order created successfully ",
         success: true,
@@ -208,6 +237,7 @@ const paymentCtrl = {
         tx_ref,
       } = req.body;
       const id = req.id;
+      const content = await findItem(item_type, item);
       if (!item && !payment_id && !paymentType && !price)
         res.status(404).json({ msg: "Payment was not succssfully." });
       const date = moment().add(-moment().utcOffset(), "minutes").toDate();
@@ -252,6 +282,26 @@ const paymentCtrl = {
           { expirationDate }
         );
       }
+      const data = {
+        from: "info@newlabelproduction.com",
+        to: (content?.emails||content?.series?.emails).join(",").join(","),
+        subject: "Order Notification",
+        text: "",
+        html: `<!DOCTYPE html>
+        <html>
+        <head>
+          <title>New Label Tv Order Notification</title>
+        </head>
+        <body>
+          <h1>Order Notification</h1>
+          <p>An Order have been created on the item ${content.title}</p>
+          <h3>here is your default password: ${password}<h3>
+          <span>NB: this is an order notification as you were added as a beneficiary</span>
+          <h2>Congratulations</h2>
+        </body>
+        </html>`,
+      };
+      await sendMail(data);
       res.json({
         msg: "card payment successfully.",
         verified: response.status,

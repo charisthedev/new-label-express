@@ -43,6 +43,7 @@ app.use("/api/admin", require("./routes/adminRouter"));
 app.use("/api/genre", require("./routes/genreRouter"));
 app.use("/api/continue-watching", require("./routes/continueWatchingRouter"));
 app.use("/api/series", require("./routes/seriesRouter"));
+app.use("/api/course", require("./routes/courseRouter"));
 app.use("/api/discount", require("./routes/discountRouter"));
 app.use("/api/upload", require("./routes/video-uploadRouter"));
 app.use("/api/stream", require("./routes/video-streamRouter"));

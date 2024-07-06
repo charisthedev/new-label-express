@@ -31,8 +31,26 @@ const episodeSchema = new mongoose.Schema(
       required: true,
     },
     price: {
-      type: Number,
-      default: 0,
+      ngn: {
+        type: Number,
+        default: 0,
+      },
+      usd: {
+        type: Number,
+        default: 0,
+      },
+      cad:{
+        type:Number,
+        default:0
+      },
+      eur:{
+        type:Number,
+        default:0
+      },
+      gbp:{
+        type:Number,
+        default:0
+      }
     },
     free: {
       type: Boolean,

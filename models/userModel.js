@@ -21,6 +21,13 @@ const userSchema = new mongoose.Schema(
       ref: "Roles",
       default: undefined,
     },
+    course:[
+      {
+       type: mongoose.Schema.Types.ObjectId,
+       ref: "Series",
+       default:[]
+      }
+    ],
     wallet: {
       type: Number,
       default: 0,

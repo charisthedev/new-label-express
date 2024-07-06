@@ -7,8 +7,26 @@ const movieSchema = new mongoose.Schema(
       required: true,
     },
     price: {
-      type: Number,
-      default: 0
+      ngn: {
+        type: Number,
+        default: 0,
+      },
+      usd: {
+        type: Number,
+        default: 0,
+      },
+      cad:{
+        type:Number,
+        default:0
+      },
+      eur:{
+        type:Number,
+        default:0
+      },
+      gbp:{
+        type:Number,
+        default:0
+      }
     },
     discount: [
       {
@@ -83,6 +101,24 @@ const movieSchema = new mongoose.Schema(
     validViews: {
       type: Number,
     },
+    emails: {
+      type: [String],
+      validate: {
+        validator: function(v) {
+          return v.every(email => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
+        },
+        message: props => `${props.value} contains an invalid email!`
+      },
+      default:[]
+    },
+    course: {
+      type: Boolean,
+      default:false
+    },
+    certificate: {
+      type: Boolean,
+      default:false
+    }
   },
   {
     timestamps: true, //important
