@@ -51,7 +51,7 @@ const seriesCtrl = {
   getAllSeries: async (req, res) => {
     try {
       const features = new APIfeatures(
-        Series.find().populate("seasons"),
+        Series.find({course:false}).populate("seasons"),
         req.query
       )
         .filtering()
@@ -72,7 +72,7 @@ const seriesCtrl = {
   },
   createSeries: async (req, res) => {
     try {
-      const { title, description, casts, genre, image, banner, donation } =
+      const { title, description, casts, genre, image, banner, donation,emails } =
         req.body;
 
       if (!req.body)
@@ -86,6 +86,7 @@ const seriesCtrl = {
         image,
         banner,
         donation,
+        emails
       });
 
       const newActivities = new Activities({

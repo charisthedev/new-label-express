@@ -129,6 +129,7 @@ const movieCtrl = {
         category,
         expirationSpan,
         validViews,
+        emails
       } = req.body;
       if (!image || !video)
         return res.status(400).json({ msg: "Asset upload not complete" });
@@ -152,6 +153,7 @@ const movieCtrl = {
         category,
         expirationSpan,
         validViews,
+        emails
       });
 
       const newActivities = new Activities({

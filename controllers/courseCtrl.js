@@ -78,7 +78,7 @@ const courseCtrl = {
   },
   createCourse: async (req, res) => {
     try {
-      const { title, description, casts, genre, image, banner, donation, certificate } =
+      const { title, description, casts, genre, image, banner, donation, certificate,emails } =
         req.body;
 
       if (!req.body)
@@ -93,7 +93,8 @@ const courseCtrl = {
         banner,
         donation,
         course:true,
-        certificate
+        certificate,
+        emails
       });
 
       const newActivities = new Activities({
