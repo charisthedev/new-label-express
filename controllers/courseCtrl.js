@@ -208,7 +208,7 @@ const courseCtrl = {
     } else {
       res.status(400).json({
         status: "Not Eligible",
-        message: "Please complete all modules to download your certificate",
+        msg: "Please complete all modules to download your certificate",
       });
     }
     } catch (err) {
