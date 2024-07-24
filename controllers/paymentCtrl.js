@@ -3,6 +3,8 @@ const Users = require("../models/userModel");
 const Movies = require("../models/movieModel");
 const Season = require("../models/seasonModel");
 const Episodes = require("../models/episodeModel");
+const Course = require("../models/courseModel");
+const Lesson = require("../models/lessonModel");
 const Discount = require("../models/dicountModel");
 const Flutterwave = require("flutterwave-node-v3");
 const moment = require("moment");
@@ -25,6 +27,12 @@ const findItem = async (type, item) => {
   if (type === "Episodes") {
     return await Episodes.findById({ _id: item }).populate({
       path: 'series',
+      select: 'emails',
+    });
+  }
+  if (type === "Lesson" || type === "Course") {
+    return await Course.findById({ _id: item }).populate({
+      path: 'lessons',
       select: 'emails',
     });
   }
@@ -312,7 +320,7 @@ const paymentCtrl = {
   },
   verifyItemPurchase: async (req, res) => {
     try {
-      const { item, item_type, season } = req.body;
+      const { item, item_type, season, course } = req.body;
       const id = req.id;
       if (!item || !item_type)
         return res.status(400).json({ msg: "Bad request" });
@@ -322,7 +330,7 @@ const paymentCtrl = {
         ? await Payments.findOne({
             user: id,
             $or: [{ item: item }, { item: season }],
-            $or: [{ item_type }, { item_type: "Seasons" }],
+            $or: [{ item_type }, { item_type: "Seasons" }, {item_type:"Course"}],
             paymentType: { $ne: "donation" },
           })
         : await Payments.findOne({

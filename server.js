@@ -35,6 +35,7 @@ app.use("/api/movies", require("./routes/movieRouter"));
 app.use("/api/category", require("./routes/categoryRouter"));
 app.use("/api/seasons", require("./routes/seasonRouter"));
 app.use("/api/episodes", require("./routes/episodeRouter"));
+app.use("/api/lessons", require("./routes/lessonRouter"));
 // app.use("/api/upload", require("./routes/upload"));
 app.use("/api/banner", require("./routes/bannerRouter"));
 app.use("/api/section", require("./routes/sectionRouter"));

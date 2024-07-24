@@ -1,4 +1,6 @@
 const Series = require("../models/seriesModel");
+const Course = require("../models/courseModel");
+const Lesson = require("../models/lessonModel");
 const Episodes = require("../models/episodeModel");
 const WatchHistory = require("../models/continueWatchingModel");
 const Activities = require("../models/activityModel");
@@ -61,7 +63,7 @@ const courseCtrl = {
     //     .paginating();
       const limit = req.query.limit??0;
       const searchTerm = req.query.term??"";
-      const series = await Series.find({course:true,$or: [
+      const course = await Course.find({$or: [
         { title: { $regex: searchTerm, $options: "i" } },
         { description: { $regex: searchTerm, $options: "i" } },
       ]}).limit(limit);
@@ -69,8 +71,8 @@ const courseCtrl = {
       res.json({
         status: "success",
         message: "successfully fetched list of course",
-        result: series.length,
-        data: series,
+        result: course.length,
+        data: course,
       });
     } catch (err) {
       res.status(500).json({ msg: err.message });
@@ -78,13 +80,13 @@ const courseCtrl = {
   },
   createCourse: async (req, res) => {
     try {
-      const { title, description, casts, genre, image, banner, donation, certificate,emails } =
+      const { title, description, casts, genre, image, banner, donation, certificate,emails, price } =
         req.body;
 
       if (!req.body)
         return res.status(400).json({ msg: "All payload are required" });
 
-      const newSeries = new Series({
+      const newCourse = new Course({
         title: title.toLowerCase(),
         description,
         casts,
@@ -94,7 +96,8 @@ const courseCtrl = {
         donation,
         course:true,
         certificate,
-        emails
+        emails,
+        price
       });
 
       const newActivities = new Activities({
@@ -104,7 +107,7 @@ const courseCtrl = {
 
       await newActivities.save();
 
-      await newSeries.save();
+      await newCourse.save();
 
       res.json({
         status: "success",
@@ -114,15 +117,69 @@ const courseCtrl = {
       res.status(500).json({ msg: err.message });
     }
   },
+  createLesson: async (req, res) => {
+    try {
+      const {
+        title,
+        description,
+        duration,
+        publication_date,
+        video,
+        image,
+        banner,
+        course
+      } = req.body;
+      if (!image || !video || !banner)
+        return res.status(400).json({ msg: "Asset upload not complete" });
+      const newCourse = new Lesson({
+        title: title.toLowerCase(),
+        description,
+        duration,
+        publication_date,
+        video,
+        image,
+        banner,
+        trailer,
+        course
+      });
+
+      const newActivities = new Activities({
+        description: `Successfully created Lesson ${title}`,
+        userId: req.id,
+      });
+
+      await newActivities.save();
+
+      await newCourse
+        .save()
+        .then((newLesson) => {
+          Course.findByIdAndUpdate(
+            { _id: course },
+            { $push: { lessons: newLesson._id } },
+            { new: true }
+          )
+            .then(() => {
+              return res
+                .status(200)
+                .json({ msg: "successfully created a lesson" });
+            })
+            .catch((err) => {
+              return res.status(400).json({ msg: err.message });
+            });
+        })
+        .catch((err) => {
+          return res.status(400).json({ msg: err.message });
+        });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
   getSingleCourse: async (req, res) => {
     try {
-      const series = await Series.findOne({ id: req.params.id, course:true })
+      const course = await Course.findOne({ id: req.params.id })
         .populate([
           {
-            path: "seasons",
-            populate: {
-              path: "episodes",
-            },
+            path: "lessons",
           },
           {
             path: "category",
@@ -130,13 +187,13 @@ const courseCtrl = {
         ])
         .populate("genre");
 
-      if (!series)
+      if (!course)
         return res.status(400).json({ msg: "Course does not exist" });
 
       res.json({
         status: "success",
-        message: `Successfully fetched ${series.title} course`,
-        data: series,
+        message: `Successfully fetched ${course.title} course`,
+        data: course,
       });
     } catch (err) {
       res.status(500).json({ msg: err.message });
@@ -144,18 +201,18 @@ const courseCtrl = {
   },
   deleteCourse: async (req, res) => {
     try {
-      const seriesTitle = await Series.findOne({ id: req.params.id,course:true });
-      await Series.findByIdAndDelete({ _id: req.params.id });
+      const courseTitle = await Course.findOne({ id: req.params.id });
+      await Course.findByIdAndDelete({ _id: req.params.id });
 
       const newActivities = new Activities({
-        description: `Successfully deleted ${seriesTitle.title} course`,
+        description: `Successfully deleted ${courseTitle.title} course`,
         userId: req.id,
       });
 
       await newActivities.save();
 
       res.json({
-        msg: `Successfully deleted ${seriesTitle.title} course`,
+        msg: `Successfully deleted ${courseTitle.title} course`,
       });
     } catch (err) {
       res.status(500).json({ msg: err.message });
@@ -166,9 +223,9 @@ const courseCtrl = {
       if (!req.body)
         return res.status(400).json({ msg: "All payload are required" });
 
-      const seriesTitle = await Series.findOne({ id: req.params.id,course:true });
+      const courseTitle = await Course.findOne({ id: req.params.id });
 
-      await Series.findByIdAndUpdate(
+      await Course.findByIdAndUpdate(
         { _id: req.params.id },
         {
           ...req.body,
@@ -176,7 +233,7 @@ const courseCtrl = {
       );
 
       const newActivities = new Activities({
-        description: `Successfully updated ${seriesTitle.title} course`,
+        description: `Successfully updated ${courseTitle.title} course`,
         userId: req.id,
       });
 
@@ -184,7 +241,7 @@ const courseCtrl = {
 
       res.json({
         status: "success",
-        message: `Successfully updated ${seriesTitle.title} course`,
+        message: `Successfully updated ${courseTitle.title} course`,
       });
     } catch (err) {
       res.status(500).json({ msg: err.message });
@@ -195,13 +252,13 @@ const courseCtrl = {
       if (!req.params.id)
         return res.status(400).json({ msg: "Course Id is required" });
 
-      const allEpisodes = await Episodes.find({ series: req.params.id }).select("_id");
-    const allEpisodeIds = allEpisodes.map((episode) => episode._id?.toHexString());
+      const allLessons = await Lesson.find({ series: req.params.id }).select("_id");
+    const allLessonIds = allLessons.map((episode) => episode._id?.toHexString());
 
     const allUserWatchHistory = await WatchHistory.find({ userId: req.id }).select("item");
     const allUserWatchHistoryIds = allUserWatchHistory.map((history) => history.item?.toHexString());
 
-    if (allEpisodeIds.every((id) => allUserWatchHistoryIds.includes(id))) {
+    if (allLessonIds.every((id) => allUserWatchHistoryIds.includes(id))) {
       res.status(200).json({
         status: "eligible",
       });
