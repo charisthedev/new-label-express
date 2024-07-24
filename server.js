@@ -25,7 +25,7 @@ cloudinary.config({
 app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.raw({ type: "application/octet-stream", limit: "100mb" }));
-app.use(cors());
+app.use(cors({ origin: '*' }));
 app.use("/uploads", express.static("uploads"));
 
 // const http = require("http").createServer(app);
