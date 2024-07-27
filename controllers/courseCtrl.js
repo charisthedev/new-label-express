@@ -194,7 +194,7 @@ const courseCtrl = {
       res.json({
         status: "success",
         message: `Successfully fetched ${course.title} course`,
-        data: {...course[0],currency:req.currency},
+        data: {...course,currency:req.currency},
       });
     } catch (err) {
       res.status(500).json({ msg: err.message });
