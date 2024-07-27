@@ -73,6 +73,7 @@ const courseCtrl = {
         message: "successfully fetched list of course",
         result: course.length,
         data: course,
+        currency:req.currency
       });
     } catch (err) {
       res.status(500).json({ msg: err.message });

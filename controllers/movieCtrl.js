@@ -68,6 +68,7 @@ const movieCtrl = {
         status: "success",
         result: movies.length,
         movies: movies,
+        currency:req.currency
       });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
@@ -80,7 +81,7 @@ const movieCtrl = {
       );
       if (!movie) return res.status(400).json({ msg: "Movie does not exist." });
 
-      return res.status(200).json(movie);
+      return res.status(200).json({...movie,currency:req.currency});
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }

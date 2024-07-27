@@ -5,6 +5,7 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const rateLimit = require("express-rate-limit");
 const bodyParser = require("body-parser");
+const requestIp = require("request-ip");
 
 const app = express();
 const cloudinary = require("cloudinary").v2;
@@ -27,6 +28,8 @@ app.use(cookieParser());
 app.use(bodyParser.raw({ type: "application/octet-stream", limit: "100mb" }));
 app.use(cors({ origin: '*' }));
 app.use("/uploads", express.static("uploads"));
+app.set('trust proxy', true);
+// app.use(requestIp.mw());
 
 // const http = require("http").createServer(app);
 

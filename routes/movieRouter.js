@@ -3,15 +3,16 @@ const movieCtrl = require("../controllers/movieCtrl");
 const auth = require("../middleware/auth");
 const authAdmin = require("../middleware/authAdmin");
 const modifiedAuthAdmin = require("../middleware/modifiedAuthAdmin");
+const checkCurrency = require("../middleware/location");
 
 router
   .route("/")
-  .get(movieCtrl.getMovies)
+  .get(checkCurrency,movieCtrl.getMovies)
   .post(modifiedAuthAdmin("Movies"), movieCtrl.createMovie);
 
 router
   .route("/:id")
-  .get(movieCtrl.getMovie)
+  .get(checkCurrency,movieCtrl.getMovie)
   .delete(modifiedAuthAdmin("Movies"), movieCtrl.deleteMovie)
   .put(modifiedAuthAdmin("Movies"), movieCtrl.updateMovie);
 

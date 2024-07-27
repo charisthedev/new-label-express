@@ -70,6 +70,7 @@ const seasonCtrl = {
         status: "success",
         result: seasons.length,
         seasons: seasons,
+        currency:req.currency
       });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
@@ -147,7 +148,7 @@ const seasonCtrl = {
       if (!season)
         return res.status(400).json({ msg: "Seasons does not exist." });
 
-      res.json(season);
+      res.json({...season,currency:req.currency});
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }
@@ -163,7 +164,7 @@ const seasonCtrl = {
       if (!season)
         return res.status(400).json({ msg: "Seasons does not exist." });
 
-      res.json({ msg: "success", seasons: season });
+      res.json({ msg: "success", seasons: season,currency:req.currency });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }

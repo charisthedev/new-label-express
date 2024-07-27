@@ -170,7 +170,7 @@ const userCtrl = {
       const user = await Users.findById({ _id: req.id }).select(
         "-createdAt -updatedAt -__v -password -role"
       );
-      res.status(200).json({ msg: "success", data: user });
+      res.status(200).json({ msg: "success", data: user, currency:req.currency });
     } catch (err) {
       res.status(500).json({ msg: err.message });
     }

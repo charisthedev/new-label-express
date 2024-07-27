@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const getCurrency = require ("../utils/location");
 
 const Auth = async (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -30,8 +31,9 @@ const Auth = async (req, res, next) => {
         message: 'token expired',
       });
     }
-
+    const currency = await getCurrency(req.clientIp);
     req.id = id;
+    req.currency = currency;
     next();
   } catch (err) {
     return res.status(401).json({

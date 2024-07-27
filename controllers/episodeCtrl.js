@@ -65,6 +65,7 @@ const episodeCtrl = {
         status: "success",
         result: episodes.length,
         episodes: episodes,
+        currency:req.currency
       });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
@@ -78,7 +79,7 @@ const episodeCtrl = {
       if (!episodes)
         return res.status(400).json({ msg: "episode does not exist." });
 
-      res.json({ msg: "success", episodes });
+      res.json({ msg: "success", episodes,currency:req.currency });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }
@@ -161,7 +162,7 @@ const episodeCtrl = {
 
       return res.json({
         msg: "Queried",
-        episodeData,
+        episodeData:{...episodeData,currency:req.currency},
       });
     } catch (err) {
       return res.status(500).json({ msg: err.message });

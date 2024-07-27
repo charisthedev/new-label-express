@@ -24,7 +24,7 @@
     "@aws-sdk/s3-request-presigner": "^3.342.0",
     "@mux/mux-node": "3.3.2",
     "aws-sdk": "^2.1282.0",
-    "axios": "^1.2.2",
+    "axios": "^1.7.2",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.1",
     "chai": "^4.3.7",
@@ -52,6 +52,7 @@
     "node-fetch": "^3.3.0",
     "nodemon": "^2.0.20",
     "path": "^0.12.7",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "request-ip": "^3.3.0"
   }
 }
