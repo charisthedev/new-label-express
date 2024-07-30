@@ -177,7 +177,7 @@ const courseCtrl = {
   },
   getSingleCourse: async (req, res) => {
     try {
-      const course = await Course.findOne({ id: req.params.id })
+      const course = await Course.findOne({ _id: req.params.id })
         .populate([
           {
             path: "lessons",
