@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const getCurrency = require("../utils/location");
+const checkCurrency = require("./location");
 
 const Auth = async (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -37,10 +38,11 @@ const Auth = async (req, res, next) => {
     }
 
     // Get currency based on IP address
-    const currency = await getCurrency(req.connection.remoteAddress || req.socket.remoteAddress || req.ip);
+    // const currency = await getCurrency(req.connection.remoteAddress || req.socket.remoteAddress || req.ip);
     req.id = id;
-    req.currency = currency;
-    next();
+    // req.currency = currency;
+    // next();
+    await checkCurrency(req,res,next)
   } catch (err) {
     return res.status(401).json({
       status: 'error',
