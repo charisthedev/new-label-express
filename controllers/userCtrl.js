@@ -3,6 +3,7 @@ const Payments = require("../models/paymentModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const sendMail = require("../utils/mail");
+const converter = require("../utils/converter");
 
 const createAccessToken = (payload, expiresIn) => {
   const token = jwt.sign(
@@ -170,7 +171,8 @@ const userCtrl = {
       const user = await Users.findById({ _id: req.id }).select(
         "-createdAt -updatedAt -__v -password -role"
       );
-      res.status(200).json({ msg: "success", data: user, currency:req.currency });
+      const walletValue = await converter(user.wallet,req.currency)
+      res.status(200).json({ msg: "success", data: {...user._doc,wallet:walletValue}, currency:req.currency });
     } catch (err) {
       res.status(500).json({ msg: err.message });
     }

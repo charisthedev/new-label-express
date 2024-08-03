@@ -29,8 +29,26 @@ const userSchema = new mongoose.Schema(
       }
     ],
     wallet: {
-      type: Number,
-      default: 0,
+      ngn: {
+        type: Number,
+        default: 0,
+      },
+      usd: {
+        type: Number,
+        default: 0,
+      },
+      cad:{
+        type:Number,
+        default:0
+      },
+      eur:{
+        type:Number,
+        default:0
+      },
+      gbp:{
+        type:Number,
+        default:0
+      }
     },
     cart: {
       type: Array,

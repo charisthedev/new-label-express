@@ -8,6 +8,7 @@ const Lesson = require("../models/lessonModel");
 const Discount = require("../models/dicountModel");
 const Flutterwave = require("flutterwave-node-v3");
 const moment = require("moment");
+const converter = require('../utils/converter');
 const flw = new Flutterwave(
   process.env.FLUTTERWAVE_PUB_KEY,
   process.env.FLUTTERWAVE_SECRET_KEY
@@ -152,18 +153,18 @@ const paymentCtrl = {
       const user = await Users.findOne({ _id: id });
       if (!user)
         res.status(400).json({ msg: "Unauthorised access" });
-
-      if (user.wallet < (price || content?.price))
+      const walletValue = await converter(user.wallet,req.currency)
+      if (walletValue < (price || content?.price))
         return res.status(400).json({ msg: "Insufficient Wallet ballance" });
 
       const deductBalance =
         price && paymentType === "donation"
-          ? user.wallet - price
-          : user.wallet - content?.price;
+          ? walletValue - price
+          : walletValue - content?.price;
 
       await Users.findOneAndUpdate(
         { _id: id },
-        { wallet: Number(deductBalance) }
+        { wallet: {[req.currency]:deductBalance} }
       );
       const verify = await Payments.findOne({
         user: id,
@@ -217,7 +218,7 @@ const paymentCtrl = {
           <p>An Order have been created on the item ${content.title}</p>
           <h3>type:${item_type}<h3>
           <h3>title:${content?.title}<h3>
-          <h3>price:${content?.price}<h3>
+          <h3>price:${req.currency} ${content?.price}<h3>
           <span>NB: this is an order notification as you were added as a beneficiary</span>
           <h2>Congratulations</h2>
         </body>
@@ -377,8 +378,8 @@ const paymentCtrl = {
         response.data.status === "successful" &&
         tx_ref === response.data.tx_ref
       ) {
-        const addToWallet = user.wallet + price;
-        await Users.findOneAndUpdate({ _id: id }, { wallet: addToWallet });
+        const addToWallet = user.wallet[req.currency] + price;
+        await Users.findOneAndUpdate({ _id: id }, { wallet: {...user.wallet,[req.currency]:addToWallet} });
       }
       const newTopup = new Payments({
         user_id: id,
