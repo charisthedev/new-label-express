@@ -160,7 +160,7 @@ const paymentCtrl = {
       const deductBalance =
         price && paymentType === "donation"
           ? walletValue - price
-          : walletValue - content?.price;
+          : walletValue - content?.price[req.currency];
 
       await Users.findOneAndUpdate(
         { _id: id },
@@ -182,7 +182,7 @@ const paymentCtrl = {
               user: id,
               item,
               paymentType,
-              price: content?.price,
+              price: content?.price[req.currency],
               expirationDate,
               validViews: content?.validViews,
               item_type,
@@ -191,7 +191,7 @@ const paymentCtrl = {
               user: id,
               item,
               paymentType,
-              price: content?.price,
+              price: content?.price[req.currency],
               validViews: content?.validViews,
               item_type,
             });
@@ -218,7 +218,7 @@ const paymentCtrl = {
           <p>An Order have been created on the item ${content.title}</p>
           <h3>type:${item_type}<h3>
           <h3>title:${content?.title}<h3>
-          <h3>price:${req.currency} ${content?.price}<h3>
+          <h3>price:${req.currency} ${content?.price[req.currency]}<h3>
           <span>NB: this is an order notification as you were added as a beneficiary</span>
           <h2>Congratulations</h2>
         </body>
@@ -270,7 +270,7 @@ const paymentCtrl = {
               user: id,
               item,
               paymentType,
-              price: content?.price,
+              price: content?.price[req.currency],
               expirationDate,
               validViews: content?.validViews,
               item_type,
@@ -279,7 +279,7 @@ const paymentCtrl = {
               user: id,
               item,
               paymentType,
-              price: content?.price,
+              price: content?.price[req.currency],
               validViews: content?.validViews,
               item_type,
             });
@@ -304,9 +304,11 @@ const paymentCtrl = {
         <body>
           <h1>Order Notification</h1>
           <p>An Order have been created on the item ${content.title}</p>
-          <h3>here is your default password: ${password}<h3>
+          <h3>price:${req.currency} ${content?.price[req.currency]}<h3>
           <span>NB: this is an order notification as you were added as a beneficiary</span>
           <h2>Congratulations</h2>
+        </body>
+        </html>
         </body>
         </html>`,
       };
