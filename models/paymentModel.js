@@ -9,7 +9,7 @@ const paymentSchema = new mongoose.Schema(
     item_type: {
       type: String,
       required: true,
-      enum: ["Episodes", "Movies", "Seasons"],
+      enum: ["Episodes", "Movies", "Seasons","Course", "Lesson"],
     },
     item: {
       type: mongoose.Schema.Types.ObjectId,
