@@ -150,7 +150,7 @@ const userCtrl = {
 
       // If login success , create access token and refresh token
       const accesstoken = createAccessToken({ id: user._id }, "3d");
-      const walletValue = await converter(user.wallet,req.currency)
+      const walletValue = await converter(user.wallet,req.currency);
       res.status(200).json({
         accesstoken,
         user: {

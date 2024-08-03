@@ -1,14 +1,14 @@
 const axios = require("axios");
 
-const calculateBaseCurrency = async (wallet,currency) => {
+const converter = async (wallet,currency) => {
     const rates = await axios.get(`https://api.currencyfreaks.com/v2.0/rates/latest?apikey=${process.env.RATE_API_KEY}`);
-    const ngn = rates.data.rates.NGN * wallet.ngn;
-    const gbp = rates.data.rates.GBP * wallet.gbp;
-    const cad = rates.data.rates.CAD * wallet.cad;
-    const eur = rates.data.rates.EUR * wallet.eur;
+    const ngn = wallet.ngn / rates.data.rates.NGN;
+    const gbp = wallet.gbp / rates.data.rates.GBP;
+    const cad = wallet.cad / rates.data.rates.CAD;
+    const eur = wallet.eur / rates.data.rates.EUR;
     const totalUsd = Number(ngn) + Number(cad) + Number(eur) + Number(gbp) + Number(wallet.usd);
-    const baseValue = totalUsd / rates.data[currency.toUpperCase()]
-    return baseValue;
+    const baseValue = totalUsd * (currency === "usd"?1:rates.data.rates[currency.toUpperCase()])
+    return parseInt(baseValue);
 }
 
-module.exports = calculateBaseCurrency;
+module.exports = converter;
