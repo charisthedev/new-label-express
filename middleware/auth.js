@@ -31,7 +31,7 @@ const Auth = async (req, res, next) => {
         message: 'token expired',
       });
     }
-    const currency = await getCurrency(req.clientIp);
+    const currency = await getCurrency(req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.ip);
     req.id = id;
     req.currency = currency;
     next();
