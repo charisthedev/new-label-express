@@ -25,7 +25,7 @@ const sectionCtrl = {
           },
         });
 
-      res.json({ sections });
+      res.json({ sections,currency:req.currency });
     } catch (error) {
       console.error(error);
       res
@@ -48,6 +48,7 @@ const sectionCtrl = {
       res.json({
         status: "success",
         data: section,
+        currency:req.currency
       });
     } catch (error) {
       res.status(500).json({ msg: err.message });

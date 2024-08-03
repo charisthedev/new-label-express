@@ -18,7 +18,7 @@ const channelCtrl = {
         const items = combineArrays(movies, series);
         channels.push({ title: e.name, id: e._id, items });
       }
-      res.status(200).json({ msg: "successfully fetched channels", channels });
+      res.status(200).json({ msg: "successfully fetched channels", channels,currency:req.currency });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }

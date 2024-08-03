@@ -65,6 +65,7 @@ const seriesCtrl = {
         message: "successfully fetched list of series",
         result: series.length,
         data: series,
+        currency:req.currency
       });
     } catch (err) {
       res.status(500).json({ msg: err.message });
@@ -128,7 +129,7 @@ const seriesCtrl = {
       res.json({
         status: "success",
         message: `Successfully fetched ${series.title} series`,
-        data: series,
+        data: {...series._doc,currency:req.currency},
       });
     } catch (err) {
       res.status(500).json({ msg: err.message });
