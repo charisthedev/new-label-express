@@ -5,6 +5,7 @@ const getLocationDetails = async (ip) => {
     if (ip === '::1') {
         clientIp = '127.0.0.1';
     }
+    console.log(ip)
     const geo = await axios.get(`http://ip-api.com/json/${ip.split(",")[0]}`)
     const country = geo?.data?.country;
     const currencyResponse = await axios.get(`https://restcountries.com/v3.1/name/${country}`);
