@@ -224,7 +224,7 @@ const courseCtrl = {
       if (!req.body)
         return res.status(400).json({ msg: "All payload are required" });
 
-      const courseTitle = await Course.findOne({ id: req.params.id });
+      const courseTitle = await Course.findOne({ _id: req.params.id });
 
       await Course.findByIdAndUpdate(
         { _id: req.params.id },
