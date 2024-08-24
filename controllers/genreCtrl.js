@@ -7,7 +7,7 @@ const genreCtrl = {
       const { name } = req.body;
       if (!name)
         return res.status(400).json({ msg: "please include genre name" });
-      const genre = Genre.find({ name });
+      const genre = await Genre.findOne({ name });
       if (genre) return res.status(400).json({ msg: "genre already exists" });
 
       const newGenre = new Genre({
@@ -24,7 +24,7 @@ const genreCtrl = {
     try {
       const { name } = req.body;
 
-      const genre = await Genre.findByIdUpdate(
+      const genre = await Genre.findByIdAndUpdate(
         { _id: req.params.id },
         {
           name,

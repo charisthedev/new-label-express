@@ -1,13 +1,16 @@
-const axios = require("axios");
+const Rate = require("../models/rateModel");
 
 const converter = async (wallet,currency) => {
-    const rates = await axios.get(`https://api.currencyfreaks.com/v2.0/rates/latest?apikey=${process.env.RATE_API_KEY}`);
-    const ngn = wallet.ngn / rates.data.rates.NGN;
-    const gbp = wallet.gbp / rates.data.rates.GBP;
-    const cad = wallet.cad / rates.data.rates.CAD;
-    const eur = wallet.eur / rates.data.rates.EUR;
+    const rates = (await Rate.find()).reduce((data,acc)=>{
+        acc[data.currency.toUpperCase()] = data.rate
+        return acc
+    },{});
+    const ngn = wallet.ngn / (rates.NGN || 1);
+    const gbp = wallet.gbp / (rates.GBP || 1);
+    const cad = wallet.cad / (rates.CAD || 1);
+    const eur = wallet.eur / (rates.EUR || 1);
     const totalUsd = Number(ngn) + Number(cad) + Number(eur) + Number(gbp) + Number(wallet.usd);
-    const baseValue = totalUsd * (currency === "usd"?1:rates.data.rates[currency.toUpperCase()])
+    const baseValue = totalUsd * (currency === "usd"?1:rates[currency.toUpperCase()])
     return parseInt(baseValue);
 }
 

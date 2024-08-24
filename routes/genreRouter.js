@@ -10,6 +10,8 @@ router.get("/", genreCtrl.getGenres);
 
 router.get("/:id", genreCtrl.getGenre);
 
+router.patch("/:id", modifiedAuthAdmin("Genres"),genreCtrl.updateGenre);
+
 router.delete("/:id", modifiedAuthAdmin("Genres"), genreCtrl.deleteGenre);
 
 module.exports = router;
