@@ -332,8 +332,13 @@ const paymentCtrl = {
       const verify = season
         ? await Payments.findOne({
             user: id,
-            $or: [{ item: item }, { item: season }],
-            $or: [{ item_type }, { item_type: "Seasons" }, {item_type:"Course"}],
+            $or: [
+              { item: item },
+              { item: season },
+              { item_type },
+              { item_type: "Seasons" },
+              { item_type: "Course" }
+            ],
             paymentType: { $ne: "donation" },
           })
         : await Payments.findOne({
