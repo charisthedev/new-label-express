@@ -1,7 +1,7 @@
 const Rate = require("../models/rateModel");
 
 const converter = async (wallet,currency) => {
-    const rates = (await Rate.find()).reduce((data,acc)=>{
+    const rates = (await Rate.find()).reduce((acc,data)=>{
         acc[data.currency.toUpperCase()] = data.rate
         return acc
     },{});
