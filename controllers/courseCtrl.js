@@ -1,9 +1,9 @@
-const Series = require("../models/seriesModel");
 const Course = require("../models/courseModel");
 const Lesson = require("../models/lessonModel");
-const Episodes = require("../models/episodeModel");
+const Payment = require("../models/paymentModel");
 const WatchHistory = require("../models/continueWatchingModel");
 const Activities = require("../models/activityModel");
+const AuthUtil = require("../utils/authUtils");
 
 class APIfeatures {
   constructor(query, queryString) {
@@ -186,15 +186,21 @@ const courseCtrl = {
             path: "category",
           },
         ])
-        .populate("genre");
+        .populate("genre").lean();
 
       if (!course)
         return res.status(400).json({ msg: "Course does not exist" });
-
+      const userId = await AuthUtil(req);
+      const verifyPayment = userId ? await Payment.findOne({
+        user: userId,
+        item: course._id,
+        item_type: course.type,
+        paymentType: { $ne: "donation" },
+      }): false
       res.json({
         status: "success",
         message: `Successfully fetched ${course.title} course`,
-        data: {...course._doc,currency:req.currency},
+        data: {...course, currency:req.currency, purchased: Boolean(verifyPayment)},
       });
     } catch (err) {
       res.status(500).json({ msg: err.message });
@@ -253,7 +259,7 @@ const courseCtrl = {
       if (!req.params.id)
         return res.status(400).json({ msg: "Course Id is required" });
 
-      const allLessons = await Lesson.find({ series: req.params.id }).select("_id");
+      const allLessons = await Lesson.find({ course: req.params.id }).select("_id");
     const allLessonIds = allLessons.map((episode) => episode._id?.toHexString());
 
     const allUserWatchHistory = await WatchHistory.find({ userId: req.id }).select("item");

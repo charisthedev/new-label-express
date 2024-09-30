@@ -1,7 +1,5 @@
 const router = require("express").Router();
 const seriesCtrl = require("../controllers/seriesCtrl");
-const auth = require("../middleware/auth");
-const authAdmin = require("../middleware/authAdmin");
 const modifiedAuthAdmin = require("../middleware/modifiedAuthAdmin");
 
 router

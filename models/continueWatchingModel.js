@@ -9,7 +9,7 @@ const ContinueWatchingSchema = new mongoose.Schema({
   item_type: {
     type: String,
     required: true,
-    enum: ["Episodes", "Movies"],
+    enum: ["Episodes", "Movies", "Lesson"],
   },
   item: {
     type: mongoose.Schema.Types.ObjectId,

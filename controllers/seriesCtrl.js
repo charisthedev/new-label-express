@@ -1,5 +1,7 @@
 const Series = require("../models/seriesModel");
 const Activities = require("../models/activityModel");
+const Payment = require("../models/paymentModel");
+const AuthUtil = require("../utils/authUtils");
 
 class APIfeatures {
   constructor(query, queryString) {
@@ -121,15 +123,21 @@ const seriesCtrl = {
             path: "category",
           },
         ])
-        .populate("genre");
+        .populate("genre").lean();
 
       if (!series)
         return res.status(400).json({ msg: "Series does not exist" });
-
+      const userId = await AuthUtil(req);
+      const verifyPayment = userId ? await Payment.findOne({
+        user: userId,
+        item: series._id,
+        item_type: series.type,
+        paymentType: { $ne: "donation" },
+      }): false
       res.json({
         status: "success",
         message: `Successfully fetched ${series.title} series`,
-        data: {...series._doc,currency:req.currency},
+        data: {...series, currency:req.currency, purchased: Boolean(verifyPayment)},
       });
     } catch (err) {
       res.status(500).json({ msg: err.message });

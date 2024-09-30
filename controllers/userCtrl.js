@@ -170,9 +170,9 @@ const userCtrl = {
     try {
       const user = await Users.findById({ _id: req.id }).select(
         "-createdAt -updatedAt -__v -password -role"
-      );
+      ).lean();
       const walletValue = await converter(user.wallet,req.currency)
-      res.status(200).json({ msg: "success", data: {...user._doc,wallet:walletValue}, currency:req.currency });
+      res.status(200).json({ msg: "success", data: {...user,wallet:walletValue}, currency:req.currency });
     } catch (err) {
       res.status(500).json({ msg: err.message });
     }

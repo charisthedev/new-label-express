@@ -350,7 +350,6 @@ const paymentCtrl = {
             item_type,
             paymentType: { $ne: "donation" },
           });
-      console.log(verify)
       if (!verify?.item)
         return res.status(403).json({
           msg: "No payment has been made for this item",

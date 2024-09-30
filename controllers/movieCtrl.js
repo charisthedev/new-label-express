@@ -1,7 +1,7 @@
 const Movies = require("../models/movieModel");
 const Payment = require("../models/paymentModel");
-const Discount = require("../models/dicountModel");
 const Activities = require("../models/activityModel");
+const AuthUtil = require("../utils/authUtils");
 
 // Filter, sorting and paginating
 
@@ -22,10 +22,6 @@ class APIfeatures {
       (match) => "$" + match
     );
 
-    //    gte = greater than or equal
-    //    lte = lesser than or equal
-    //    lt = lesser than
-    //    gt = greater than
     this.query.find(JSON.parse(queryStr));
 
     return this;
@@ -78,10 +74,16 @@ const movieCtrl = {
     try {
       const movie = await Movies.findById({ _id: req.params.id }).populate(
         "category discount genre"
-      );
+      ).lean();
       if (!movie) return res.status(400).json({ msg: "Movie does not exist." });
-
-      return res.status(200).json({...movie._doc,currency:req.currency});
+      const userId = await AuthUtil(req);
+      const verifyPayment = userId ? await Payment.findOne({
+        user: userId,
+        item: movie._id,
+        item_type:movie.type,
+        paymentType: { $ne: "donation" },
+      }): false
+      return res.status(200).json({...movie, currency:req.currency, purchased:Boolean(verifyPayment)});
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }
