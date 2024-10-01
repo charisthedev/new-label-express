@@ -23,7 +23,7 @@ const sectionCtrl = {
           populate: {
             path: "seasons",
           },
-        });
+        }).lean();
 
       res.json({ sections,currency:req.currency });
     } catch (error) {
