@@ -2,7 +2,7 @@ const router = require("express").Router();
 const courseCtrl = require("../controllers/courseCtrl");
 const modifiedAuthAdmin = require("../middleware/modifiedAuthAdmin");
 const auth = require("../middleware/auth");
-const checkCurrency = require("../middleware/location")
+const checkCurrency = require("../middleware/location");
 
 router
   .route("/")

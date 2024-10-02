@@ -41,6 +41,7 @@ const channelCtrl = {
             id: channel[0]._id,
           },
         ],
+        currency:req.currency
       });
     } catch (err) {
       res.status(500).json({ msg: err.message });
