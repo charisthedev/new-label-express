@@ -16,6 +16,6 @@ router
   .delete(modifiedAuthAdmin("Movies"), movieCtrl.deleteMovie)
   .put(modifiedAuthAdmin("Movies"), movieCtrl.updateMovie);
 
-router.route(auth, "/player/:id").get(movieCtrl.getVideoUrl);
+router.route("/player/:id").get(auth,movieCtrl.getVideoUrl);
 
 module.exports = router;
