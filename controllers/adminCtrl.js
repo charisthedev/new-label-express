@@ -130,6 +130,7 @@ const adminCtrl = {
           },
         ])
         .skip((page - 1) * limit)
+        .sort({ createdAt: -1 })
         .limit(limit);
       res.status(200).json({
         msg: "successfully fetched Activities",
