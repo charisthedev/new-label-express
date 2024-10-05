@@ -143,7 +143,7 @@ const movieCtrl = {
         discount,
         year,
         description,
-        trailer,
+        trailer: trailer || undefined,
         duration,
         donation,
         donate,

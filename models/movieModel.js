@@ -55,8 +55,8 @@ const movieSchema = new mongoose.Schema(
       required: true,
     },
     trailer: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Video"
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Video"
     },
     duration: {
       type: String,
