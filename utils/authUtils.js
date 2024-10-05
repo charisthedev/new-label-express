@@ -6,8 +6,21 @@ const AuthUtil = async (req) => {
     return false;
   }
   const token = authHeader.split(' ')[1];
-  const decodedToken = await jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-  const { id } = decodedToken.data; 
+  
+  const decodedToken = await new Promise((resolve) => {
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+      if (err) {
+        resolve(null);
+      } else {
+        resolve(decoded);
+      }
+    });
+  });
+
+  if (!decodedToken) {
+    return false;
+  }
+  const { id } = decodedToken.data;
   return id;
 }
 

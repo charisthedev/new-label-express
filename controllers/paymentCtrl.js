@@ -200,7 +200,7 @@ const paymentCtrl = {
       } else {
         await Payments.findByIdAndUpdate(
           { _id: verify?._id },
-          { expirationDate }
+          { expirationDate, validViews:content.validViews }
         );
       }
       const data = {
@@ -288,7 +288,7 @@ const paymentCtrl = {
       } else {
         await Payments.findByIdAndUpdate(
           { _id: verify?._id },
-          { expirationDate }
+          { expirationDate, validViews:content.validViews }
         );
       }
       const data = {

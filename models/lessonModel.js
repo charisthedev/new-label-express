@@ -19,8 +19,9 @@ const lessonSchema = new mongoose.Schema(
       required: true,
     },
     video: {
-      type: String,
-      required: true,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Video",
+      required: true
     },
     image: {
       type: String,

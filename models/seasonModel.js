@@ -11,8 +11,8 @@ const seasonSchema = new mongoose.Schema(
       required: true,
     },
     trailer: {
-      type: String,
-      required: true,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Video"
     },
     price: {
       ngn: {

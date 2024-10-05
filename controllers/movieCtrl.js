@@ -73,7 +73,7 @@ const movieCtrl = {
   getMovie: async (req, res) => {
     try {
       const movie = await Movies.findById({ _id: req.params.id }).populate(
-        "category discount genre"
+        "category discount genre trailer"
       ).lean();
       if (!movie) return res.status(400).json({ msg: "Movie does not exist." });
       const userId = await AuthUtil(req);
@@ -83,7 +83,7 @@ const movieCtrl = {
         item_type:movie.type,
         paymentType: { $ne: "donation" },
       }): false
-      return res.status(200).json({...movie, currency:req.currency, purchased:Boolean(verifyPayment)});
+      return res.status(200).json({...movie, trailer:movie?.trailer?.link, currency:req.currency, purchased:Boolean(verifyPayment)});
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }
