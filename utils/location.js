@@ -14,7 +14,8 @@ const getLocationDetails = async (ip) => {
     );
     const currency = currencyResponse.data[0].currencies;
     const currencyCode = Object.keys(currency)[0].toLowerCase();
-    return currencyCode;
+    const validCurrencies = ["ngn", "usd", "gbp", "cad", "eur"];
+    return validCurrencies.includes(currencyCode) ? currencyCode : "usd";
   } catch (error) {
     console.log(error);
   }

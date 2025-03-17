@@ -150,7 +150,7 @@ const userCtrl = {
 
       // If login success , create access token and refresh token
       const accesstoken = createAccessToken({ id: user._id }, "3d");
-      const walletValue = await converter(user.wallet,req.currency);
+      const walletValue = await converter(user.wallet, req.currency);
       res.status(200).json({
         accesstoken,
         user: {
@@ -168,11 +168,15 @@ const userCtrl = {
   },
   getMe: async (req, res) => {
     try {
-      const user = await Users.findById({ _id: req.id }).select(
-        "-createdAt -updatedAt -__v -password -role"
-      ).lean();
-      const walletValue = await converter(user.wallet,req.currency)
-      res.status(200).json({ msg: "success", data: {...user,wallet:walletValue}, currency:req.currency });
+      const user = await Users.findById({ _id: req.id })
+        .select("-createdAt -updatedAt -__v -password -role")
+        .lean();
+      const walletValue = await converter(user.wallet, req.currency);
+      res.status(200).json({
+        msg: "success",
+        data: { ...user, wallet: walletValue },
+        currency: req.currency,
+      });
     } catch (err) {
       res.status(500).json({ msg: err.message });
     }
