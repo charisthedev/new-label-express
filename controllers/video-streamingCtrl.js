@@ -10,7 +10,7 @@ const cache = {}; // cache to store video data
 const videoStreamCtrl = {
   sendVideoFile: async (req, res) => {
     try {
-      const file_name = await Video.findById({ _id: req.params.file_name });
+      const file_name = await Video.findById(req.params.file_name);
       const path = `./uploads/${file_name.link}.mp4`;
       const stat = fs.statSync(path);
       const fileSize = stat.size;
@@ -72,7 +72,7 @@ const videoStreamCtrl = {
       const media = req.body.item;
       if (!req.params.id)
         return res.status(400).json({ msg: "video id is undefined" });
-      const video = await Video.findById({ _id: req.params.id });
+      const video = await Video.findById(req.params.id);
       const options = {
         secure: true,
         expires_at: Math.floor(Date.now() / 1000) + 43200, // URL expiration time in seconds (12 hours)

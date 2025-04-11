@@ -99,7 +99,7 @@ const discountCtrl = {
   },
   getSingleDiscount: async (req, res) => {
     try {
-      const discount = await Discount.findById({ _id: req.params.id });
+      const discount = await Discount.findById(req.params.id);
       if (!discount)
         return res.status(400).json({ msg: "discount does not exist" });
 
@@ -115,7 +115,7 @@ const discountCtrl = {
     try {
       const { name, percentage, active } = req.body;
 
-      const getDiscount = await Discount.findById({ _id: req.params.id });
+      const getDiscount = await Discount.findById(req.params.id);
       if (!getDiscount)
         return res.status(400).json({ msg: "discount does not exist" });
 
@@ -148,7 +148,7 @@ const discountCtrl = {
   },
   deleteDiscount: async (req, res) => {
     try {
-      const getDiscount = await Discount.findById({ _id: req.params.id });
+      const getDiscount = await Discount.findById(req.params.id);
       if (!getDiscount)
         return res.status(400).json({ msg: "discount does not exist" });
 

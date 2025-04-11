@@ -65,7 +65,7 @@ const lessonCtrl = {
         status: "success",
         result: episodes.length,
         episodes: episodes,
-        currency:req.currency
+        currency: req.currency,
       });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
@@ -79,7 +79,7 @@ const lessonCtrl = {
       if (!lessons)
         return res.status(400).json({ msg: "lesson does not exist." });
 
-      res.json({ msg: "success", lessons,currency:req.currency });
+      res.json({ msg: "success", lessons, currency: req.currency });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }
@@ -94,7 +94,7 @@ const lessonCtrl = {
         video,
         image,
         banner,
-        course
+        course,
       } = req.body;
       if (!image || !video || !banner)
         return res.status(400).json({ msg: "Asset upload not complete" });
@@ -106,7 +106,7 @@ const lessonCtrl = {
         video,
         image,
         banner,
-        course
+        course,
       });
 
       const newActivities = new Activities({
@@ -146,7 +146,7 @@ const lessonCtrl = {
 
       return res.json({
         msg: "Queried",
-        episodeData:{...episodeData,currency:req.currency},
+        episodeData: { ...episodeData, currency: req.currency },
       });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
@@ -154,7 +154,7 @@ const lessonCtrl = {
   },
   deleteLesson: async (req, res) => {
     try {
-      const episode = await Lesson.findById({ _id: req.params.id });
+      const episode = await Lesson.findById(req.params.id);
       await Lesson.findByIdAndDelete(req.params.id);
 
       const newActivities = new Activities({
@@ -174,9 +174,7 @@ const lessonCtrl = {
       if (!req.body)
         return res.status(400).json({ msg: "Please include a payload" });
 
-      const episode = await Lesson.findById({ _id: req.params.id });
-
-      await Lesson.findByIdAndUpdate(
+      const episode = await Lesson.findByIdAndUpdate(
         { _id: req.params.id },
         {
           ...req.body,

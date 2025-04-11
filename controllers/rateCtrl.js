@@ -57,7 +57,7 @@ const rateCtrl = {
   },
   getRate: async (req, res) => {
     try {
-      const rate = await Rate.findById({ _id: req.params.id });
+      const rate = await Rate.findById(req.params.id);
 
       res.json(rate);
     } catch (err) {

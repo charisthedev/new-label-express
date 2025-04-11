@@ -13,7 +13,7 @@ const categoryCtrl = {
   },
   getCategory: async (req, res) => {
     try {
-      const category = await Category.findById({ _id: req.params.id });
+      const category = await Category.findById(req.params.id);
       if (!category) return res.status(404).json({ msg: "Category not found" });
 
       res.json({
@@ -37,7 +37,7 @@ const categoryCtrl = {
 
       const newActivities = new Activities({
         description: `Successfully created ${name} category`,
-        userId:req.id
+        userId: req.id,
       });
 
       await newActivities.save();
@@ -51,12 +51,12 @@ const categoryCtrl = {
   },
   deleteCategory: async (req, res) => {
     try {
-      const category = await Category.findById({ _id: req.params.id });
+      const category = await Category.findById(req.params.id);
       await Category.findByIdAndDelete({ _id: req.params.id });
 
       const newActivities = new Activities({
         description: `Successfully deleted category ${category.name}`,
-        userId:req.id
+        userId: req.id,
       });
 
       await newActivities.save();
@@ -73,7 +73,7 @@ const categoryCtrl = {
 
       const newActivities = new Activities({
         description: `Successfully updated category ${name}`,
-        userId:req.id
+        userId: req.id,
       });
 
       await newActivities.save();

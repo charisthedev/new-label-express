@@ -168,7 +168,7 @@ const userCtrl = {
   },
   getMe: async (req, res) => {
     try {
-      const user = await Users.findById({ _id: req.id })
+      const user = await Users.findById(req.id)
         .select("-createdAt -updatedAt -__v -password -role")
         .lean();
       const walletValue = await converter(user.wallet, req.currency);
@@ -197,7 +197,7 @@ const userCtrl = {
     try {
       const oldPassword = req.body.oldPassword;
       const newPassword = req.body.newPassword;
-      const user = await Users.findById({ _id: req.id }).select(
+      const user = await Users.findById(req.id).select(
         "-createdAt -updatedAt -__v"
       );
       const isMatch = bcrypt.compare(oldPassword, user.password);

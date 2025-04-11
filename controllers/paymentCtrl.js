@@ -8,7 +8,7 @@ const Lesson = require("../models/lessonModel");
 const Discount = require("../models/dicountModel");
 const Flutterwave = require("flutterwave-node-v3");
 const moment = require("moment");
-const converter = require('../utils/converter');
+const converter = require("../utils/converter");
 const flw = new Flutterwave(
   process.env.FLUTTERWAVE_PUB_KEY,
   process.env.FLUTTERWAVE_SECRET_KEY
@@ -17,24 +17,24 @@ const sendMail = require("../utils/mail");
 
 const findItem = async (type, item) => {
   if (type === "Movies") {
-    return await Movies.findById({ _id: item });
+    return await Movies.findById(item);
   }
   if (type === "Seasons") {
-    return await Season.findById({ _id: item }).populate({
-      path: 'series',
-      select: 'emails',
+    return await Season.findById(item).populate({
+      path: "series",
+      select: "emails",
     });
   }
   if (type === "Episodes") {
-    return await Episodes.findById({ _id: item }).populate({
-      path: 'series',
-      select: 'emails',
+    return await Episodes.findById(item).populate({
+      path: "series",
+      select: "emails",
     });
   }
   if (type === "Lesson" || type === "Course") {
-    return await Course.findById({ _id: item }).populate({
-      path: 'lessons',
-      select: 'emails',
+    return await Course.findById(item).populate({
+      path: "lessons",
+      select: "emails",
     });
   }
 };
@@ -151,9 +151,8 @@ const paymentCtrl = {
       if (!item) res.status(400).json({ msg: "Payment was not successfull." });
       const content = await findItem(item_type, item);
       const user = await Users.findOne({ _id: id });
-      if (!user)
-        res.status(400).json({ msg: "Unauthorised access" });
-      const walletValue = await converter(user.wallet,req.currency)
+      if (!user) res.status(400).json({ msg: "Unauthorised access" });
+      const walletValue = await converter(user.wallet, req.currency);
       if (walletValue < (price || content?.price))
         return res.status(400).json({ msg: "Insufficient Wallet ballance" });
 
@@ -164,7 +163,7 @@ const paymentCtrl = {
 
       await Users.findOneAndUpdate(
         { _id: id },
-        { wallet: {[req.currency]:deductBalance} }
+        { wallet: { [req.currency]: deductBalance } }
       );
       const verify = await Payments.findOne({
         user: id,
@@ -200,12 +199,12 @@ const paymentCtrl = {
       } else {
         await Payments.findByIdAndUpdate(
           { _id: verify?._id },
-          { expirationDate, validViews:content.validViews }
+          { expirationDate, validViews: content.validViews }
         );
       }
       const data = {
         from: "info@newlabelproduction.com",
-        to: (content?.emails||content?.series?.emails).join(","),
+        to: (content?.emails || content?.series?.emails).join(","),
         subject: "Order Notification",
         text: "",
         html: `<!DOCTYPE html>
@@ -288,12 +287,12 @@ const paymentCtrl = {
       } else {
         await Payments.findByIdAndUpdate(
           { _id: verify?._id },
-          { expirationDate, validViews:content.validViews }
+          { expirationDate, validViews: content.validViews }
         );
       }
       const data = {
         from: "info@newlabelproduction.com",
-        to: (content?.emails||content?.series?.emails).join(",").join(","),
+        to: (content?.emails || content?.series?.emails).join(",").join(","),
         subject: "Order Notification",
         text: "",
         html: `<!DOCTYPE html>
@@ -334,13 +333,10 @@ const paymentCtrl = {
             user: id,
             $or: [
               { item: item },
-              { 
-                  item: season,
-                  $or: [
-                      { item_type: "Seasons" },
-                      { item_type: "Course" }
-                  ]
-              }
+              {
+                item: season,
+                $or: [{ item_type: "Seasons" }, { item_type: "Course" }],
+              },
             ],
             paymentType: { $ne: "donation" },
           })
@@ -389,7 +385,10 @@ const paymentCtrl = {
         tx_ref === response.data.tx_ref
       ) {
         const addToWallet = user.wallet[req.currency] + price;
-        await Users.findOneAndUpdate({ _id: id }, { wallet: {...user.wallet,[req.currency]:addToWallet} });
+        await Users.findOneAndUpdate(
+          { _id: id },
+          { wallet: { ...user.wallet, [req.currency]: addToWallet } }
+        );
       }
       const newTopup = new Payments({
         user_id: id,

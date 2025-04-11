@@ -65,7 +65,7 @@ const episodeCtrl = {
         status: "success",
         result: episodes.length,
         episodes: episodes,
-        currency:req.currency
+        currency: req.currency,
       });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
@@ -79,7 +79,7 @@ const episodeCtrl = {
       if (!episodes)
         return res.status(400).json({ msg: "episode does not exist." });
 
-      res.json({ msg: "success", episodes,currency:req.currency });
+      res.json({ msg: "success", episodes, currency: req.currency });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }
@@ -162,7 +162,7 @@ const episodeCtrl = {
 
       return res.json({
         msg: "Queried",
-        episodeData:{...episodeData,currency:req.currency},
+        episodeData: { ...episodeData, currency: req.currency },
       });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
@@ -170,7 +170,7 @@ const episodeCtrl = {
   },
   deleteEpisode: async (req, res) => {
     try {
-      const episode = await Episodes.findById({ _id: req.params.id });
+      const episode = await Episodes.findById(req.params.id);
       await Episodes.findByIdAndDelete(req.params.id);
 
       const newActivities = new Activities({
@@ -190,7 +190,7 @@ const episodeCtrl = {
       if (!req.body)
         return res.status(400).json({ msg: "Please include a payload" });
 
-      const episode = await Episodes.findById({ _id: req.params.id });
+      const episode = await Episodes.findById(req.params.id);
 
       await Episodes.findByIdAndUpdate(
         { _id: req.params.id },

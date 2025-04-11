@@ -143,7 +143,7 @@ const adminCtrl = {
   getUser: async (req, res) => {
     try {
       const { id } = req.params;
-      const user = await Users.findById({ _id: id }).select(
+      const user = await Users.findById(id).select(
         "-password -createdAt -updatedAt -__v -role"
       );
       if (!user) return res.status(400).json({ msg: "User does not exist." });
@@ -278,7 +278,7 @@ const adminCtrl = {
           msg: "email is required",
         });
       }
-      const userRole = await Roles.findById({ _id: role });
+      const userRole = await Roles.findById(role);
       const password = generatePassword.generate({
         length: 10,
         numbers: true,

@@ -70,7 +70,7 @@ const seasonCtrl = {
         status: "success",
         result: seasons.length,
         seasons: seasons,
-        currency:req.currency
+        currency: req.currency,
       });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
@@ -141,14 +141,14 @@ const seasonCtrl = {
   },
   getSeason: async (req, res) => {
     try {
-      const season = await Seasons.findById({ _id: req.params.id }).populate({
+      const season = await Seasons.findById(req.params.id).populate({
         path: "episodes",
         select: "-video",
       });
       if (!season)
         return res.status(400).json({ msg: "Seasons does not exist." });
 
-      res.json({...season,currency:req.currency});
+      res.json({ ...season, currency: req.currency });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }
@@ -164,7 +164,7 @@ const seasonCtrl = {
       if (!season)
         return res.status(400).json({ msg: "Seasons does not exist." });
 
-      res.json({ msg: "success", seasons: season,currency:req.currency });
+      res.json({ msg: "success", seasons: season, currency: req.currency });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }

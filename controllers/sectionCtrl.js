@@ -23,9 +23,10 @@ const sectionCtrl = {
           populate: {
             path: "seasons",
           },
-        }).lean();
+        })
+        .lean();
 
-      res.json({ sections,currency:req.currency });
+      res.json({ sections, currency: req.currency });
     } catch (error) {
       console.error(error);
       res
@@ -35,7 +36,7 @@ const sectionCtrl = {
   },
   getSection: async (req, res) => {
     try {
-      const section = await Section.findById({ _id: req.params.id })
+      const section = await Section.findById(req.params.id)
         .populate({
           path: "movies",
           select: "-video",
@@ -48,7 +49,7 @@ const sectionCtrl = {
       res.json({
         status: "success",
         data: section,
-        currency:req.currency
+        currency: req.currency,
       });
     } catch (error) {
       res.status(500).json({ msg: err.message });

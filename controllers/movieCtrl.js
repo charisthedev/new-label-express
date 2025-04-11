@@ -64,7 +64,7 @@ const movieCtrl = {
         status: "success",
         result: movies.length,
         movies: movies,
-        currency:req.currency
+        currency: req.currency,
       });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
@@ -72,25 +72,32 @@ const movieCtrl = {
   },
   getMovie: async (req, res) => {
     try {
-      const movie = await Movies.findById({ _id: req.params.id }).populate(
-        "category discount genre trailer"
-      ).lean();
+      const movie = await Movies.findById(req.params.id)
+        .populate("category discount genre trailer")
+        .lean();
       if (!movie) return res.status(400).json({ msg: "Movie does not exist." });
       const userId = await AuthUtil(req);
-      const verifyPayment = userId ? await Payment.findOne({
-        user: userId,
-        item: movie._id,
-        item_type:movie.type,
-        paymentType: { $ne: "donation" },
-      }): false
-      return res.status(200).json({...movie, trailer:movie?.trailer?.link, currency:req.currency, purchased:Boolean(verifyPayment)});
+      const verifyPayment = userId
+        ? await Payment.findOne({
+            user: userId,
+            item: movie._id,
+            item_type: movie.type,
+            paymentType: { $ne: "donation" },
+          })
+        : false;
+      return res.status(200).json({
+        ...movie,
+        trailer: movie?.trailer?.link,
+        currency: req.currency,
+        purchased: Boolean(verifyPayment),
+      });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }
   },
   getVideoUrl: async (req, res) => {
     try {
-      const movie = await Movies.findById({ _id: req.params.id }).populate(
+      const movie = await Movies.findById(req.params.id).populate(
         "category genre"
       );
       if (!movie) return res.status(400).json({ msg: "Movie does not exist." });
@@ -132,7 +139,7 @@ const movieCtrl = {
         category,
         expirationSpan,
         validViews,
-        emails
+        emails,
       } = req.body;
       if (!image || !video)
         return res.status(400).json({ msg: "Asset upload not complete" });
@@ -156,7 +163,7 @@ const movieCtrl = {
         category,
         expirationSpan,
         validViews,
-        emails
+        emails,
       });
 
       const newActivities = new Activities({
@@ -178,7 +185,7 @@ const movieCtrl = {
 
       const newActivities = new Activities({
         description: `Successfully deleted movie with id ${req.params.id}`,
-        userId:req.id
+        userId: req.id,
       });
 
       await newActivities.save();
@@ -190,11 +197,12 @@ const movieCtrl = {
   },
   updateMovie: async (req, res) => {
     try {
-      const movie = await Movies.findById({ _id: req.params.id });
+      const movie = await Movies.findById(req.params.id);
+      const { _id, ...payload } = req.body;
       await Movies.findByIdAndUpdate(
         { _id: req.params.id },
         {
-          ...req.body,
+          ...payload,
         }
       );
 

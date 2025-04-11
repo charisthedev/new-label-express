@@ -56,7 +56,7 @@ const genreCtrl = {
   },
   getGenre: async (req, res) => {
     try {
-      const genre = await Genre.findById({ _id: req.params.id });
+      const genre = await Genre.findById(req.params.id);
 
       res.json(genre);
     } catch (err) {
