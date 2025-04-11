@@ -53,7 +53,7 @@ const seriesCtrl = {
   getAllSeries: async (req, res) => {
     try {
       const features = new APIfeatures(
-        Series.find({course:false}).populate("seasons"),
+        Series.find({ course: false }).populate("seasons"),
         req.query
       )
         .filtering()
@@ -67,7 +67,7 @@ const seriesCtrl = {
         message: "successfully fetched list of series",
         result: series.length,
         data: series,
-        currency:req.currency
+        currency: req.currency,
       });
     } catch (err) {
       res.status(500).json({ msg: err.message });
@@ -75,8 +75,16 @@ const seriesCtrl = {
   },
   createSeries: async (req, res) => {
     try {
-      const { title, description, casts, genre, image, banner, donation,emails } =
-        req.body;
+      const {
+        title,
+        description,
+        casts,
+        genre,
+        image,
+        banner,
+        donation,
+        emails,
+      } = req.body;
 
       if (!req.body)
         return res.status(400).json({ msg: "All payload are required" });
@@ -89,7 +97,7 @@ const seriesCtrl = {
         image,
         banner,
         donation,
-        emails
+        emails,
       });
 
       const newActivities = new Activities({
@@ -111,7 +119,7 @@ const seriesCtrl = {
   },
   getSingleSeries: async (req, res) => {
     try {
-      const series = await Series.findById({ _id: req.params.id })
+      const series = await Series.findById(req.params.id)
         .populate([
           {
             path: "seasons",
@@ -123,21 +131,28 @@ const seriesCtrl = {
             path: "category",
           },
         ])
-        .populate("genre").lean();
+        .populate("genre")
+        .lean();
 
       if (!series)
         return res.status(400).json({ msg: "Series does not exist" });
       const userId = await AuthUtil(req);
-      const verifyPayment = userId ? await Payment.findOne({
-        user: userId,
-        item: series._id,
-        item_type: series.type,
-        paymentType: { $ne: "donation" },
-      }): false
+      const verifyPayment = userId
+        ? await Payment.findOne({
+            user: userId,
+            item: series._id,
+            item_type: series.type,
+            paymentType: { $ne: "donation" },
+          })
+        : false;
       res.json({
         status: "success",
         message: `Successfully fetched ${series.title} series`,
-        data: {...series, currency:req.currency, purchased: Boolean(verifyPayment)},
+        data: {
+          ...series,
+          currency: req.currency,
+          purchased: Boolean(verifyPayment),
+        },
       });
     } catch (err) {
       res.status(500).json({ msg: err.message });
@@ -145,7 +160,7 @@ const seriesCtrl = {
   },
   deleteASeries: async (req, res) => {
     try {
-      const seriesTitle = await Series.findById({ _id: req.params.id });
+      const seriesTitle = await Series.findById(req.params.id);
       await Series.findByIdAndDelete({ _id: req.params.id });
 
       const newActivities = new Activities({
@@ -166,18 +181,13 @@ const seriesCtrl = {
     try {
       if (!req.body)
         return res.status(400).json({ msg: "All payload are required" });
-
-      const seriesTitle = await Series.findById({ _id: req.params.id });
-
-      await Series.findByIdAndUpdate(
-        { _id: req.params.id },
-        {
-          ...req.body,
-        }
-      );
+      const { _id, ...payload } = req.body;
+      const updatedSeries = await Series.findByIdAndUpdate(req.params.id, {
+        ...payload,
+      });
 
       const newActivities = new Activities({
-        description: `Successfully updated ${seriesTitle.title} series`,
+        description: `Successfully updated ${updatedSeries.title} series`,
         userId: req.id,
       });
 
@@ -185,7 +195,7 @@ const seriesCtrl = {
 
       res.json({
         status: "success",
-        message: `Successfully updated ${seriesTitle.title} series`,
+        message: `Successfully updated series`,
       });
     } catch (err) {
       res.status(500).json({ msg: err.message });

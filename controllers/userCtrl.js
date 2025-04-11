@@ -172,6 +172,7 @@ const userCtrl = {
         .select("-createdAt -updatedAt -__v -password -role")
         .lean();
       const walletValue = await converter(user.wallet, req.currency);
+      console.log(walletValue, user.wallet, req.currency);
       res.status(200).json({
         msg: "success",
         data: { ...user, wallet: walletValue },
