@@ -158,7 +158,9 @@ const episodeCtrl = {
   },
   getEpisode: async (req, res) => {
     try {
-      const episodeData = await Episodes.findById(req.params.id);
+      const episodeData = await Episodes.findById(req.params.id).populate(
+        "trailer"
+      );
 
       return res.json({
         msg: "Queried",
