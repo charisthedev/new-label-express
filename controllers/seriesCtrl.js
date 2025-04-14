@@ -136,12 +136,15 @@ const seriesCtrl = {
         .populate([
           {
             path: "seasons",
-            populate: {
-              path: "episodes",
-              populate: {
-                path: "trailer",
+            populate: [
+              {
+                path: "episodes",
+                populate: {
+                  path: "trailer",
+                },
               },
-            },
+              { path: "trailer" },
+            ],
           },
           {
             path: "category",
@@ -166,6 +169,11 @@ const seriesCtrl = {
         message: `Successfully fetched ${series.title} series`,
         data: {
           ...series,
+          seasons: series.seasons.map((e) => ({
+            ...e,
+            episodes: e.episodes.map((e) => ({ ...e, currency: req.currency })),
+            currency: req.currency,
+          })),
           currency: req.currency,
           purchased: Boolean(verifyPayment),
         },
