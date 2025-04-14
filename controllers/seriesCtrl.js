@@ -53,7 +53,20 @@ const seriesCtrl = {
   getAllSeries: async (req, res) => {
     try {
       const features = new APIfeatures(
-        Series.find({ course: false }).populate("seasons"),
+        Series.find({ course: false }).populate([
+          {
+            path: "seasons",
+            populate: [
+              {
+                path: "episodes",
+                populate: {
+                  path: "trailer",
+                },
+              },
+              { path: "trailer" },
+            ],
+          },
+        ]),
         req.query
       )
         .filtering()
@@ -125,13 +138,16 @@ const seriesCtrl = {
             path: "seasons",
             populate: {
               path: "episodes",
+              populate: {
+                path: "trailer",
+              },
             },
           },
           {
             path: "category",
           },
+          { path: "genre" },
         ])
-        .populate("genre")
         .lean();
 
       if (!series)

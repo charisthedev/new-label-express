@@ -56,6 +56,9 @@ const seasonCtrl = {
           .populate({
             path: "episodes",
             select: "-video",
+            populate: {
+              path: "trailer",
+            },
           })
           .sort({ _id: 1 }),
         req.query
@@ -141,10 +144,15 @@ const seasonCtrl = {
   },
   getSeason: async (req, res) => {
     try {
-      const season = await Seasons.findById(req.params.id).populate({
-        path: "episodes",
-        select: "-video",
-      });
+      const season = await Seasons.findById(req.params.id).populate([
+        {
+          path: "episodes",
+          select: "-video",
+          populate: {
+            path: "trailer",
+          },
+        },
+      ]);
       if (!season)
         return res.status(400).json({ msg: "Seasons does not exist." });
 

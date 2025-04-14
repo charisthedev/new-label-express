@@ -51,7 +51,9 @@ const movieCtrl = {
   getMovies: async (req, res) => {
     try {
       const features = new APIfeatures(
-        Movies.find().select("-video").populate("category"),
+        Movies.find()
+          .select("-video")
+          .populate([{ path: "category" }, { path: "trailer" }]),
         req.query
       )
         .filtering()
@@ -87,7 +89,6 @@ const movieCtrl = {
         : false;
       return res.status(200).json({
         ...movie,
-        trailer: movie?.trailer?.link,
         currency: req.currency,
         purchased: Boolean(verifyPayment),
       });
