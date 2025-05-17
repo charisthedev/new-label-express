@@ -47,24 +47,27 @@ const seriesSchema = new mongoose.Schema(
     donation: {
       type: Boolean,
     },
+    donate: {
+      type: Number,
+    },
     emails: {
       type: [String],
       validate: {
-        validator: function(v) {
-          return v.every(email => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
+        validator: function (v) {
+          return v.every((email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
         },
-        message: props => `${props.value} contains an invalid email!`
+        message: (props) => `${props.value} contains an invalid email!`,
       },
-      default:[]
+      default: [],
     },
     course: {
       type: Boolean,
-      default:false
+      default: false,
     },
     certificate: {
       type: Boolean,
-      default:false
-    }
+      default: false,
+    },
   },
   {
     timestamps: true,

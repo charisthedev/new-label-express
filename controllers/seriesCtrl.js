@@ -96,6 +96,7 @@ const seriesCtrl = {
         image,
         banner,
         donation,
+        donate,
         emails,
       } = req.body;
 
@@ -110,6 +111,7 @@ const seriesCtrl = {
         image,
         banner,
         donation,
+        donate,
         emails,
       });
 
